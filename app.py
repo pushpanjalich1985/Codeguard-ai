@@ -1,3 +1,3 @@
 # CodeGuard AI - Backend
-# Author: Your Name
+# Author: Chennuru Pushpanjali
 # FOSS Hack 2026
