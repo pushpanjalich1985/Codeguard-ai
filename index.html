@@ -120,6 +120,138 @@
       color: #484f58;
       font-size: 15px;
     }
+
+    .summary-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .summary-pill {
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .pill-red    { background: #3d1f1f; color: #f85149; border: 1px solid #f85149; }
+    .pill-orange { background: #3d2b1f; color: #e3b341; border: 1px solid #e3b341; }
+    .pill-blue   { background: #1f2d3d; color: #58a6ff; border: 1px solid #58a6ff; }
+    .pill-green  { background: #1f3d2b; color: #3fb950; border: 1px solid #3fb950; }
+    .pill-gray   { background: #21262d; color: #8b949e; border: 1px solid #30363d; }
+
+    .issue-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 14px;
+      border-left: 4px solid #30363d;
+    }
+
+    .issue-card.critical { border-left-color: #f85149; }
+    .issue-card.high     { border-left-color: #e3b341; }
+    .issue-card.medium   { border-left-color: #58a6ff; }
+    .issue-card.low      { border-left-color: #3fb950; }
+
+    .issue-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: bold;
+      padding: 3px 10px;
+      border-radius: 12px;
+      text-transform: uppercase;
+    }
+
+    .badge-critical { background: #3d1f1f; color: #f85149; }
+    .badge-high     { background: #3d2b1f; color: #e3b341; }
+    .badge-medium   { background: #1f2d3d; color: #58a6ff; }
+    .badge-low      { background: #1f3d2b; color: #3fb950; }
+
+    .issue-title { font-size: 15px; font-weight: bold; }
+
+    .issue-body p {
+      color: #8b949e;
+      font-size: 14px;
+      margin-bottom: 10px;
+      line-height: 1.6;
+    }
+
+    .code-comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 12px 0;
+    }
+
+    @media (max-width: 600px) {
+      .code-comparison { grid-template-columns: 1fr; }
+    }
+
+    .code-block {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      overflow-x: auto;
+    }
+
+    .code-label {
+      font-size: 11px;
+      font-weight: bold;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .label-bad  { color: #f85149; }
+    .label-good { color: #3fb950; }
+
+    .steps-list {
+      color: #8b949e;
+      font-size: 13px;
+      padding-left: 18px;
+      line-height: 1.9;
+      margin-bottom: 12px;
+    }
+
+    .copy-btn {
+      background: #21262d;
+      color: #58a6ff;
+      border: 1px solid #30363d;
+      padding: 7px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .copy-btn:hover { background: #30363d; }
+
+    .no-issues {
+      text-align: center;
+      padding: 36px;
+      background: #161b22;
+      border: 1px solid #3fb950;
+      border-radius: 12px;
+      color: #3fb950;
+      font-size: 17px;
+    }
+
+    .analyzing {
+      text-align: center;
+      padding: 36px;
+      color: #58a6ff;
+      font-size: 15px;
+    }
   </style>
 </head>
 <body>
