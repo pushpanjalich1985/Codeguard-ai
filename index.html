@@ -279,7 +279,7 @@
     </div>
     <textarea id="codeInput"
       placeholder="Paste your code here..."></textarea>
-    <button id="analyzeBtn">
+    <button id="analyzeBtn" onclick="analyzeCode()">
       🔍 Analyze Code
     </button>
   </div>
@@ -291,6 +291,331 @@
   </div>
 
 </div>
+<script>
+  const rules = [
+    {
+      id: "sql_injection",
+      title: "SQL Injection Risk",
+      severity: "critical",
+      languages: ["python", "javascript", "general"],
+      detect: (code) =>
+        (code.includes("SELECT") || code.includes("INSERT") ||
+         code.includes("DELETE") || code.includes("UPDATE")) &&
+        (code.includes(" + ") || code.includes("${")) &&
+        (code.includes("input") || code.includes("request") ||
+         code.includes("req.") || code.includes("params")),
+      explanation: "You are building SQL queries by joining strings with user input. Attackers can inject malicious SQL and steal or destroy your entire database.",
+      badCode: `query = "SELECT * FROM users WHERE id = " + user_id\ncursor.execute(query)`,
+      goodCode: `query = "SELECT * FROM users WHERE id = ?"\ncursor.execute(query, [user_id])`,
+      steps: [
+        "Find where you join user input into SQL strings",
+        "Replace with ? placeholders instead",
+        "Pass values separately to execute()"
+      ]
+    },
+    {
+      id: "hardcoded_secret",
+      title: "Hardcoded Password or Secret Key",
+      severity: "critical",
+      languages: ["python", "javascript", "general"],
+      detect: (code) =>
+        (code.toLowerCase().includes("password =") ||
+         code.toLowerCase().includes("password=") ||
+         code.toLowerCase().includes("secret =") ||
+         code.toLowerCase().includes("api_key =") ||
+         code.toLowerCase().includes("api_key=")) &&
+        (code.includes('"') || code.includes("'")),
+      explanation: "Hardcoded passwords or API keys in your code are extremely dangerous. Anyone who sees your GitHub repo can steal your credentials instantly.",
+      badCode: `password = "mypassword123"\napi_key = "sk-abc123xyz"`,
+      goodCode: `import os\npassword = os.getenv("PASSWORD")\napi_key = os.getenv("API_KEY")`,
+      steps: [
+        "Remove all hardcoded secrets from your code",
+        "Create a .env file and put secrets there",
+        "Use os.getenv() to read them in Python",
+        "Add .env to your .gitignore file immediately"
+      ]
+    },
+    {
+      id: "eval_usage",
+      title: "Dangerous eval() Usage",
+      severity: "critical",
+      languages: ["python", "javascript", "general"],
+      detect: (code) => code.includes("eval("),
+      explanation: "eval() executes any string as real code. If user input ever reaches eval(), attackers can run any command on your server or machine.",
+      badCode: `result = eval(user_input)`,
+      goodCode: `import ast\nresult = ast.literal_eval(user_input)`,
+      steps: [
+        "Remove eval() from your code entirely if possible",
+        "Use ast.literal_eval() for safe Python data parsing",
+        "Validate and sanitize all user inputs before processing"
+      ]
+    },
+    {
+      id: "xss_risk",
+      title: "XSS (Cross-Site Scripting) Risk",
+      severity: "critical",
+      languages: ["javascript", "general"],
+      detect: (code) =>
+        code.includes("innerHTML") &&
+        (code.includes("input") || code.includes("value") ||
+         code.includes("params") || code.includes("query")),
+      explanation: "Setting innerHTML with user input lets attackers inject malicious scripts that run in your users browsers and steal their data.",
+      badCode: `element.innerHTML = userInput`,
+      goodCode: `element.textContent = userInput\n// If HTML needed:\nelement.innerHTML = DOMPurify.sanitize(userInput)`,
+      steps: [
+        "Replace innerHTML with textContent for plain text",
+        "If you need HTML, use DOMPurify library to sanitize first",
+        "Never trust user input directly in the DOM"
+      ]
+    },
+    {
+      id: "infinite_loop",
+      title: "Infinite Loop Detected",
+      severity: "high",
+      languages: ["python", "javascript", "general"],
+      detect: (code) =>
+        (code.includes("while True") || code.includes("while(true") ||
+         code.includes("while (true")) &&
+        !code.includes("break"),
+      explanation: "A loop with no exit condition runs forever. This freezes your app, consumes 100% CPU, and eventually crashes everything.",
+      badCode: `while True:\n    process_data()`,
+      goodCode: `while True:\n    process_data()\n    if done:\n        break`,
+      steps: [
+        "Find your while True loop",
+        "Add a break condition inside it",
+        "Test that the loop actually exits when expected"
+      ]
+    },
+    {
+      id: "no_error_handling",
+      title: "No Error Handling Found",
+      severity: "medium",
+      languages: ["python", "javascript", "general"],
+      detect: (code) =>
+        (code.includes("open(") || code.includes("requests.get") ||
+         code.includes("fetch(") || code.includes("urllib")) &&
+        !code.includes("try") && !code.includes("except") &&
+        !code.includes("catch"),
+      explanation: "File operations and network requests can fail anytime. Without error handling, one failure crashes your entire program.",
+      badCode: `file = open("data.txt")\ndata = file.read()`,
+      goodCode: `try:\n    file = open("data.txt")\n    data = file.read()\nexcept FileNotFoundError:\n    print("File not found")\nfinally:\n    file.close()`,
+      steps: [
+        "Wrap risky operations inside try/except blocks",
+        "Handle specific error types like FileNotFoundError",
+        "Use finally to always close files or connections"
+      ]
+    },
+    {
+      id: "no_input_validation",
+      title: "Missing Input Validation",
+      severity: "high",
+      languages: ["python", "javascript", "general"],
+      detect: (code) =>
+        (code.includes("input(") || code.includes("request.form") ||
+         code.includes("req.body") || code.includes("argv")) &&
+        !code.includes("if ") && !code.includes("validate") &&
+        !code.includes("len("),
+      explanation: "Accepting user input without checks lets empty, malformed, or malicious data enter your system and cause unexpected crashes.",
+      badCode: `username = request.form["username"]\nsave_to_db(username)`,
+      goodCode: `username = request.form["username"]\nif not username or len(username) < 3:\n    return "Invalid input"\nsave_to_db(username)`,
+      steps: [
+        "Always check if input is empty first",
+        "Validate minimum and maximum length",
+        "Check the expected format like email or number"
+      ]
+    },
+    {
+      id: "division_by_zero",
+      title: "Possible Division by Zero",
+      severity: "high",
+      languages: ["python", "javascript", "general"],
+      detect: (code) => {
+        const lines = code.split("\n");
+        return lines.some(line =>
+          line.includes("/") &&
+          !line.trim().startsWith("#") &&
+          !line.trim().startsWith("//") &&
+          (line.includes("len(") || line.includes("count") ||
+           line.includes("total") || line.includes("size"))
+        );
+      },
+      explanation: "Dividing by a variable that could be zero crashes your program instantly with a ZeroDivisionError.",
+      badCode: `average = total / count`,
+      goodCode: `if count == 0:\n    average = 0\nelse:\n    average = total / count`,
+      steps: [
+        "Find every place you divide by a variable",
+        "Add a check if the variable could be zero",
+        "Return a safe default value when dividing by zero"
+      ]
+    },
+    {
+      id: "debug_prints",
+      title: "Debug Print Statements Left In",
+      severity: "low",
+      languages: ["python", "general"],
+      detect: (code) => {
+        const lines = code.split("\n");
+        const printLines = lines.filter(l =>
+          l.trim().startsWith("print(")
+        );
+        return printLines.length > 3;
+      },
+      explanation: "Too many print() statements mean debugging code was left in. This may accidentally expose sensitive data in production.",
+      badCode: `print("user:", user)\nprint("password:", password)\nprint("token:", token)`,
+      goodCode: `import logging\nlogging.info("Processing user: %s", user.id)\n# Never log passwords or secrets`,
+      steps: [
+        "Remove or comment out all debug print statements",
+        "Use Python logging module for proper logs",
+        "Never print passwords, tokens, or sensitive data"
+      ]
+    },
+    {
+      id: "missing_colon",
+      title: "Possible Missing Colon in Python",
+      severity: "high",
+      languages: ["python"],
+      detect: (code) => {
+        const lines = code.split("\n");
+        return lines.some(line => {
+          const t = line.trim();
+          return (
+            (t.startsWith("if ") || t.startsWith("for ") ||
+             t.startsWith("while ") || t.startsWith("def ") ||
+             t.startsWith("class ") || t.startsWith("else") ||
+             t.startsWith("elif ") || t.startsWith("try") ||
+             t.startsWith("except")) &&
+            !t.endsWith(":") &&
+            !t.endsWith("\\") &&
+            t.length > 2
+          );
+        });
+      },
+      explanation: "Python requires a colon at the end of if, for, while, def and class statements. A missing colon causes an immediate SyntaxError.",
+      badCode: `for i in range(10)\n    print(i)`,
+      goodCode: `for i in range(10):\n    print(i)`,
+      steps: [
+        "Look for lines starting with if, for, while, def, class",
+        "Make sure every one of them ends with a colon :",
+        "Check elif, else, try and except lines too"
+      ]
+    },
+    {
+      id: "bare_except",
+      title: "Bare except Clause",
+      severity: "medium",
+      languages: ["python"],
+      detect: (code) =>
+        code.includes("except:") ||
+        code.includes("except :"),
+      explanation: "Using except: without specifying the error type catches ALL exceptions. This hides real bugs and makes debugging nearly impossible.",
+      badCode: `try:\n    do_something()\nexcept:\n    pass`,
+      goodCode: `try:\n    do_something()\nexcept ValueError as e:\n    print("Error:", e)`,
+      steps: [
+        "Always specify the exception type after except",
+        "Use except ValueError or except TypeError etc",
+        "Never use bare except: silently"
+      ]
+    }
+  ];
+
+  function analyzeCode() {
+    const code = document.getElementById("codeInput").value.trim();
+    const language = document.getElementById("language").value;
+    const btn = document.getElementById("analyzeBtn");
+    const resultsDiv = document.getElementById("results");
+
+    if (!code) {
+      resultsDiv.innerHTML =
+        '<div class="empty-state">⚠️ Please paste some code first!</div>';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "🔍 Analyzing...";
+    resultsDiv.innerHTML =
+      '<div class="analyzing">⏳ Analyzing your code...</div>';
+
+    setTimeout(() => {
+      const found = rules.filter(rule =>
+        (rule.languages.includes(language) ||
+         rule.languages.includes("general")) &&
+        rule.detect(code)
+      );
+
+      btn.disabled = false;
+      btn.textContent = "🔍 Analyze Code";
+
+      if (found.length === 0) {
+        resultsDiv.innerHTML =
+          '<div class="no-issues">✅ No issues detected! Your code looks clean.</div>';
+        return;
+      }
+
+      const counts = {
+        critical: found.filter(i => i.severity === "critical").length,
+        high:     found.filter(i => i.severity === "high").length,
+        medium:   found.filter(i => i.severity === "medium").length,
+        low:      found.filter(i => i.severity === "low").length
+      };
+
+      let html = '<div class="summary-bar">';
+      if (counts.critical)
+        html += `<span class="summary-pill pill-red">🔴 ${counts.critical} Critical</span>`;
+      if (counts.high)
+        html += `<span class="summary-pill pill-orange">🟠 ${counts.high} High</span>`;
+      if (counts.medium)
+        html += `<span class="summary-pill pill-blue">🔵 ${counts.medium} Medium</span>`;
+      if (counts.low)
+        html += `<span class="summary-pill pill-green">🟢 ${counts.low} Low</span>`;
+      html += `<span class="summary-pill pill-gray">Total: ${found.length} issues</span>`;
+      html += '</div>';
+
+      found.forEach(issue => {
+        html += `
+        <div class="issue-card ${issue.severity}">
+          <div class="issue-header">
+            <span class="badge badge-${issue.severity}">
+              ${issue.severity}
+            </span>
+            <span class="issue-title">${issue.title}</span>
+          </div>
+          <div class="issue-body">
+            <p>${issue.explanation}</p>
+            <div class="code-comparison">
+              <div class="code-block">
+                <div class="code-label label-bad">❌ Bad Code</div>
+                <pre>${issue.badCode}</pre>
+              </div>
+              <div class="code-block">
+                <div class="code-label label-good">✅ Fixed Code</div>
+                <pre>${issue.goodCode}</pre>
+              </div>
+            </div>
+            <p><strong>How to fix:</strong></p>
+            <ol class="steps-list">
+              ${issue.steps.map(s => `<li>${s}</li>`).join("")}
+            </ol>
+            <button class="copy-btn"
+              onclick="copyFix('${issue.id}')">
+              📋 Copy Fixed Code
+            </button>
+          </div>
+        </div>`;
+      });
+
+      resultsDiv.innerHTML = html;
+      window._rules = rules;
+    }, 900);
+  }
+
+  function copyFix(id) {
+    const issue = window._rules.find(r => r.id === id);
+    if (issue) {
+      navigator.clipboard.writeText(issue.goodCode);
+      alert("✅ Fixed code copied to clipboard!");
+    }
+  }
+</script>
 
 </body>
 </html>
