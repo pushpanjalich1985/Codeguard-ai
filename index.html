@@ -46,8 +46,8 @@
     }
 
     .intro h2 { font-size: 26px; margin-bottom: 8px; }
-
     .intro p { color: #8b949e; font-size: 15px; }
+
     .input-section {
       background: #161b22;
       border: 1px solid #30363d;
@@ -107,7 +107,6 @@
     }
 
     button#analyzeBtn:hover { background: #2ea043; }
-
     button#analyzeBtn:disabled {
       background: #21262d;
       color: #8b949e;
@@ -266,7 +265,7 @@
     <h2>Analyze Your Code Instantly</h2>
     <p>Detects security issues, syntax errors, logic bugs,
        and bad practices — and teaches you how to fix them.</p>
- </div>
+  </div>
 
   <div class="input-section">
     <div class="top-bar">
@@ -289,8 +288,8 @@
       👆 Paste your code above and click Analyze
     </div>
   </div>
-
 </div>
+
 <script>
   const rules = [
     {
@@ -535,15 +534,35 @@
     resultsDiv.innerHTML =
       '<div class="analyzing">⏳ Analyzing your code...</div>';
 
+    fetch("http://127.0.0.1:5000/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code, language })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.issues && data.issues.length > 0) {
+        showBackendResults(data.issues, resultsDiv);
+      } else {
+        runFrontendAnalysis(code, language, resultsDiv);
+      }
+      btn.disabled = false;
+      btn.textContent = "🔍 Analyze Code";
+    })
+    .catch(() => {
+      runFrontendAnalysis(code, language, resultsDiv);
+      btn.disabled = false;
+      btn.textContent = "🔍 Analyze Code";
+    });
+  }
+
+  function runFrontendAnalysis(code, language, resultsDiv) {
     setTimeout(() => {
       const found = rules.filter(rule =>
         (rule.languages.includes(language) ||
          rule.languages.includes("general")) &&
         rule.detect(code)
       );
-
-      btn.disabled = false;
-      btn.textContent = "🔍 Analyze Code";
 
       if (found.length === 0) {
         resultsDiv.innerHTML =
@@ -571,41 +590,69 @@
       html += '</div>';
 
       found.forEach(issue => {
-        html += `
-        <div class="issue-card ${issue.severity}">
-          <div class="issue-header">
-            <span class="badge badge-${issue.severity}">
-              ${issue.severity}
-            </span>
-            <span class="issue-title">${issue.title}</span>
-          </div>
-          <div class="issue-body">
-            <p>${issue.explanation}</p>
-            <div class="code-comparison">
-              <div class="code-block">
-                <div class="code-label label-bad">❌ Bad Code</div>
-                <pre>${issue.badCode}</pre>
-              </div>
-              <div class="code-block">
-                <div class="code-label label-good">✅ Fixed Code</div>
-                <pre>${issue.goodCode}</pre>
-              </div>
-            </div>
-            <p><strong>How to fix:</strong></p>
-            <ol class="steps-list">
-              ${issue.steps.map(s => `<li>${s}</li>`).join("")}
-            </ol>
-            <button class="copy-btn"
-              onclick="copyFix('${issue.id}')">
-              📋 Copy Fixed Code
-            </button>
-          </div>
-        </div>`;
+        html += buildIssueCard(issue);
       });
 
       resultsDiv.innerHTML = html;
       window._rules = rules;
     }, 900);
+  }
+
+  function showBackendResults(issues, resultsDiv) {
+    const counts = {
+      critical: issues.filter(i => i.severity === "critical").length,
+      high:     issues.filter(i => i.severity === "high").length,
+      medium:   issues.filter(i => i.severity === "medium").length,
+      low:      issues.filter(i => i.severity === "low").length
+    };
+
+    let html = '<div class="summary-bar">';
+    if (counts.critical)
+      html += `<span class="summary-pill pill-red">🔴 ${counts.critical} Critical</span>`;
+    if (counts.high)
+      html += `<span class="summary-pill pill-orange">🟠 ${counts.high} High</span>`;
+    if (counts.medium)
+      html += `<span class="summary-pill pill-blue">🔵 ${counts.medium} Medium</span>`;
+    if (counts.low)
+      html += `<span class="summary-pill pill-green">🟢 ${counts.low} Low</span>`;
+    html += `<span class="summary-pill pill-gray">Total: ${issues.length} issues</span>`;
+    html += '</div>';
+
+    issues.forEach(issue => {
+      html += buildIssueCard(issue);
+    });
+
+    resultsDiv.innerHTML = html;
+  }
+
+  function buildIssueCard(issue) {
+    return `
+      <div class="issue-card ${issue.severity}">
+        <div class="issue-header">
+          <span class="badge badge-${issue.severity}">
+            ${issue.severity}
+          </span>
+          <span class="issue-title">${issue.title}</span>
+          ${issue.line ? `<span style="color:#8b949e;font-size:12px">Line ${issue.line}</span>` : ""}
+        </div>
+        <div class="issue-body">
+          <p>${issue.explanation}</p>
+          <div class="code-comparison">
+            <div class="code-block">
+              <div class="code-label label-bad">❌ Bad Code</div>
+              <pre>${issue.badCode}</pre>
+            </div>
+            <div class="code-block">
+              <div class="code-label label-good">✅ Fixed Code</div>
+              <pre>${issue.goodCode}</pre>
+            </div>
+          </div>
+          <p><strong>How to fix:</strong></p>
+          <ol class="steps-list">
+            ${issue.steps.map(s => `<li>${s}</li>`).join("")}
+          </ol>
+        </div>
+      </div>`;
   }
 
   function copyFix(id) {
