@@ -2,14 +2,6 @@
 # Author: Chennuru Pushpanjali
 # FOSS Hack 2026
 
-# CodeGuard AI - Backend
-# Author: Chennuru Pushpanjali
-# FOSS Hack 2026
-
-# CodeGuard AI - Backend
-# Author: Chennuru Pushpanjali
-# FOSS Hack 2026
-
 import ast
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -148,6 +140,105 @@ def check_logic(code):
                     "Return a safe default value when it is zero"
                 ]
             })
+
+    # Check for empty except blocks
+    for i, line in enumerate(lines, 1):
+        stripped = line.strip()
+        if stripped == "except:" or stripped.startswith("except "):
+            if i < len(lines):
+                next_line = lines[i].strip() if i < len(lines) else ""
+                if next_line == "pass":
+                    issues.append({
+                        "id": "empty_except",
+                        "title": "Empty except Block with pass",
+                        "severity": "medium",
+                        "line": i,
+                        "explanation": f"Line {i}: You are silently ignoring "
+                                      f"errors with pass. This hides bugs and "
+                                      f"makes debugging nearly impossible.",
+                        "badCode": "try:\n    do_something()\nexcept:\n    pass",
+                        "goodCode": "try:\n    do_something()\nexcept Exception as e:\n    print('Error:', e)",
+                        "steps": [
+                            "Find the except block at line " + str(i),
+                            "Replace pass with actual error handling",
+                            "At minimum print the error so you know it happened"
+                        ]
+                    })
+
+    # Check for missing return in functions
+    for i, line in enumerate(lines, 1):
+        stripped = line.strip()
+        if stripped.startswith("def ") and stripped.endswith(":"):
+            func_lines = lines[i:i+20]
+            has_return = any("return" in l for l in func_lines)
+            has_print = any("print(" in l for l in func_lines)
+            if not has_return and not has_print:
+                issues.append({
+                    "id": "no_return",
+                    "title": "Function Has No Return Statement",
+                    "severity": "low",
+                    "line": i,
+                    "explanation": f"Line {i}: This function does not return "
+                                  f"anything. If you expect a result from it, "
+                                  f"it will return None silently.",
+                    "badCode": "def calculate(x, y):\n    result = x + y",
+                    "goodCode": "def calculate(x, y):\n    result = x + y\n    return result",
+                    "steps": [
+                        "Find the function at line " + str(i),
+                        "Add a return statement at the end",
+                        "Make sure it returns the value you need"
+                    ]
+                })
+
+    # Check for SQL injection
+    for i, line in enumerate(lines, 1):
+        if (("SELECT" in line or "INSERT" in line or
+             "DELETE" in line or "UPDATE" in line) and
+            ("+" in line or "%" in line or ".format(" in line)):
+            issues.append({
+                "id": "sql_injection_backend",
+                "title": "SQL Injection Risk in Query",
+                "severity": "critical",
+                "line": i,
+                "explanation": f"Line {i}: You are building a SQL query using "
+                              f"string concatenation. Attackers can inject "
+                              f"malicious SQL and steal your database.",
+                "badCode": 'query = "SELECT * FROM users WHERE id = " + user_id',
+                "goodCode": 'query = "SELECT * FROM users WHERE id = ?"\ncursor.execute(query, [user_id])',
+                "steps": [
+                    "Find the SQL query on line " + str(i),
+                    "Replace string concatenation with ? placeholders",
+                    "Pass values separately to cursor.execute()"
+                ]
+            })
+
+    # Check for unused imports
+    for i, line in enumerate(lines, 1):
+        stripped = line.strip()
+        if stripped.startswith("import ") or stripped.startswith("from "):
+            if "import " in stripped:
+                parts = stripped.split("import ")
+                if len(parts) > 1:
+                    imported = parts[1].strip().split(" as ")[0].strip()
+                    imported = imported.split(",")[0].strip()
+                    rest_of_code = "\n".join(lines[i:])
+                    if imported and imported not in rest_of_code:
+                        issues.append({
+                            "id": "unused_import",
+                            "title": "Possibly Unused Import",
+                            "severity": "low",
+                            "line": i,
+                            "explanation": f"Line {i}: You imported '{imported}' "
+                                          f"but it does not appear to be used "
+                                          f"anywhere in your code.",
+                            "badCode": f"import {imported}\n# never used below",
+                            "goodCode": "# Remove unused imports\n# Only import what you actually use",
+                            "steps": [
+                                "Check if " + imported + " is actually used",
+                                "Remove the import if it is not needed",
+                                "Clean imports make code easier to read"
+                            ]
+                        })
 
     return issues
 
