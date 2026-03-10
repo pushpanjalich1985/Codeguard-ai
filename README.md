@@ -2,7 +2,7 @@
 
 CodeGuard AI is a free and open source code analyzer that detects 
 security vulnerabilities, syntax errors, logic bugs, and bad practices 
-in your code. It does not just find the problem — it explains why it 
+in your code. It does not just find the problem, it explains why it 
 is dangerous and shows you exactly how to fix it.
 
 Built for FOSS Hack 2026 by Chennuru Pushpanjali.
