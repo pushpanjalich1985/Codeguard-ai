@@ -6,656 +6,221 @@
   <title>CodeGuard AI</title>
   <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* ── LIGHT THEME ── */
     [data-theme="light"] {
-      --bg:            #fafaf9;
-      --bg2:           #f3f2ee;
-      --surface:       #ffffff;
-      --border:        #e5e2da;
-      --border2:       #ccc8bd;
-      --text:          #1a1814;
-      --text2:         #6b6460;
-      --text3:         #a8a29c;
-      --shield-from:   #f59e0b;
-      --shield-to:     #d97706;
-      --shield-glyph:  #ffffff;
-      --theme-icon:    "🌙";
+      --bg:#fafaf9; --bg2:#f3f2ee; --surface:#ffffff;
+      --border:#e5e2da; --border2:#ccc8bd;
+      --text:#1a1814; --text2:#6b6460; --text3:#a8a29c;
     }
-
-    /* ── DARK THEME ── */
     [data-theme="dark"] {
-      --bg:            #0d0f12;
-      --bg2:           #141720;
-      --surface:       #161b24;
-      --border:        #1e2535;
-      --border2:       #2a3349;
-      --text:          #e8eaf0;
-      --text2:         #8892a4;
-      --text3:         #4a556a;
-      --shield-from:   #f59e0b;
-      --shield-to:     #d97706;
-      --shield-glyph:  #ffffff;
-      --theme-icon:    "☀️";
+      --bg:#0d0f12; --bg2:#141720; --surface:#161b24;
+      --border:#1e2535; --border2:#2a3349;
+      --text:#e8eaf0; --text2:#8892a4; --text3:#4a556a;
     }
-
-    /* ── SHARED SEMANTIC COLORS ── */
     :root {
-      --accent:        #d97706;
-      --teal:          #0d9488;
-      --teal-light-l:  #ccfbf1;
-      --teal-light-d:  rgba(13,148,136,0.12);
-      --teal-border-l: #5eead4;
-      --teal-border-d: rgba(13,148,136,0.35);
-
-      --red:           #ef4444;
-      --red-l:         #fef2f2;
-      --red-d:         rgba(239,68,68,0.10);
-      --red-bl:        #fca5a5;
-      --red-bd:        rgba(239,68,68,0.30);
-
-      --orange:        #ea580c;
-      --orange-l:      #fff7ed;
-      --orange-d:      rgba(234,88,12,0.10);
-      --orange-bl:     #fdba74;
-      --orange-bd:     rgba(234,88,12,0.30);
-
-      --blue:          #3b82f6;
-      --blue-l:        #eff6ff;
-      --blue-d:        rgba(59,130,246,0.10);
-      --blue-bl:       #93c5fd;
-      --blue-bd:       rgba(59,130,246,0.30);
-
-      --green:         #16a34a;
-      --green-l:       #f0fdf4;
-      --green-d:       rgba(22,163,74,0.10);
-      --green-bl:      #86efac;
-      --green-bd:      rgba(22,163,74,0.30);
-
-      --mono: 'Geist Mono', monospace;
-      --sans: 'Geist', sans-serif;
-      --radius: 8px;
-      --shadow-l: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
-      --shadow-md-l: 0 4px 14px rgba(0,0,0,0.09);
-      --shadow-d: 0 1px 3px rgba(0,0,0,0.3);
-      --shadow-md-d: 0 4px 14px rgba(0,0,0,0.4);
+      --accent:#d97706; --teal:#0d9488;
+      --red:#ef4444; --orange:#ea580c; --blue:#3b82f6; --green:#16a34a;
+      --mono:'Geist Mono',monospace; --sans:'Geist',sans-serif;
+      --radius:8px;
     }
-
     [data-theme="light"] {
-      --shadow:    var(--shadow-l);
-      --shadow-md: var(--shadow-md-l);
-      --teal-light:  var(--teal-light-l);
-      --teal-border: var(--teal-border-l);
-      --red-bg:    var(--red-l);    --red-border:    var(--red-bl);
-      --org-bg:    var(--orange-l); --org-border:    var(--orange-bl);
-      --blu-bg:    var(--blue-l);   --blu-border:    var(--blue-bl);
-      --grn-bg:    var(--green-l);  --grn-border:    var(--green-bl);
+      --shadow:0 1px 3px rgba(0,0,0,0.07); --shadow-md:0 4px 14px rgba(0,0,0,0.09);
+      --teal-light:#ccfbf1; --teal-border:#5eead4;
+      --red-bg:#fef2f2; --red-border:#fca5a5;
+      --org-bg:#fff7ed; --org-border:#fdba74;
+      --blu-bg:#eff6ff; --blu-border:#93c5fd;
+      --grn-bg:#f0fdf4; --grn-border:#86efac;
     }
-
     [data-theme="dark"] {
-      --shadow:    var(--shadow-d);
-      --shadow-md: var(--shadow-md-d);
-      --teal-light:  var(--teal-light-d);
-      --teal-border: var(--teal-border-d);
-      --red-bg:    var(--red-d);    --red-border:    var(--red-bd);
-      --org-bg:    var(--orange-d); --org-border:    var(--orange-bd);
-      --blu-bg:    var(--blue-d);   --blu-border:    var(--blue-bd);
-      --grn-bg:    var(--green-d);  --grn-border:    var(--green-bd);
+      --shadow:0 1px 3px rgba(0,0,0,0.3); --shadow-md:0 4px 14px rgba(0,0,0,0.4);
+      --teal-light:rgba(13,148,136,0.12); --teal-border:rgba(13,148,136,0.35);
+      --red-bg:rgba(239,68,68,0.10); --red-border:rgba(239,68,68,0.30);
+      --org-bg:rgba(234,88,12,0.10); --org-border:rgba(234,88,12,0.30);
+      --blu-bg:rgba(59,130,246,0.10); --blu-border:rgba(59,130,246,0.30);
+      --grn-bg:rgba(22,163,74,0.10);  --grn-border:rgba(22,163,74,0.30);
     }
 
-    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--sans);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      font-size: 14px;
-      line-height: 1.5;
-      -webkit-font-smoothing: antialiased;
-      transition: background 0.2s, color 0.2s;
-    }
-
-    /* ── HEADER ── */
-    header {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      height: 56px;
-      padding: 0 28px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      transition: background 0.2s, border-color 0.2s;
-    }
-
-    .brand { display: flex; align-items: center; gap: 10px; }
-
-    /* ── SHIELD LOGO ── */
-    .shield-logo {
-      width: 32px; height: 32px;
-      flex-shrink: 0;
-    }
-
-    .shield-logo svg {
-      width: 100%; height: 100%;
-    }
-
-    .brand-name {
-      font-family: var(--mono);
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--text);
-      letter-spacing: -0.02em;
-    }
-
-    .brand-name .cg-accent { color: var(--accent); }
-
-    .header-right { display: flex; align-items: center; gap: 8px; }
-
-    /* ── THEME TOGGLE ── */
-    .theme-toggle {
-      width: 34px; height: 34px;
-      border-radius: 7px;
-      border: 1px solid var(--border);
-      background: var(--bg2);
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 15px;
-      transition: all 0.15s;
-      flex-shrink: 0;
-    }
-
-    .theme-toggle:hover { background: var(--border); }
-
-    .chip {
-      font-family: var(--mono);
-      font-size: 11px;
-      padding: 3px 9px;
-      border-radius: 99px;
-      border: 1px solid var(--border);
-      color: var(--text3);
-      background: var(--bg2);
-      transition: all 0.2s;
-    }
-
-    .chip.live {
-      color: var(--teal);
-      background: var(--teal-light);
-      border-color: var(--teal-border);
-      display: flex; align-items: center; gap: 5px;
-    }
-
-    .chip.live::before {
-      content: '';
-      width: 6px; height: 6px;
-      background: var(--teal);
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
-
-    /* ── WORKSPACE ── */
-    .workspace {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      flex: 1;
-      min-height: calc(100vh - 56px - 48px);
-    }
-
-    /* ── PANELS ── */
-    .left-panel {
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      background: var(--surface);
-      transition: background 0.2s, border-color 0.2s;
-    }
-
-    .right-panel {
-      display: flex;
-      flex-direction: column;
-      background: var(--bg);
-      transition: background 0.2s;
-    }
-
-    .pane-bar {
-      height: 42px;
-      padding: 0 16px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: var(--bg2);
-      flex-shrink: 0;
-      transition: background 0.2s, border-color 0.2s;
-    }
-
-    .pane-label {
-      font-family: var(--mono);
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--text3);
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-    }
-
-    /* ── LANG PILL ── */
-    .lang-pill {
-      display: flex;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      overflow: hidden;
-    }
-
-    .lang-btn {
-      font-family: var(--mono);
-      font-size: 11px;
-      padding: 4px 10px;
-      border: none;
-      background: transparent;
-      color: var(--text3);
-      cursor: pointer;
-      transition: all 0.12s;
-    }
-
-    .lang-btn.active {
-      background: var(--accent);
-      color: #fff;
-    }
-
-    /* ── TEXTAREA ── */
-    textarea {
-      flex: 1;
-      width: 100%;
-      background: var(--surface);
-      color: var(--text);
-      border: none;
-      outline: none;
-      resize: none;
-      padding: 20px;
-      font-family: var(--mono);
-      font-size: 13px;
-      line-height: 1.85;
-      caret-color: var(--accent);
-      min-height: 320px;
-      transition: background 0.2s, color 0.2s;
-    }
-
-    textarea::placeholder { color: var(--text3); }
-
-    /* ── EDITOR FOOTER ── */
-    .editor-foot {
-      height: 48px;
-      padding: 0 16px;
-      border-top: 1px solid var(--border);
-      background: var(--bg2);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-shrink: 0;
-      transition: background 0.2s, border-color 0.2s;
-    }
-
-    .meta { font-family: var(--mono); font-size: 11px; color: var(--text3); }
-
-    .btn-row { display: flex; gap: 8px; }
-
-    .btn {
-      font-family: var(--sans);
-      font-size: 13px;
-      font-weight: 500;
-      padding: 7px 16px;
-      border-radius: 6px;
-      border: none;
-      cursor: pointer;
-      transition: all 0.12s;
-      letter-spacing: -0.01em;
-    }
-
-    .btn-primary {
-      background: var(--accent);
-      color: #fff;
-      box-shadow: var(--shadow);
-    }
-
-    .btn-primary:hover { background: #b45309; transform: translateY(-1px); }
-    .btn-primary:active { transform: translateY(0); }
-    .btn-primary:disabled { background: var(--border2); color: var(--text3); cursor: not-allowed; transform: none; box-shadow: none; }
-
-    .btn-secondary {
-      background: transparent;
-      color: var(--text2);
-      border: 1px solid var(--border);
-    }
-
-    .btn-secondary:hover { background: var(--bg2); color: var(--text); }
-
-    /* ── RESULTS SCROLL ── */
-    .results-scroll {
-      flex: 1;
-      overflow-y: auto;
-      padding: 18px;
-    }
-
-    .results-scroll::-webkit-scrollbar { width: 3px; }
-    .results-scroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
-
-    /* ── EMPTY ── */
-    .empty-state {
-      min-height: 340px;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 10px; color: var(--text3);
-      text-align: center; padding: 40px;
-    }
-
-    .empty-glyph {
-      width: 52px; height: 52px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 24px; margin-bottom: 6px;
-      box-shadow: var(--shadow);
-    }
-
-    .empty-state h3 { font-size: 14px; font-weight: 600; color: var(--text2); }
-    .empty-state p  { font-size: 13px; max-width: 200px; line-height: 1.6; }
-
-    /* ── LOADING ── */
-    .loading-state {
-      min-height: 340px;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 14px;
-    }
-
-    .spinner {
-      width: 28px; height: 28px;
-      border: 2px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.65s linear infinite;
-    }
-
-    .loading-state span { font-family: var(--mono); font-size: 12px; color: var(--text3); }
-
-    /* ── RISK SUMMARY ── */
-    .risk-summary {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px;
-      margin-bottom: 14px;
-      box-shadow: var(--shadow);
-      animation: slideUp 0.25s ease both;
-      transition: background 0.2s, border-color 0.2s;
-    }
-
-    .risk-row {
-      display: flex; align-items: center;
-      justify-content: space-between; margin-bottom: 12px;
-    }
-
-    .risk-eyebrow {
-      font-family: var(--mono); font-size: 10px;
-      text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3);
-      margin-bottom: 3px;
-    }
-
-    .risk-verdict {
-      font-size: 19px; font-weight: 700; letter-spacing: -0.03em;
-    }
-
-    .risk-score-badge {
-      font-family: var(--mono); font-size: 13px; font-weight: 600;
-      padding: 6px 14px; border-radius: 6px; border: 1px solid;
-    }
-
-    .risk-bar-wrap {
-      height: 3px; background: var(--bg2); border-radius: 2px;
-      overflow: hidden; margin-bottom: 14px;
-    }
-
-    .risk-bar {
-      height: 100%; border-radius: 2px; width: 0;
-      transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
-    }
-
-    .sev-row {
-      display: grid; grid-template-columns: repeat(4,1fr); gap: 8px;
-    }
-
-    .sev-box {
-      background: var(--bg2); border: 1px solid var(--border);
-      border-radius: 6px; padding: 10px 8px; text-align: center;
-      transition: background 0.2s, border-color 0.2s;
-    }
-
-    .sev-n {
-      font-family: var(--mono); font-size: 22px; font-weight: 700;
-      line-height: 1; margin-bottom: 3px;
-    }
-
-    .sev-t {
-      font-size: 10px; text-transform: uppercase;
-      letter-spacing: 0.05em; color: var(--text3);
-    }
-
-    /* ── ISSUE CARD ── */
-    .issue-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      margin-bottom: 8px;
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      animation: slideUp 0.25s ease both;
-      transition: box-shadow 0.15s, border-color 0.15s, background 0.2s;
-    }
-
-    .issue-card:hover { border-color: var(--border2); box-shadow: var(--shadow-md); }
-
-    .card-head {
-      padding: 12px 14px;
-      display: flex; align-items: center; gap: 10px;
-      cursor: pointer; user-select: none;
-    }
-
-    .sev-pip {
-      width: 8px; height: 8px;
-      border-radius: 2px; flex-shrink: 0;
-    }
-
-    .pip-critical { background: var(--red); }
-    .pip-high     { background: var(--orange); }
-    .pip-medium   { background: var(--blue); }
-    .pip-low      { background: var(--green); }
-
-    .sev-tag {
-      font-family: var(--mono); font-size: 10px; font-weight: 600;
-      padding: 2px 7px; border-radius: 4px;
-      text-transform: uppercase; letter-spacing: 0.04em;
-      flex-shrink: 0; border: 1px solid;
-    }
-
-    .tag-critical { background: var(--red-bg);  color: var(--red);    border-color: var(--red-border); }
-    .tag-high     { background: var(--org-bg);  color: var(--orange); border-color: var(--org-border); }
-    .tag-medium   { background: var(--blu-bg);  color: var(--blue);   border-color: var(--blu-border); }
-    .tag-low      { background: var(--grn-bg);  color: var(--green);  border-color: var(--grn-border); }
-
-    .card-title { font-size: 13px; font-weight: 500; flex: 1; }
-
-    .line-tag {
-      font-family: var(--mono); font-size: 11px; color: var(--text3);
-      background: var(--bg2); padding: 2px 7px;
-      border-radius: 4px; border: 1px solid var(--border);
-    }
-
-    .arrow {
-      color: var(--text3); font-size: 13px;
-      transition: transform 0.18s; flex-shrink: 0;
-    }
-
-    .arrow.open { transform: rotate(90deg); }
-
-    .card-body {
-      border-top: 1px solid var(--border);
-      padding: 16px; background: var(--bg);
-      display: none;
-      transition: background 0.2s, border-color 0.2s;
-    }
-
-    .card-body.open { display: block; }
-
-    .explanation {
-      font-size: 13px; color: var(--text2);
-      line-height: 1.7; margin-bottom: 14px;
-    }
-
-    .code-duo {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 8px; margin-bottom: 14px;
-    }
-
-    .code-box {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 6px; overflow: hidden;
-      transition: background 0.2s, border-color 0.2s;
-    }
-
-    .code-box-head {
-      padding: 7px 12px; border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-      background: var(--bg2);
-      transition: background 0.2s, border-color 0.2s;
-    }
-
-    .code-tag {
-      font-family: var(--mono); font-size: 10px; font-weight: 600;
-      text-transform: uppercase; letter-spacing: 0.06em;
-    }
-
-    .ct-bad  { color: var(--red); }
-    .ct-good { color: var(--teal); }
-
-    .code-box pre {
-      padding: 12px; font-family: var(--mono); font-size: 12px;
-      line-height: 1.75; white-space: pre-wrap; word-break: break-word;
-      color: var(--text2);
-    }
-
-    .copy-btn {
-      font-family: var(--mono); font-size: 10px;
-      padding: 3px 8px; border-radius: 4px;
-      border: 1px solid var(--teal-border);
-      background: var(--teal-light);
-      color: var(--teal);
-      cursor: pointer; transition: all 0.12s;
-    }
-
-    .copy-btn:hover { opacity: 0.8; }
-    .copy-btn.done  { color: var(--green); border-color: var(--grn-border); background: var(--grn-bg); }
-
-    .fix-head {
-      font-family: var(--mono); font-size: 10px;
-      text-transform: uppercase; letter-spacing: 0.07em;
-      color: var(--text3); margin-bottom: 8px;
-    }
-
-    .fix-steps { list-style: none; display: flex; flex-direction: column; gap: 7px; }
-
-    .fix-steps li {
-      display: flex; gap: 10px; font-size: 13px;
-      color: var(--text2); align-items: flex-start;
-    }
-
-    .step-n {
-      font-family: var(--mono); font-size: 10px;
-      min-width: 20px; height: 20px;
-      background: var(--bg2); border: 1px solid var(--border);
-      border-radius: 4px; display: flex; align-items: center; justify-content: center;
-      color: var(--text3); flex-shrink: 0; margin-top: 1px;
-    }
-
-    /* ── NO ISSUES ── */
-    .no-issues {
-      background: var(--surface);
-      border: 1px solid var(--grn-border);
-      border-radius: var(--radius); padding: 40px;
-      text-align: center; animation: slideUp 0.25s ease;
-      box-shadow: var(--shadow);
-    }
-
-    .ni-icon { font-size: 36px; display: block; margin-bottom: 12px; }
-    .no-issues h3 { color: var(--green); font-size: 16px; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.02em; }
-    .no-issues p  { color: var(--text3); font-size: 13px; }
-
-    /* ── FOOTER ── */
-    footer {
-      height: 48px;
-      border-top: 1px solid var(--border);
-      padding: 0 28px;
-      display: flex; align-items: center; justify-content: space-between;
-      background: var(--surface);
-      font-size: 12px; color: var(--text3);
-      flex-shrink: 0;
-      transition: background 0.2s, border-color 0.2s;
-    }
-
-    footer strong { color: var(--text2); font-weight: 500; }
-    footer a { color: var(--text3); text-decoration: none; }
-    footer a:hover { color: var(--text); }
-
-    /* ── ANIMATIONS ── */
-    @keyframes slideUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-    @keyframes spin    { to{transform:rotate(360deg)} }
-
-    @media (max-width: 768px) {
-      .workspace  { grid-template-columns: 1fr; }
-      .code-duo   { grid-template-columns: 1fr; }
-    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;display:flex;flex-direction:column;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+
+    /* HEADER */
+    header{background:var(--surface);border-bottom:1px solid var(--border);height:56px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;transition:background .2s,border-color .2s}
+    .brand{display:flex;align-items:center;gap:10px}
+    .shield-logo{width:30px;height:30px;flex-shrink:0}
+    .shield-logo svg{width:100%;height:100%}
+    .brand-name{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--text);letter-spacing:-.02em}
+    .brand-name .cg-accent{color:var(--accent)}
+    .header-right{display:flex;align-items:center;gap:8px}
+    .chip{font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:99px;border:1px solid var(--border);color:var(--text3);background:var(--bg2);transition:all .2s}
+    .chip.live{color:var(--teal);background:var(--teal-light);border-color:var(--teal-border);display:flex;align-items:center;gap:5px}
+    .chip.live::before{content:'';width:6px;height:6px;background:var(--teal);border-radius:50%;animation:pulse 2s infinite}
+
+    .icon-btn{width:34px;height:34px;border-radius:7px;border:1px solid var(--border);background:var(--bg2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .15s;flex-shrink:0;position:relative}
+    .icon-btn:hover{background:var(--border)}
+    .icon-btn.active{background:var(--accent);border-color:var(--accent)}
+
+    .history-count{position:absolute;top:-5px;right:-5px;background:var(--accent);color:#fff;border-radius:99px;font-size:9px;font-family:var(--mono);font-weight:600;padding:1px 5px;min-width:16px;text-align:center;display:none}
+
+    /* WORKSPACE */
+    .workspace{display:grid;grid-template-columns:1fr 1fr;flex:1;min-height:calc(100vh - 56px - 48px)}
+
+    /* PANELS */
+    .left-panel{border-right:1px solid var(--border);display:flex;flex-direction:column;background:var(--surface);transition:background .2s,border-color .2s}
+    .right-panel{display:flex;flex-direction:column;background:var(--bg);transition:background .2s}
+    .pane-bar{height:42px;padding:0 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg2);flex-shrink:0;transition:background .2s,border-color .2s}
+    .pane-label{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em}
+    .lang-pill{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+    .lang-btn{font-family:var(--mono);font-size:11px;padding:4px 10px;border:none;background:transparent;color:var(--text3);cursor:pointer;transition:all .12s}
+    .lang-btn.active{background:var(--accent);color:#fff}
+
+    textarea{flex:1;width:100%;background:var(--surface);color:var(--text);border:none;outline:none;resize:none;padding:20px;font-family:var(--mono);font-size:13px;line-height:1.85;caret-color:var(--accent);min-height:320px;transition:background .2s,color .2s}
+    textarea::placeholder{color:var(--text3)}
+
+    .editor-foot{height:48px;padding:0 16px;border-top:1px solid var(--border);background:var(--bg2);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;transition:background .2s,border-color .2s}
+    .meta{font-family:var(--mono);font-size:11px;color:var(--text3)}
+    .btn-row{display:flex;gap:8px}
+    .btn{font-family:var(--sans);font-size:13px;font-weight:500;padding:7px 16px;border-radius:6px;border:none;cursor:pointer;transition:all .12s;letter-spacing:-.01em}
+    .btn-primary{background:var(--accent);color:#fff;box-shadow:var(--shadow)}
+    .btn-primary:hover{background:#b45309;transform:translateY(-1px)}
+    .btn-primary:active{transform:translateY(0)}
+    .btn-primary:disabled{background:var(--border2);color:var(--text3);cursor:not-allowed;transform:none;box-shadow:none}
+    .btn-secondary{background:transparent;color:var(--text2);border:1px solid var(--border)}
+    .btn-secondary:hover{background:var(--bg2);color:var(--text)}
+
+    .results-scroll{flex:1;overflow-y:auto;padding:18px}
+    .results-scroll::-webkit-scrollbar{width:3px}
+    .results-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+    .empty-state{min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--text3);text-align:center;padding:40px}
+    .empty-glyph{width:52px;height:52px;background:var(--surface);border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:6px;box-shadow:var(--shadow)}
+    .empty-state h3{font-size:14px;font-weight:600;color:var(--text2)}
+    .empty-state p{font-size:13px;max-width:200px;line-height:1.6}
+
+    .loading-state{min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+    .spinner{width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .65s linear infinite}
+    .loading-state span{font-family:var(--mono);font-size:12px;color:var(--text3)}
+
+    .risk-summary{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px;box-shadow:var(--shadow);animation:slideUp .25s ease both;transition:background .2s,border-color .2s}
+    .risk-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .risk-eyebrow{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:3px}
+    .risk-verdict{font-size:19px;font-weight:700;letter-spacing:-.03em}
+    .risk-score-badge{font-family:var(--mono);font-size:13px;font-weight:600;padding:6px 14px;border-radius:6px;border:1px solid}
+    .risk-bar-wrap{height:3px;background:var(--bg2);border-radius:2px;overflow:hidden;margin-bottom:14px}
+    .risk-bar{height:100%;border-radius:2px;width:0;transition:width .8s cubic-bezier(.4,0,.2,1)}
+    .sev-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+    .sev-box{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:10px 8px;text-align:center;transition:background .2s,border-color .2s}
+    .sev-n{font-family:var(--mono);font-size:22px;font-weight:700;line-height:1;margin-bottom:3px}
+    .sev-t{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3)}
+
+    .issue-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;overflow:hidden;box-shadow:var(--shadow);animation:slideUp .25s ease both;transition:box-shadow .15s,border-color .15s,background .2s}
+    .issue-card:hover{border-color:var(--border2);box-shadow:var(--shadow-md)}
+    .card-head{padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
+    .sev-pip{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+    .pip-critical{background:var(--red)} .pip-high{background:var(--orange)} .pip-medium{background:var(--blue)} .pip-low{background:var(--green)}
+    .sev-tag{font-family:var(--mono);font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:.04em;flex-shrink:0;border:1px solid}
+    .tag-critical{background:var(--red-bg);color:var(--red);border-color:var(--red-border)}
+    .tag-high{background:var(--org-bg);color:var(--orange);border-color:var(--org-border)}
+    .tag-medium{background:var(--blu-bg);color:var(--blue);border-color:var(--blu-border)}
+    .tag-low{background:var(--grn-bg);color:var(--green);border-color:var(--grn-border)}
+    .card-title{font-size:13px;font-weight:500;flex:1}
+    .line-tag{font-family:var(--mono);font-size:11px;color:var(--text3);background:var(--bg2);padding:2px 7px;border-radius:4px;border:1px solid var(--border)}
+    .arrow{color:var(--text3);font-size:13px;transition:transform .18s;flex-shrink:0}
+    .arrow.open{transform:rotate(90deg)}
+    .card-body{border-top:1px solid var(--border);padding:16px;background:var(--bg);display:none;transition:background .2s,border-color .2s}
+    .card-body.open{display:block}
+    .explanation{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:14px}
+    .code-duo{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+    .code-box{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;transition:background .2s,border-color .2s}
+    .code-box-head{padding:7px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg2);transition:background .2s,border-color .2s}
+    .code-tag{font-family:var(--mono);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+    .ct-bad{color:var(--red)} .ct-good{color:var(--teal)}
+    .code-box pre{padding:12px;font-family:var(--mono);font-size:12px;line-height:1.75;white-space:pre-wrap;word-break:break-word;color:var(--text2)}
+    .copy-btn{font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:4px;border:1px solid var(--teal-border);background:var(--teal-light);color:var(--teal);cursor:pointer;transition:all .12s}
+    .copy-btn:hover{opacity:.8}
+    .copy-btn.done{color:var(--green);border-color:var(--grn-border);background:var(--grn-bg)}
+    .fix-head{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:8px}
+    .fix-steps{list-style:none;display:flex;flex-direction:column;gap:7px}
+    .fix-steps li{display:flex;gap:10px;font-size:13px;color:var(--text2);align-items:flex-start}
+    .step-n{font-family:var(--mono);font-size:10px;min-width:20px;height:20px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--text3);flex-shrink:0;margin-top:1px}
+    .no-issues{background:var(--surface);border:1px solid var(--grn-border);border-radius:var(--radius);padding:40px;text-align:center;animation:slideUp .25s ease;box-shadow:var(--shadow)}
+    .ni-icon{font-size:36px;display:block;margin-bottom:12px}
+    .no-issues h3{color:var(--green);font-size:16px;font-weight:700;margin-bottom:6px;letter-spacing:-.02em}
+    .no-issues p{color:var(--text3);font-size:13px}
+
+    /* HISTORY PANEL */
+    .history-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:299;opacity:0;pointer-events:none;transition:opacity .2s}
+    .history-overlay.open{opacity:1;pointer-events:all}
+    .history-panel{position:fixed;top:0;right:0;width:360px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:300;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s cubic-bezier(.4,0,.2,1);box-shadow:-8px 0 32px rgba(0,0,0,0.15)}
+    .history-panel.open{transform:translateX(0)}
+    .history-header{height:56px;padding:0 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--bg2)}
+    .history-title{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--text)}
+    .history-close{width:28px;height:28px;border-radius:5px;border:1px solid var(--border);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:16px;transition:all .12s}
+    .history-close:hover{background:var(--border);color:var(--text)}
+    .history-list{flex:1;overflow-y:auto;padding:12px}
+    .history-list::-webkit-scrollbar{width:3px}
+    .history-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+    .history-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;color:var(--text3);text-align:center;padding:40px}
+    .history-empty span{font-size:32px}
+    .history-empty p{font-size:13px;line-height:1.6;max-width:180px}
+    .history-item{background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:all .15s;position:relative}
+    .history-item:hover{border-color:var(--border2);box-shadow:var(--shadow)}
+    .history-item:hover .restore-hint{opacity:1}
+    .hi-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+    .hi-lang{font-family:var(--mono);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:4px;background:var(--surface);border:1px solid var(--border);color:var(--text2)}
+    .hi-time{font-family:var(--mono);font-size:10px;color:var(--text3)}
+    .hi-risk{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+    .hi-verdict{font-size:13px;font-weight:600;letter-spacing:-.01em}
+    .hi-score{font-family:var(--mono);font-size:11px;color:var(--text3)}
+    .hi-counts{display:flex;gap:6px;flex-wrap:wrap}
+    .hi-pill{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:4px;border:1px solid}
+    .hi-code{font-family:var(--mono);font-size:11px;color:var(--text3);background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:6px 8px;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .restore-hint{position:absolute;bottom:10px;right:12px;font-size:10px;font-family:var(--mono);color:var(--accent);opacity:0;transition:opacity .15s}
+    .history-footer{padding:12px;border-top:1px solid var(--border);flex-shrink:0}
+    .clear-history-btn{width:100%;padding:8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text3);font-family:var(--mono);font-size:11px;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.05em}
+    .clear-history-btn:hover{background:var(--red-bg);color:var(--red);border-color:var(--red-border)}
+
+    /* FOOTER */
+    footer{height:48px;border-top:1px solid var(--border);padding:0 28px;display:flex;align-items:center;justify-content:space-between;background:var(--surface);font-size:12px;color:var(--text3);flex-shrink:0;transition:background .2s,border-color .2s}
+    footer strong{color:var(--text2);font-weight:500}
+    footer a{color:var(--text3);text-decoration:none}
+    footer a:hover{color:var(--text)}
+
+    @keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+    @media(max-width:768px){.workspace{grid-template-columns:1fr}.code-duo{grid-template-columns:1fr}.history-panel{width:100%}}
   </style>
 </head>
 <body>
 
 <header>
   <div class="brand">
-    <!-- Shield SVG logo with amber gradient -->
     <div class="shield-logo">
       <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="shieldGrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+          <linearGradient id="sg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
             <stop offset="0%" stop-color="#fbbf24"/>
             <stop offset="100%" stop-color="#d97706"/>
           </linearGradient>
         </defs>
-        <path d="M16 2L4 7V15C4 21.6 9.4 27.7 16 30C22.6 27.7 28 21.6 28 15V7L16 2Z"
-              fill="url(#shieldGrad)" rx="3"/>
-        <path d="M11 16L14.5 19.5L21 13" stroke="#fff" stroke-width="2.2"
-              stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M16 2L4 7V15C4 21.6 9.4 27.7 16 30C22.6 27.7 28 21.6 28 15V7L16 2Z" fill="url(#sg)"/>
+        <path d="M11 16L14.5 19.5L21 13" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </div>
     <span class="brand-name">code<span class="cg-accent">guard</span></span>
   </div>
-
   <div class="header-right">
     <span class="chip live">FOSS Hack 2026</span>
     <span class="chip">v1.0</span>
-    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">
-      🌙
+    <button class="icon-btn" id="historyBtn" onclick="toggleHistory()" title="History">
+      🕐
+      <span class="history-count" id="historyCount"></span>
     </button>
+    <button class="icon-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
   </div>
 </header>
 
 <div class="workspace">
-
-  <!-- LEFT: Editor -->
   <div class="left-panel">
     <div class="pane-bar">
       <span class="pane-label">Input</span>
@@ -665,13 +230,9 @@
         <button class="lang-btn" onclick="setLang('general',this)">General</button>
       </div>
     </div>
-
-    <textarea
-      id="codeInput"
-      spellcheck="false"
+    <textarea id="codeInput" spellcheck="false"
       placeholder="# Paste your code here and click Analyze →"
       oninput="updateMeta()"></textarea>
-
     <div class="editor-foot">
       <span class="meta" id="metaInfo">Ready</span>
       <div class="btn-row">
@@ -681,13 +242,11 @@
     </div>
   </div>
 
-  <!-- RIGHT: Results -->
   <div class="right-panel">
     <div class="pane-bar">
       <span class="pane-label">Results</span>
       <span class="chip" id="resultChip">—</span>
     </div>
-
     <div class="results-scroll" id="results">
       <div class="empty-state">
         <div class="empty-glyph">🔍</div>
@@ -696,7 +255,19 @@
       </div>
     </div>
   </div>
+</div>
 
+<!-- History -->
+<div class="history-overlay" id="historyOverlay" onclick="closeHistory()"></div>
+<div class="history-panel" id="historyPanel">
+  <div class="history-header">
+    <span class="history-title">📋 Analysis History</span>
+    <button class="history-close" onclick="closeHistory()">✕</button>
+  </div>
+  <div class="history-list" id="historyList"></div>
+  <div class="history-footer">
+    <button class="clear-history-btn" onclick="clearHistory()">Clear all history</button>
+  </div>
 </div>
 
 <footer>
@@ -710,8 +281,9 @@
 
 <script>
   let currentLang = 'python';
+  let lastIssues = [];
 
-  // ── Theme ──────────────────────────────────────────────────────────
+  // THEME
   function toggleTheme() {
     const html = document.documentElement;
     const isDark = html.getAttribute('data-theme') === 'dark';
@@ -719,22 +291,20 @@
     document.getElementById('themeToggle').textContent = isDark ? '🌙' : '☀️';
     localStorage.setItem('cg-theme', isDark ? 'light' : 'dark');
   }
-
-  // Load saved theme
-  const saved = localStorage.getItem('cg-theme');
-  if (saved) {
-    document.documentElement.setAttribute('data-theme', saved);
-    document.getElementById('themeToggle').textContent = saved === 'dark' ? '☀️' : '🌙';
+  const savedTheme = localStorage.getItem('cg-theme');
+  if (savedTheme) {
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    document.getElementById('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
   }
 
-  // ── Lang ───────────────────────────────────────────────────────────
+  // LANG
   function setLang(lang, btn) {
     currentLang = lang;
     document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
   }
 
-  // ── Meta ───────────────────────────────────────────────────────────
+  // META
   function updateMeta() {
     const v = document.getElementById('codeInput').value;
     if (!v) { document.getElementById('metaInfo').textContent = 'Ready'; return; }
@@ -758,193 +328,14 @@
     return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
-  // ── Rules ──────────────────────────────────────────────────────────
-  const rules = [
-    {
-      id:'sql_injection', title:'SQL Injection Risk', severity:'critical',
-      languages:['python','javascript','general'],
-      detect: c =>
-        (c.includes('SELECT')||c.includes('INSERT')||c.includes('DELETE')||c.includes('UPDATE')) &&
-        (c.includes(' + ')||c.includes('${')) &&
-        (c.includes('input')||c.includes('request')||c.includes('req.')||c.includes('params')),
-      explanation:'SQL queries built by concatenating user input let attackers inject malicious SQL and steal or destroy your entire database.',
-      badCode:`query = "SELECT * FROM users WHERE id = " + user_id\ncursor.execute(query)`,
-      goodCode:`query = "SELECT * FROM users WHERE id = ?"\ncursor.execute(query, [user_id])`,
-      steps:['Find where user input is joined into SQL strings','Replace with parameterized ? placeholders','Pass values separately to cursor.execute()']
-    },
-    {
-      id:'hardcoded_secret', title:'Hardcoded Secret / Credential', severity:'critical',
-      languages:['python','javascript','general'],
-      detect: c =>
-        (c.toLowerCase().includes('password =')||c.toLowerCase().includes('password=')||
-         c.toLowerCase().includes('secret =')||c.toLowerCase().includes('api_key =')||
-         c.toLowerCase().includes('api_key=')) && (c.includes('"')||c.includes("'")),
-      explanation:'Hardcoded credentials are visible to anyone with access to your repository. Always load secrets from environment variables.',
-      badCode:`password = "mypassword123"\napi_key = "sk-abc123xyz"`,
-      goodCode:`import os\npassword = os.getenv("PASSWORD")\napi_key = os.getenv("API_KEY")`,
-      steps:['Remove all hardcoded secrets from source code','Store them in a .env file','Use os.getenv() to load at runtime','Add .env to .gitignore']
-    },
-    {
-      id:'eval_usage', title:'Dangerous eval() Call', severity:'critical',
-      languages:['python','javascript','general'],
-      detect: c => c.includes('eval('),
-      explanation:'eval() executes arbitrary strings as real code. If user input reaches eval(), an attacker can run any command on your system.',
-      badCode:`result = eval(user_input)`,
-      goodCode:`import ast\nresult = ast.literal_eval(user_input)`,
-      steps:['Remove eval() wherever possible','Use ast.literal_eval() for safe data parsing','Validate all external input']
-    },
-    {
-      id:'xss_risk', title:'XSS via innerHTML', severity:'critical',
-      languages:['javascript','general'],
-     detect: c =>
-        c.includes('innerHTML') &&
-        (c.includes('input') || c.includes('Input') ||
-         c.includes('value') || c.includes('Value') ||
-         c.includes('params') || c.includes('query') ||
-         c.includes('data') || c.includes('user')),
-      explanation:'Setting innerHTML from user input lets attackers inject scripts that run in your users\' browsers and steal session data.',
-      badCode:`element.innerHTML = userInput`,
-      goodCode:`element.textContent = userInput\n// If HTML needed:\nelement.innerHTML = DOMPurify.sanitize(userInput)`,
-      steps:['Use textContent instead of innerHTML for plain text','Sanitize with DOMPurify if HTML is needed','Never trust raw user input in the DOM']
-    },
-    {
-      id:'infinite_loop', title:'Potential Infinite Loop', severity:'high',
-      languages:['python','javascript','general'],
-      detect: c =>
-        (c.includes('while True')||c.includes('while(true')||c.includes('while (true')) &&
-        !c.includes('break'),
-      explanation:'A loop without an exit condition runs forever, consuming 100% CPU and eventually crashing your process.',
-      badCode:`while True:\n    process_data()`,
-      goodCode:`while True:\n    process_data()\n    if done:\n        break`,
-      steps:['Locate the while True loop','Add a break condition inside it','Verify it terminates under all conditions']
-    },
-    {
-      id:'no_error_handling', title:'Missing Error Handling', severity:'medium',
-      languages:['python','javascript','general'],
-      detect: c =>
-        (c.includes('open(')||c.includes('requests.get')||c.includes('fetch(')||c.includes('urllib')) &&
-        !c.includes('try') && !c.includes('except') && !c.includes('catch'),
-      explanation:'File and network operations can fail anytime. Without error handling, one failure terminates your entire program.',
-      badCode:`file = open("data.txt")\ndata = file.read()`,
-      goodCode:`try:\n    with open("data.txt") as f:\n        data = f.read()\nexcept FileNotFoundError:\n    print("File not found")`,
-      steps:['Wrap risky operations in try/except','Catch specific exception types','Use finally to release resources']
-    },
-    {
-      id:'no_input_validation', title:'No Input Validation', severity:'high',
-      languages:['python','javascript','general'],
-      detect: c =>
-        (c.includes('input(')||c.includes('request.form')||c.includes('req.body')||c.includes('argv')) &&
-        !c.includes('if ') && !c.includes('validate') && !c.includes('len('),
-      explanation:'Unvalidated input allows empty, malformed, or malicious data to enter your system and cause crashes.',
-      badCode:`username = request.form["username"]\nsave_to_db(username)`,
-      goodCode:`username = request.form["username"]\nif not username or len(username) < 3:\n    return "Invalid input"\nsave_to_db(username)`,
-      steps:['Check that input is not empty','Validate length and format','Reject invalid values with a clear error']
-    },
-    {
-      id:'division_by_zero', title:'Division by Zero Risk', severity:'high',
-      languages:['python','javascript','general'],
-      detect: c => c.split('\n').some(l =>
-        l.includes('/') && !l.trim().startsWith('#') && !l.trim().startsWith('//') &&
-        (l.includes('len(')||l.includes('count')||l.includes('total')||l.includes('size'))
-      ),
-      explanation:'Dividing by a variable that could equal zero crashes your program with ZeroDivisionError.',
-      badCode:`average = total / count`,
-      goodCode:`average = total / count if count != 0 else 0`,
-      steps:['Find all divisions by variables','Check whether the divisor can be zero','Provide a safe fallback value']
-    },
-    {
-      id:'debug_prints', title:'Debug print() Left in Code', severity:'low',
-      languages:['python','general'],
-      detect: c => c.split('\n').filter(l=>l.trim().startsWith('print(')).length > 3,
-      explanation:'Excessive print() calls indicate debug code left in production and may expose sensitive data.',
-      badCode:`print("user:", user)\nprint("token:", token)\nprint("password:", password)`,
-      goodCode:`import logging\nlogging.info("Processing user: %s", user.id)\n# Never log credentials`,
-      steps:['Remove all debug print() calls','Use the logging module for production output','Never log passwords or tokens']
-    },
-    {
-      id:'missing_colon', title:'Missing Colon in Statement', severity:'high',
-      languages:['python'],
-      detect: c => c.split('\n').some(l => {
-        const t = l.trim();
-        return (t.startsWith('if ')||t.startsWith('for ')||t.startsWith('while ')||
-                t.startsWith('def ')||t.startsWith('class ')||t.startsWith('else')||
-                t.startsWith('elif ')||t.startsWith('try')||t.startsWith('except')) &&
-               !t.endsWith(':') && !t.endsWith('\\') && t.length > 2;
-      }),
-      explanation:'Python requires a colon at the end of every compound statement. A missing colon causes an immediate SyntaxError.',
-      badCode:`for i in range(10)\n    print(i)`,
-      goodCode:`for i in range(10):\n    print(i)`,
-      steps:['Check all if, for, while, def, class headers','Ensure every one ends with :','Also check elif, else, try, except']
-    },
-    {
-      id:'bare_except', title:'Bare except Clause', severity:'medium',
-      languages:['python'],
-      detect: c => c.includes('except:') || c.includes('except :'),
-      explanation:'A bare except: catches every exception including SystemExit, masking real bugs and making debugging very hard.',
-      badCode:`try:\n    do_something()\nexcept:\n    pass`,
-      goodCode:`try:\n    do_something()\nexcept ValueError as e:\n    print("Error:", e)`,
-      steps:['Specify the exception type after except','Use except Exception as e: at minimum','Never silently pass on errors']
-    },
-    {
-      id:'bool_comparison', title:'Unnecessary Boolean Comparison', severity:'low',
-      languages:['python'],
-      detect: c => c.includes('== True') || c.includes('== False'),
-      explanation:'Comparing directly to True or False is unnecessary and considered bad practice in Python.',
-      badCode:`if is_valid == True:\n    do_something()`,
-      goodCode:`if is_valid:\n    do_something()`,
-      steps:['Find the boolean comparison','Replace "if x == True:" with just "if x:"','Replace "if x == False:" with "if not x:"']
-    },
-    {
-      id:'var_usage', title:"Outdated 'var' Keyword Used", severity:'medium',
-      languages:['javascript'],
-      detect: c => c.split('\n').some(l => l.trim().startsWith('var ')),
-      explanation:"'var' is outdated JavaScript with confusing scope rules. Use 'let' or 'const' instead.",
-      badCode:`var username = "john"\nvar count = 0`,
-      goodCode:`const username = "john"\nlet count = 0`,
-      steps:["Find 'var' in your code","Replace with 'const' if the value never changes","Replace with 'let' if the value will be reassigned"]
-    },
-    {
-      id:'input_no_cast', title:'input() Used in Math Without int()', severity:'high',
-      languages:['python'],
-      detect: c => c.split('\n').some(l =>
-        l.includes('input(') && !l.trim().startsWith('#') &&
-        (l.includes(' + ')||l.includes(' - ')||l.includes(' * ')||l.includes(' / ')||
-         l.includes(' > ')||l.includes(' < ')||l.includes(' >= ')||l.includes(' <= '))
-      ),
-      explanation:'input() always returns a string. Using it directly in math or comparisons will crash with a TypeError.',
-      badCode:`age = input("Enter age: ")\nif age > 18:`,
-      goodCode:`age = int(input("Enter age: "))\nif age > 18:`,
-      steps:['Find input() used in math or comparisons','Wrap with int() for numbers','Or float() if you need decimals']
-    },
-  ];
-
-  // ── Risk ───────────────────────────────────────────────────────────
-  function getRisk(issues) {
-    const c = issues.filter(i=>i.severity==='critical').length;
-    const h = issues.filter(i=>i.severity==='high').length;
-    const score = Math.min(100, c*25 + h*12 + issues.length*4);
-    if (score>=75) return {score,verdict:'Critical Risk', color:'var(--red)',    bg:'var(--red-bg)',  border:'var(--red-border)'};
-    if (score>=50) return {score,verdict:'High Risk',     color:'var(--orange)', bg:'var(--org-bg)',  border:'var(--org-border)'};
-    if (score>=20) return {score,verdict:'Medium Risk',   color:'var(--blue)',   bg:'var(--blu-bg)',  border:'var(--blu-border)'};
-    return                {score,verdict:'Low Risk',      color:'var(--green)',  bg:'var(--grn-bg)',  border:'var(--grn-border)'};
+  // HISTORY
+  function getHistory() {
+    try { return JSON.parse(localStorage.getItem('cg-history') || '[]'); }
+    catch { return []; }
   }
 
-  // ── Render ─────────────────────────────────────────────────────────
-  function renderResults(issues) {
-    const div = document.getElementById('results');
-    document.getElementById('resultChip').textContent =
-      issues.length === 0 ? '0 issues' : `${issues.length} issue${issues.length!==1?'s':''}`;
-
-    if (issues.length === 0) {
-      div.innerHTML = `
-        <div class="no-issues">
-          <span class="ni-icon">✅</span>
-          <h3>No Issues Found</h3>
-          <p>Your code passed all checks.</p>
-        </div>`;
-      return;
-    }
-
+  function saveToHistory(code, language, issues) {
+    const history = getHistory();
     const risk = getRisk(issues);
     const counts = {
       critical:issues.filter(i=>i.severity==='critical').length,
@@ -952,21 +343,269 @@
       medium:  issues.filter(i=>i.severity==='medium').length,
       low:     issues.filter(i=>i.severity==='low').length,
     };
+    const entry = {
+      id: Date.now(), code, language, issues, counts,
+      risk: { score: risk.score, verdict: risk.verdict, color: risk.color },
+      timestamp: new Date().toLocaleString('en-IN', { dateStyle:'short', timeStyle:'short' }),
+      preview: code.trim().split('\n')[0].substring(0, 60)
+    };
+    history.unshift(entry);
+    if (history.length > 10) history.pop();
+    localStorage.setItem('cg-history', JSON.stringify(history));
+    updateHistoryCount();
+    if (document.getElementById('historyPanel').classList.contains('open')) renderHistoryList();
+  }
 
-    let html = `
+  function updateHistoryCount() {
+    const count = getHistory().length;
+    const badge = document.getElementById('historyCount');
+    badge.textContent = count;
+    badge.style.display = count > 0 ? 'block' : 'none';
+  }
+
+  function toggleHistory() {
+    const panel = document.getElementById('historyPanel');
+    const isOpen = panel.classList.contains('open');
+    if (isOpen) closeHistory();
+    else {
+      panel.classList.add('open');
+      document.getElementById('historyOverlay').classList.add('open');
+      document.getElementById('historyBtn').classList.add('active');
+      renderHistoryList();
+    }
+  }
+
+  function closeHistory() {
+    document.getElementById('historyPanel').classList.remove('open');
+    document.getElementById('historyOverlay').classList.remove('open');
+    document.getElementById('historyBtn').classList.remove('active');
+  }
+
+  function renderHistoryList() {
+    const history = getHistory();
+    const listEl = document.getElementById('historyList');
+    if (history.length === 0) {
+      listEl.innerHTML = `<div class="history-empty"><span>📭</span><p>No analyses yet. Run your first scan to see history here.</p></div>`;
+      return;
+    }
+    listEl.innerHTML = history.map(entry => {
+      const c = entry.counts;
+      let pills = '';
+      if (c.critical) pills += `<span class="hi-pill" style="background:var(--red-bg);color:var(--red);border-color:var(--red-border)">${c.critical} critical</span>`;
+      if (c.high)     pills += `<span class="hi-pill" style="background:var(--org-bg);color:var(--orange);border-color:var(--org-border)">${c.high} high</span>`;
+      if (c.medium)   pills += `<span class="hi-pill" style="background:var(--blu-bg);color:var(--blue);border-color:var(--blu-border)">${c.medium} med</span>`;
+      if (c.low)      pills += `<span class="hi-pill" style="background:var(--grn-bg);color:var(--green);border-color:var(--grn-border)">${c.low} low</span>`;
+      if (!pills)     pills  = `<span class="hi-pill" style="background:var(--grn-bg);color:var(--green);border-color:var(--grn-border)">✓ clean</span>`;
+      return `
+        <div class="history-item" onclick="restoreEntry(${entry.id})">
+          <div class="hi-top">
+            <span class="hi-lang">${entry.language}</span>
+            <span class="hi-time">${entry.timestamp}</span>
+          </div>
+          <div class="hi-risk">
+            <span class="hi-verdict" style="color:${entry.risk.color}">${entry.risk.verdict}</span>
+            <span class="hi-score">${entry.risk.score}/100</span>
+          </div>
+          <div class="hi-counts">${pills}</div>
+          <div class="hi-code">${esc(entry.preview)}</div>
+          <span class="restore-hint">click to restore →</span>
+        </div>`;
+    }).join('');
+  }
+
+  function restoreEntry(id) {
+    const entry = getHistory().find(e => e.id === id);
+    if (!entry) return;
+    document.getElementById('codeInput').value = entry.code;
+    updateMeta();
+    currentLang = entry.language;
+    document.querySelectorAll('.lang-btn').forEach(b => {
+      const match = b.textContent.toLowerCase() === entry.language ||
+        (entry.language === 'javascript' && b.textContent === 'JS');
+      b.classList.toggle('active', match);
+    });
+    renderResults(entry.issues);
+    closeHistory();
+  }
+
+  function clearHistory() {
+    if (!confirm('Clear all history?')) return;
+    localStorage.removeItem('cg-history');
+    updateHistoryCount();
+    renderHistoryList();
+  }
+
+  // RULES
+  const rules = [
+    {
+      id:'sql_injection',title:'SQL Injection Risk',severity:'critical',
+      languages:['python','javascript','general'],
+      detect:c=>(c.includes('SELECT')||c.includes('INSERT')||c.includes('DELETE')||c.includes('UPDATE'))&&(c.includes(' + ')||c.includes('${'))&&(c.includes('input')||c.includes('request')||c.includes('req.')||c.includes('params')),
+      explanation:'SQL queries built by concatenating user input let attackers inject malicious SQL and steal or destroy your entire database.',
+      badCode:`query = "SELECT * FROM users WHERE id = " + user_id\ncursor.execute(query)`,
+      goodCode:`query = "SELECT * FROM users WHERE id = ?"\ncursor.execute(query, [user_id])`,
+      steps:['Find where user input is joined into SQL strings','Replace with parameterized ? placeholders','Pass values separately to cursor.execute()']
+    },
+    {
+      id:'hardcoded_secret',title:'Hardcoded Secret / Credential',severity:'critical',
+      languages:['python','javascript','general'],
+      detect:c=>(c.toLowerCase().includes('password =')||c.toLowerCase().includes('password=')||c.toLowerCase().includes('secret =')||c.toLowerCase().includes('api_key =')||c.toLowerCase().includes('api_key='))&&(c.includes('"')||c.includes("'")),
+      explanation:'Hardcoded credentials are visible to anyone with access to your repository. Always load secrets from environment variables.',
+      badCode:`password = "mypassword123"\napi_key = "sk-abc123xyz"`,
+      goodCode:`import os\npassword = os.getenv("PASSWORD")\napi_key = os.getenv("API_KEY")`,
+      steps:['Remove all hardcoded secrets from source code','Store them in a .env file','Use os.getenv() to load at runtime','Add .env to .gitignore']
+    },
+    {
+      id:'eval_usage',title:'Dangerous eval() Call',severity:'critical',
+      languages:['python','javascript','general'],
+      detect:c=>c.includes('eval('),
+      explanation:'eval() executes arbitrary strings as real code. If user input reaches eval(), an attacker can run any command on your system.',
+      badCode:`result = eval(user_input)`,
+      goodCode:`import ast\nresult = ast.literal_eval(user_input)`,
+      steps:['Remove eval() wherever possible','Use ast.literal_eval() for safe data parsing','Validate all external input']
+    },
+    {
+      id:'xss_risk',title:'XSS via innerHTML',severity:'critical',
+      languages:['javascript','general'],
+      detect:c=>c.includes('innerHTML')&&(c.includes('input')||c.includes('Input')||c.includes('value')||c.includes('Value')||c.includes('params')||c.includes('query')||c.includes('data')||c.includes('user')),
+      explanation:'Setting innerHTML from user input lets attackers inject scripts that run in your users\' browsers and steal session data.',
+      badCode:`element.innerHTML = userInput`,
+      goodCode:`element.textContent = userInput\n// If HTML needed:\nelement.innerHTML = DOMPurify.sanitize(userInput)`,
+      steps:['Use textContent instead of innerHTML for plain text','Sanitize with DOMPurify if HTML is needed','Never trust raw user input in the DOM']
+    },
+    {
+      id:'infinite_loop',title:'Potential Infinite Loop',severity:'high',
+      languages:['python','javascript','general'],
+      detect:c=>(c.includes('while True')||c.includes('while(true')||c.includes('while (true'))&&!c.includes('break'),
+      explanation:'A loop without an exit condition runs forever, consuming 100% CPU and eventually crashing your process.',
+      badCode:`while True:\n    process_data()`,
+      goodCode:`while True:\n    process_data()\n    if done:\n        break`,
+      steps:['Locate the while True loop','Add a break condition inside it','Verify it terminates under all conditions']
+    },
+    {
+      id:'no_error_handling',title:'Missing Error Handling',severity:'medium',
+      languages:['python','javascript','general'],
+      detect:c=>(c.includes('open(')||c.includes('requests.get')||c.includes('fetch(')||c.includes('urllib'))&&!c.includes('try')&&!c.includes('except')&&!c.includes('catch'),
+      explanation:'File and network operations can fail anytime. Without error handling, one failure terminates your entire program.',
+      badCode:`file = open("data.txt")\ndata = file.read()`,
+      goodCode:`try:\n    with open("data.txt") as f:\n        data = f.read()\nexcept FileNotFoundError:\n    print("File not found")`,
+      steps:['Wrap risky operations in try/except','Catch specific exception types','Use finally to release resources']
+    },
+    {
+      id:'no_input_validation',title:'No Input Validation',severity:'high',
+      languages:['python','javascript','general'],
+      detect:c=>(c.includes('input(')||c.includes('request.form')||c.includes('req.body')||c.includes('argv'))&&!c.includes('if ')&&!c.includes('validate')&&!c.includes('len('),
+      explanation:'Unvalidated input allows empty, malformed, or malicious data to enter your system and cause crashes.',
+      badCode:`username = request.form["username"]\nsave_to_db(username)`,
+      goodCode:`username = request.form["username"]\nif not username or len(username) < 3:\n    return "Invalid input"\nsave_to_db(username)`,
+      steps:['Check that input is not empty','Validate length and format','Reject invalid values with a clear error']
+    },
+    {
+      id:'division_by_zero',title:'Division by Zero Risk',severity:'high',
+      languages:['python','javascript','general'],
+      detect:c=>c.split('\n').some(l=>l.includes('/')&&!l.trim().startsWith('#')&&!l.trim().startsWith('//')&&(l.includes('len(')||l.includes('count')||l.includes('total')||l.includes('size'))),
+      explanation:'Dividing by a variable that could equal zero crashes your program with ZeroDivisionError.',
+      badCode:`average = total / count`,
+      goodCode:`average = total / count if count != 0 else 0`,
+      steps:['Find all divisions by variables','Check whether the divisor can be zero','Provide a safe fallback value']
+    },
+    {
+      id:'debug_prints',title:'Debug print() Left in Code',severity:'low',
+      languages:['python','general'],
+      detect:c=>c.split('\n').filter(l=>l.trim().startsWith('print(')).length>3,
+      explanation:'Excessive print() calls indicate debug code left in production and may expose sensitive data.',
+      badCode:`print("user:", user)\nprint("token:", token)\nprint("password:", password)`,
+      goodCode:`import logging\nlogging.info("Processing user: %s", user.id)\n# Never log credentials`,
+      steps:['Remove all debug print() calls','Use the logging module for production output','Never log passwords or tokens']
+    },
+    {
+      id:'missing_colon',title:'Missing Colon in Statement',severity:'high',
+      languages:['python'],
+      detect:c=>c.split('\n').some(l=>{const t=l.trim();return(t.startsWith('if ')||t.startsWith('for ')||t.startsWith('while ')||t.startsWith('def ')||t.startsWith('class ')||t.startsWith('else')||t.startsWith('elif ')||t.startsWith('try')||t.startsWith('except'))&&!t.endsWith(':')&&!t.endsWith('\\')&&t.length>2}),
+      explanation:'Python requires a colon at the end of every compound statement. A missing colon causes an immediate SyntaxError.',
+      badCode:`for i in range(10)\n    print(i)`,
+      goodCode:`for i in range(10):\n    print(i)`,
+      steps:['Check all if, for, while, def, class headers','Ensure every one ends with :','Also check elif, else, try, except']
+    },
+    {
+      id:'bare_except',title:'Bare except Clause',severity:'medium',
+      languages:['python'],
+      detect:c=>c.includes('except:')||c.includes('except :'),
+      explanation:'A bare except: catches every exception including SystemExit, masking real bugs and making debugging very hard.',
+      badCode:`try:\n    do_something()\nexcept:\n    pass`,
+      goodCode:`try:\n    do_something()\nexcept ValueError as e:\n    print("Error:", e)`,
+      steps:['Specify the exception type after except','Use except Exception as e: at minimum','Never silently pass on errors']
+    },
+    {
+      id:'bool_comparison',title:'Unnecessary Boolean Comparison',severity:'low',
+      languages:['python'],
+      detect:c=>c.includes('== True')||c.includes('== False'),
+      explanation:'Comparing directly to True or False is unnecessary and considered bad practice in Python.',
+      badCode:`if is_valid == True:\n    do_something()`,
+      goodCode:`if is_valid:\n    do_something()`,
+      steps:['Find the boolean comparison','Replace "if x == True:" with just "if x:"','Replace "if x == False:" with "if not x:"']
+    },
+    {
+      id:'var_usage',title:"Outdated 'var' Keyword Used",severity:'medium',
+      languages:['javascript'],
+      detect:c=>c.split('\n').some(l=>l.trim().startsWith('var ')),
+      explanation:"'var' is outdated JavaScript with confusing scope rules. Use 'let' or 'const' instead.",
+      badCode:`var username = "john"\nvar count = 0`,
+      goodCode:`const username = "john"\nlet count = 0`,
+      steps:["Find 'var' in your code","Replace with 'const' if the value never changes","Replace with 'let' if the value will be reassigned"]
+    },
+    {
+      id:'input_no_cast',title:'input() Used in Math Without int()',severity:'high',
+      languages:['python'],
+      detect:c=>c.split('\n').some(l=>l.includes('input(')&&!l.trim().startsWith('#')&&(l.includes(' + ')||l.includes(' - ')||l.includes(' * ')||l.includes(' / ')||l.includes(' > ')||l.includes(' < ')||l.includes(' >= ')||l.includes(' <= '))),
+      explanation:'input() always returns a string. Using it directly in math or comparisons will crash with a TypeError.',
+      badCode:`age = input("Enter age: ")\nif age > 18:`,
+      goodCode:`age = int(input("Enter age: "))\nif age > 18:`,
+      steps:['Find input() used in math or comparisons','Wrap with int() for numbers','Or float() if you need decimals']
+    }
+  ];
+
+  // RISK
+  function getRisk(issues) {
+    const c=issues.filter(i=>i.severity==='critical').length;
+    const h=issues.filter(i=>i.severity==='high').length;
+    const score=Math.min(100,c*25+h*12+issues.length*4);
+    if(score>=75) return{score,verdict:'Critical Risk',color:'var(--red)',bg:'var(--red-bg)',border:'var(--red-border)'};
+    if(score>=50) return{score,verdict:'High Risk',color:'var(--orange)',bg:'var(--org-bg)',border:'var(--org-border)'};
+    if(score>=20) return{score,verdict:'Medium Risk',color:'var(--blue)',bg:'var(--blu-bg)',border:'var(--blu-border)'};
+    return{score,verdict:'Low Risk',color:'var(--green)',bg:'var(--grn-bg)',border:'var(--grn-border)'};
+  }
+
+  // RENDER
+  function renderResults(issues) {
+    lastIssues = issues;
+    const div=document.getElementById('results');
+    document.getElementById('resultChip').textContent=
+      issues.length===0?'0 issues':`${issues.length} issue${issues.length!==1?'s':''}`;
+
+    if(issues.length===0){
+      div.innerHTML=`<div class="no-issues"><span class="ni-icon">✅</span><h3>No Issues Found</h3><p>Your code passed all checks.</p></div>`;
+      return;
+    }
+
+    const risk=getRisk(issues);
+    const counts={
+      critical:issues.filter(i=>i.severity==='critical').length,
+      high:issues.filter(i=>i.severity==='high').length,
+      medium:issues.filter(i=>i.severity==='medium').length,
+      low:issues.filter(i=>i.severity==='low').length,
+    };
+
+    let html=`
       <div class="risk-summary">
         <div class="risk-row">
           <div>
             <div class="risk-eyebrow">Risk Assessment</div>
             <div class="risk-verdict" style="color:${risk.color}">${risk.verdict}</div>
           </div>
-          <span class="risk-score-badge" style="background:${risk.bg};color:${risk.color};border-color:${risk.border}">
-            ${risk.score} / 100
-          </span>
+          <span class="risk-score-badge" style="background:${risk.bg};color:${risk.color};border-color:${risk.border}">${risk.score} / 100</span>
         </div>
-        <div class="risk-bar-wrap">
-          <div class="risk-bar" id="riskBar" style="background:${risk.color}"></div>
-        </div>
+        <div class="risk-bar-wrap"><div class="risk-bar" id="riskBar" style="background:${risk.color}"></div></div>
         <div class="sev-row">
           <div class="sev-box"><div class="sev-n" style="color:var(--red)">${counts.critical}</div><div class="sev-t">Critical</div></div>
           <div class="sev-box"><div class="sev-n" style="color:var(--orange)">${counts.high}</div><div class="sev-t">High</div></div>
@@ -975,28 +614,23 @@
         </div>
       </div>`;
 
-    issues.forEach((issue, idx) => {
-      const delay = (idx * 0.04).toFixed(2);
-      const steps = issue.steps.map((s,i) =>
-        `<li><span class="step-n">${i+1}</span><span>${s}</span></li>`
-      ).join('');
-
-      html += `
+    issues.forEach((issue,idx)=>{
+      const delay=(idx*0.04).toFixed(2);
+      const steps=issue.steps.map((s,i)=>`<li><span class="step-n">${i+1}</span><span>${s}</span></li>`).join('');
+      html+=`
         <div class="issue-card" style="animation-delay:${delay}s">
           <div class="card-head" onclick="toggleCard(this)">
             <span class="sev-pip pip-${issue.severity}"></span>
             <span class="sev-tag tag-${issue.severity}">${issue.severity}</span>
             <span class="card-title">${issue.title}</span>
-            ${issue.line ? `<span class="line-tag">L${issue.line}</span>` : ''}
+            ${issue.line?`<span class="line-tag">L${issue.line}</span>`:''}
             <span class="arrow">›</span>
           </div>
           <div class="card-body">
             <p class="explanation">${issue.explanation}</p>
             <div class="code-duo">
               <div class="code-box">
-                <div class="code-box-head">
-                  <span class="code-tag ct-bad">Before</span>
-                </div>
+                <div class="code-box-head"><span class="code-tag ct-bad">Before</span></div>
                 <pre>${esc(issue.badCode)}</pre>
               </div>
               <div class="code-box">
@@ -1013,66 +647,72 @@
         </div>`;
     });
 
-    div.innerHTML = html;
-    requestAnimationFrame(() => {
-      const bar = document.getElementById('riskBar');
-      if (bar) bar.style.width = risk.score + '%';
+    div.innerHTML=html;
+    requestAnimationFrame(()=>{
+      const bar=document.getElementById('riskBar');
+      if(bar) bar.style.width=risk.score+'%';
     });
   }
 
-  function toggleCard(head) {
-    const body = head.nextElementSibling;
-    const arrow = head.querySelector('.arrow');
+  function toggleCard(head){
+    const body=head.nextElementSibling;
+    const arrow=head.querySelector('.arrow');
     body.classList.toggle('open');
     arrow.classList.toggle('open');
   }
 
-  function copyFix(btn, code) {
-    navigator.clipboard.writeText(code).then(() => {
-      btn.textContent = 'done ✓';
-      btn.classList.add('done');
-      setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('done'); }, 2000);
+  function copyFix(btn,code){
+    navigator.clipboard.writeText(code).then(()=>{
+      btn.textContent='done ✓';btn.classList.add('done');
+      setTimeout(()=>{btn.textContent='copy';btn.classList.remove('done');},2000);
     });
   }
 
-  // ── Analyze ────────────────────────────────────────────────────────
-  function analyzeCode() {
-    const code = document.getElementById('codeInput').value.trim();
-    const btn = document.getElementById('analyzeBtn');
-    const div = document.getElementById('results');
+  // ANALYZE
+  function analyzeCode(){
+    const code=document.getElementById('codeInput').value.trim();
+    const btn=document.getElementById('analyzeBtn');
+    const div=document.getElementById('results');
 
-    if (!code) {
-      div.innerHTML = `<div class="empty-state"><div class="empty-glyph">⚠️</div><h3>No code found</h3><p>Paste something first.</p></div>`;
+    if(!code){
+      div.innerHTML=`<div class="empty-state"><div class="empty-glyph">⚠️</div><h3>No code found</h3><p>Paste something first.</p></div>`;
       return;
     }
 
-    btn.disabled = true;
-    btn.textContent = 'Analyzing...';
-    document.getElementById('resultChip').textContent = '—';
-    div.innerHTML = `<div class="loading-state"><div class="spinner"></div><span>Scanning for issues...</span></div>`;
+    btn.disabled=true; btn.textContent='Analyzing...';
+    document.getElementById('resultChip').textContent='—';
+    div.innerHTML=`<div class="loading-state"><div class="spinner"></div><span>Scanning for issues...</span></div>`;
 
-    fetch('http://127.0.0.1:5000/analyze', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code, language: currentLang })
+    fetch('http://127.0.0.1:5000/analyze',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({code,language:currentLang})
     })
-    .then(r => r.json())
-    .then(data => {
-      if (data.issues && data.issues.length > 0) renderResults(data.issues);
-      else runFrontend(code, currentLang);
+    .then(r=>r.json())
+    .then(data=>{
+      if(data.issues&&data.issues.length>0){
+        renderResults(data.issues);
+        saveToHistory(code,currentLang,data.issues);
+      } else {
+        runFrontend(code,currentLang);
+      }
     })
-    .catch(() => runFrontend(code, currentLang))
-    .finally(() => { btn.disabled = false; btn.textContent = 'Analyze →'; });
+    .catch(()=>runFrontend(code,currentLang))
+    .finally(()=>{btn.disabled=false;btn.textContent='Analyze →';});
   }
 
-  function runFrontend(code, language) {
-    setTimeout(() => {
-      const found = rules.filter(r =>
-        (r.languages.includes(language) || r.languages.includes('general')) && r.detect(code)
+  function runFrontend(code,language){
+    setTimeout(()=>{
+      const found=rules.filter(r=>
+        (r.languages.includes(language)||r.languages.includes('general'))&&r.detect(code)
       );
       renderResults(found);
-    }, 500);
+      saveToHistory(code,language,found);
+    },500);
   }
+
+  // Init
+  updateHistoryCount();
 </script>
 </body>
 </html>
