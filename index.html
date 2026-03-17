@@ -178,6 +178,21 @@
     .clear-history-btn{width:100%;padding:8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text3);font-family:var(--mono);font-size:11px;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.05em}
     .clear-history-btn:hover{background:var(--red-bg);color:var(--red);border-color:var(--red-border)}
 
+      .hi-delete {
+    width: 20px; height: 20px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text3);
+    font-size: 11px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .12s;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+  .hi-delete:hover { background: var(--red-bg); color: var(--red); border-color: var(--red-border); }
+
     /* FOOTER */
     footer{height:48px;border-top:1px solid var(--border);padding:0 28px;display:flex;align-items:center;justify-content:space-between;background:var(--surface);font-size:12px;color:var(--text3);flex-shrink:0;transition:background .2s,border-color .2s}
     footer strong{color:var(--text2);font-weight:500}
@@ -397,18 +412,21 @@
       if (c.low)      pills += `<span class="hi-pill" style="background:var(--grn-bg);color:var(--green);border-color:var(--grn-border)">${c.low} low</span>`;
       if (!pills)     pills  = `<span class="hi-pill" style="background:var(--grn-bg);color:var(--green);border-color:var(--grn-border)">✓ clean</span>`;
       return `
-        <div class="history-item" onclick="restoreEntry(${entry.id})">
+        <div class="history-item" id="hi-${entry.id}">
           <div class="hi-top">
             <span class="hi-lang">${entry.language}</span>
             <span class="hi-time">${entry.timestamp}</span>
+            <button class="hi-delete" onclick="deleteEntry(${entry.id}, event)" title="Delete">✕</button>
           </div>
-          <div class="hi-risk">
-            <span class="hi-verdict" style="color:${entry.risk.color}">${entry.risk.verdict}</span>
-            <span class="hi-score">${entry.risk.score}/100</span>
+          <div onclick="restoreEntry(${entry.id})" style="cursor:pointer">
+            <div class="hi-risk">
+              <span class="hi-verdict" style="color:${entry.risk.color}">${entry.risk.verdict}</span>
+              <span class="hi-score">${entry.risk.score}/100</span>
+            </div>
+            <div class="hi-counts">${pills}</div>
+            <div class="hi-code">${esc(entry.preview)}</div>
+            <span class="restore-hint">click to restore →</span>
           </div>
-          <div class="hi-counts">${pills}</div>
-          <div class="hi-code">${esc(entry.preview)}</div>
-          <span class="restore-hint">click to restore →</span>
         </div>`;
     }).join('');
   }
@@ -434,6 +452,14 @@
     updateHistoryCount();
     renderHistoryList();
   }
+  function deleteEntry(id, event) {
+  event.stopPropagation();
+  const history = getHistory().filter(e => e.id !== id);
+  localStorage.setItem('cg-history', JSON.stringify(history));
+  updateHistoryCount();
+  renderHistoryList(); 
+  }
+
 
   // RULES
   const rules = [
