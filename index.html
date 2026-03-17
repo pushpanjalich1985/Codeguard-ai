@@ -796,9 +796,12 @@
     {
       id:'xss_risk', title:'XSS via innerHTML', severity:'critical',
       languages:['javascript','general'],
-      detect: c =>
+     detect: c =>
         c.includes('innerHTML') &&
-        (c.includes('input')||c.includes('value')||c.includes('params')||c.includes('query')),
+        (c.includes('input') || c.includes('Input') ||
+         c.includes('value') || c.includes('Value') ||
+         c.includes('params') || c.includes('query') ||
+         c.includes('data') || c.includes('user')),
       explanation:'Setting innerHTML from user input lets attackers inject scripts that run in your users\' browsers and steal session data.',
       badCode:`element.innerHTML = userInput`,
       goodCode:`element.textContent = userInput\n// If HTML needed:\nelement.innerHTML = DOMPurify.sanitize(userInput)`,
