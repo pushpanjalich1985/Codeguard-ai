@@ -1,948 +1,1044 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CodeGuard AI 🛡️</title>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>CodeGuard AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    :root {
-      --bg: #0d1117;
-      --surface: #161b22;
-      --surface2: #21262d;
-      --border: #30363d;
-      --text: #e6edf3;
-      --muted: #8b949e;
-      --blue: #58a6ff;
-      --green: #3fb950;
-      --red: #f85149;
-      --orange: #e3b341;
-      --purple: #bc8cff;
+    /* ── LIGHT THEME ── */
+    [data-theme="light"] {
+      --bg:            #fafaf9;
+      --bg2:           #f3f2ee;
+      --surface:       #ffffff;
+      --border:        #e5e2da;
+      --border2:       #ccc8bd;
+      --text:          #1a1814;
+      --text2:         #6b6460;
+      --text3:         #a8a29c;
+      --shield-from:   #f59e0b;
+      --shield-to:     #d97706;
+      --shield-glyph:  #ffffff;
+      --theme-icon:    "🌙";
     }
+
+    /* ── DARK THEME ── */
+    [data-theme="dark"] {
+      --bg:            #0d0f12;
+      --bg2:           #141720;
+      --surface:       #161b24;
+      --border:        #1e2535;
+      --border2:       #2a3349;
+      --text:          #e8eaf0;
+      --text2:         #8892a4;
+      --text3:         #4a556a;
+      --shield-from:   #f59e0b;
+      --shield-to:     #d97706;
+      --shield-glyph:  #ffffff;
+      --theme-icon:    "☀️";
+    }
+
+    /* ── SHARED SEMANTIC COLORS ── */
+    :root {
+      --accent:        #d97706;
+      --teal:          #0d9488;
+      --teal-light-l:  #ccfbf1;
+      --teal-light-d:  rgba(13,148,136,0.12);
+      --teal-border-l: #5eead4;
+      --teal-border-d: rgba(13,148,136,0.35);
+
+      --red:           #ef4444;
+      --red-l:         #fef2f2;
+      --red-d:         rgba(239,68,68,0.10);
+      --red-bl:        #fca5a5;
+      --red-bd:        rgba(239,68,68,0.30);
+
+      --orange:        #ea580c;
+      --orange-l:      #fff7ed;
+      --orange-d:      rgba(234,88,12,0.10);
+      --orange-bl:     #fdba74;
+      --orange-bd:     rgba(234,88,12,0.30);
+
+      --blue:          #3b82f6;
+      --blue-l:        #eff6ff;
+      --blue-d:        rgba(59,130,246,0.10);
+      --blue-bl:       #93c5fd;
+      --blue-bd:       rgba(59,130,246,0.30);
+
+      --green:         #16a34a;
+      --green-l:       #f0fdf4;
+      --green-d:       rgba(22,163,74,0.10);
+      --green-bl:      #86efac;
+      --green-bd:      rgba(22,163,74,0.30);
+
+      --mono: 'Geist Mono', monospace;
+      --sans: 'Geist', sans-serif;
+      --radius: 8px;
+      --shadow-l: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md-l: 0 4px 14px rgba(0,0,0,0.09);
+      --shadow-d: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow-md-d: 0 4px 14px rgba(0,0,0,0.4);
+    }
+
+    [data-theme="light"] {
+      --shadow:    var(--shadow-l);
+      --shadow-md: var(--shadow-md-l);
+      --teal-light:  var(--teal-light-l);
+      --teal-border: var(--teal-border-l);
+      --red-bg:    var(--red-l);    --red-border:    var(--red-bl);
+      --org-bg:    var(--orange-l); --org-border:    var(--orange-bl);
+      --blu-bg:    var(--blue-l);   --blu-border:    var(--blue-bl);
+      --grn-bg:    var(--green-l);  --grn-border:    var(--green-bl);
+    }
+
+    [data-theme="dark"] {
+      --shadow:    var(--shadow-d);
+      --shadow-md: var(--shadow-md-d);
+      --teal-light:  var(--teal-light-d);
+      --teal-border: var(--teal-border-d);
+      --red-bg:    var(--red-d);    --red-border:    var(--red-bd);
+      --org-bg:    var(--orange-d); --org-border:    var(--orange-bd);
+      --blu-bg:    var(--blue-d);   --blu-border:    var(--blue-bd);
+      --grn-bg:    var(--green-d);  --grn-border:    var(--green-bd);
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'Inter', sans-serif;
+      font-family: var(--sans);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.2s, color 0.2s;
     }
 
-    /* HEADER */
+    /* ── HEADER ── */
     header {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 16px 40px;
+      height: 56px;
+      padding: 0 28px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       position: sticky;
       top: 0;
       z-index: 100;
-      backdrop-filter: blur(10px);
+      transition: background 0.2s, border-color 0.2s;
     }
 
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
+    .brand { display: flex; align-items: center; gap: 10px; }
 
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .logo-icon {
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(135deg, #238636, #58a6ff);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-    }
-
-    header h1 {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--text);
-      font-family: 'JetBrains Mono', monospace;
-    }
-
-    .header-badges {
-      display: flex;
-      gap: 8px;
-    }
-
-    .hbadge {
-      font-size: 11px;
-      color: var(--muted);
-      background: var(--surface2);
-      padding: 3px 10px;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-      font-family: 'JetBrains Mono', monospace;
-    }
-
-    .hbadge.foss {
-      color: var(--blue);
-      border-color: var(--blue);
-      background: rgba(88,166,255,0.08);
-    }
-
-    /* MAIN LAYOUT */
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 40px 20px;
-      flex: 1;
-    }
-
-    /* HERO */
-    .hero {
-      text-align: center;
-      margin-bottom: 40px;
-      animation: fadeUp 0.5s ease both;
-    }
-
-    .hero h2 {
-      font-size: 32px;
-      font-weight: 700;
-      background: linear-gradient(135deg, var(--text) 40%, var(--blue));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 10px;
-    }
-
-    .hero p {
-      color: var(--muted);
-      font-size: 15px;
-      max-width: 520px;
-      margin: 0 auto;
-      line-height: 1.7;
-    }
-
-    /* INPUT SECTION */
-    .input-section {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 24px;
-      margin-bottom: 28px;
-      animation: fadeUp 0.5s 0.1s ease both;
-    }
-
-    .top-bar {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 14px;
-      align-items: center;
-    }
-
-    .top-bar label {
-      font-size: 13px;
-      color: var(--muted);
-      font-weight: 500;
-    }
-
-    select {
-      background: var(--surface2);
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 7px 14px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-family: 'Inter', sans-serif;
-      cursor: pointer;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    select:focus { border-color: var(--blue); }
-
-    .editor-wrapper {
-      position: relative;
-    }
-
-    textarea {
-      width: 100%;
-      height: 220px;
-      background: var(--bg);
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 16px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 13px;
-      resize: vertical;
-      outline: none;
-      line-height: 1.7;
-      transition: border-color 0.2s;
-    }
-
-    textarea:focus { border-color: var(--blue); }
-    textarea::placeholder { color: #484f58; }
-
-    .char-count {
-      position: absolute;
-      bottom: 10px;
-      right: 14px;
-      font-size: 11px;
-      color: #484f58;
-      font-family: 'JetBrains Mono', monospace;
-      pointer-events: none;
-    }
-
-    .btn-row {
-      display: flex;
-      gap: 10px;
-      margin-top: 14px;
-    }
-
-    button#analyzeBtn {
-      flex: 1;
-      padding: 13px;
-      background: #238636;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 15px;
-      font-weight: 600;
-      font-family: 'Inter', sans-serif;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    button#analyzeBtn:hover { background: #2ea043; transform: translateY(-1px); }
-    button#analyzeBtn:active { transform: translateY(0); }
-    button#analyzeBtn:disabled {
-      background: var(--surface2);
-      color: var(--muted);
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    button#clearBtn {
-      padding: 13px 20px;
-      background: var(--surface2);
-      color: var(--muted);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 14px;
-      font-family: 'Inter', sans-serif;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    button#clearBtn:hover { color: var(--text); background: var(--border); }
-
-    /* RISK SCORE METER */
-    .risk-meter {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 22px 24px;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 24px;
-      animation: fadeUp 0.4s ease both;
-    }
-
-    .risk-score-circle {
-      width: 72px;
-      height: 72px;
-      border-radius: 50%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      border: 3px solid;
+    /* ── SHIELD LOGO ── */
+    .shield-logo {
+      width: 32px; height: 32px;
       flex-shrink: 0;
-      font-family: 'JetBrains Mono', monospace;
     }
 
-    .risk-score-circle .score-num {
-      font-size: 22px;
-      font-weight: 700;
-      line-height: 1;
+    .shield-logo svg {
+      width: 100%; height: 100%;
     }
 
-    .risk-score-circle .score-label {
-      font-size: 9px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-top: 2px;
-    }
-
-    .risk-info { flex: 1; }
-
-    .risk-title {
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-
-    .risk-bar-track {
-      height: 6px;
-      background: var(--surface2);
-      border-radius: 3px;
-      overflow: hidden;
-      margin-bottom: 8px;
-    }
-
-    .risk-bar-fill {
-      height: 100%;
-      border-radius: 3px;
-      transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
-    }
-
-    .summary-pills {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .summary-pill {
-      padding: 3px 12px;
-      border-radius: 20px;
-      font-size: 12px;
+    .brand-name {
+      font-family: var(--mono);
+      font-size: 15px;
       font-weight: 600;
-      font-family: 'JetBrains Mono', monospace;
+      color: var(--text);
+      letter-spacing: -0.02em;
     }
 
-    .pill-red    { background: rgba(248,81,73,0.15); color: var(--red); border: 1px solid rgba(248,81,73,0.4); }
-    .pill-orange { background: rgba(227,179,65,0.15); color: var(--orange); border: 1px solid rgba(227,179,65,0.4); }
-    .pill-blue   { background: rgba(88,166,255,0.12); color: var(--blue); border: 1px solid rgba(88,166,255,0.4); }
-    .pill-green  { background: rgba(63,185,80,0.12); color: var(--green); border: 1px solid rgba(63,185,80,0.4); }
-    .pill-gray   { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+    .brand-name .cg-accent { color: var(--accent); }
 
-    /* ISSUE CARDS */
-    .issue-card {
-      background: var(--surface);
+    .header-right { display: flex; align-items: center; gap: 8px; }
+
+    /* ── THEME TOGGLE ── */
+    .theme-toggle {
+      width: 34px; height: 34px;
+      border-radius: 7px;
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 14px;
-      border-left: 4px solid var(--border);
-      animation: fadeUp 0.4s ease both;
-      transition: box-shadow 0.2s, transform 0.2s;
+      background: var(--bg2);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+      transition: all 0.15s;
+      flex-shrink: 0;
     }
 
-    .issue-card:hover {
-      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
-      transform: translateY(-1px);
-    }
+    .theme-toggle:hover { background: var(--border); }
 
-    .issue-card.critical { border-left-color: var(--red); }
-    .issue-card.high     { border-left-color: var(--orange); }
-    .issue-card.medium   { border-left-color: var(--blue); }
-    .issue-card.low      { border-left-color: var(--green); }
-
-    .issue-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-    }
-
-    .badge {
-      font-size: 10px;
-      font-weight: 700;
-      padding: 3px 10px;
-      border-radius: 12px;
-      text-transform: uppercase;
-      font-family: 'JetBrains Mono', monospace;
-      letter-spacing: 0.5px;
-    }
-
-    .badge-critical { background: rgba(248,81,73,0.15); color: var(--red); border: 1px solid rgba(248,81,73,0.4); }
-    .badge-high     { background: rgba(227,179,65,0.15); color: var(--orange); border: 1px solid rgba(227,179,65,0.4); }
-    .badge-medium   { background: rgba(88,166,255,0.12); color: var(--blue); border: 1px solid rgba(88,166,255,0.4); }
-    .badge-low      { background: rgba(63,185,80,0.12); color: var(--green); border: 1px solid rgba(63,185,80,0.4); }
-
-    .issue-title { font-size: 15px; font-weight: 600; flex: 1; }
-
-    .line-tag {
+    .chip {
+      font-family: var(--mono);
       font-size: 11px;
-      color: var(--muted);
-      background: var(--surface2);
-      padding: 2px 8px;
-      border-radius: 6px;
-      font-family: 'JetBrains Mono', monospace;
+      padding: 3px 9px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      color: var(--text3);
+      background: var(--bg2);
+      transition: all 0.2s;
     }
 
-    .issue-body p {
-      color: var(--muted);
-      font-size: 14px;
-      margin-bottom: 14px;
-      line-height: 1.7;
+    .chip.live {
+      color: var(--teal);
+      background: var(--teal-light);
+      border-color: var(--teal-border);
+      display: flex; align-items: center; gap: 5px;
     }
 
-    .code-comparison {
+    .chip.live::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: var(--teal);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+    /* ── WORKSPACE ── */
+    .workspace {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin: 14px 0;
-    }
-
-    @media (max-width: 600px) {
-      .code-comparison { grid-template-columns: 1fr; }
-      .risk-meter { flex-direction: column; text-align: center; }
-    }
-
-    .code-block {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12.5px;
-      overflow-x: auto;
-      position: relative;
-    }
-
-    .code-label {
-      font-size: 10px;
-      font-weight: 700;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .label-bad  { color: var(--red); }
-    .label-good { color: var(--green); }
-
-    pre { white-space: pre-wrap; word-break: break-word; line-height: 1.6; }
-
-    .fix-section {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .steps-list {
-      color: var(--muted);
-      font-size: 13px;
-      padding-left: 18px;
-      line-height: 2;
       flex: 1;
+      min-height: calc(100vh - 56px - 48px);
     }
 
-    .steps-list li { padding-left: 4px; }
+    /* ── PANELS ── */
+    .left-panel {
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      background: var(--surface);
+      transition: background 0.2s, border-color 0.2s;
+    }
 
-    .copy-btn {
-      background: var(--surface2);
-      color: var(--blue);
-      border: 1px solid var(--border);
-      padding: 8px 16px;
-      border-radius: 7px;
-      font-size: 12px;
-      font-family: 'Inter', sans-serif;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-      white-space: nowrap;
+    .right-panel {
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+      transition: background 0.2s;
+    }
+
+    .pane-bar {
+      height: 42px;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
-      gap: 6px;
+      justify-content: space-between;
+      background: var(--bg2);
       flex-shrink: 0;
+      transition: background 0.2s, border-color 0.2s;
     }
 
-    .copy-btn:hover { background: var(--border); color: var(--text); }
-    .copy-btn.copied { color: var(--green); border-color: rgba(63,185,80,0.4); }
-
-    /* EMPTY / NO ISSUES */
-    .empty-state {
-      text-align: center;
-      padding: 48px 36px;
-      color: #484f58;
-      font-size: 15px;
+    .pane-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
     }
 
-    .empty-state .empty-icon { font-size: 48px; margin-bottom: 14px; display: block; }
-
-    .no-issues {
-      text-align: center;
-      padding: 40px 36px;
+    /* ── LANG PILL ── */
+    .lang-pill {
+      display: flex;
       background: var(--surface);
-      border: 1px solid rgba(63,185,80,0.3);
-      border-radius: 14px;
-      animation: fadeUp 0.4s ease both;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
     }
 
-    .no-issues .ni-icon { font-size: 48px; margin-bottom: 14px; display: block; }
-    .no-issues h3 { color: var(--green); font-size: 20px; margin-bottom: 8px; }
-    .no-issues p { color: var(--muted); font-size: 14px; }
+    .lang-btn {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 4px 10px;
+      border: none;
+      background: transparent;
+      color: var(--text3);
+      cursor: pointer;
+      transition: all 0.12s;
+    }
 
-    .analyzing {
-      text-align: center;
-      padding: 48px 36px;
-      color: var(--blue);
-      font-size: 15px;
+    .lang-btn.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    /* ── TEXTAREA ── */
+    textarea {
+      flex: 1;
+      width: 100%;
+      background: var(--surface);
+      color: var(--text);
+      border: none;
+      outline: none;
+      resize: none;
+      padding: 20px;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.85;
+      caret-color: var(--accent);
+      min-height: 320px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    textarea::placeholder { color: var(--text3); }
+
+    /* ── EDITOR FOOTER ── */
+    .editor-foot {
+      height: 48px;
+      padding: 0 16px;
+      border-top: 1px solid var(--border);
+      background: var(--bg2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .meta { font-family: var(--mono); font-size: 11px; color: var(--text3); }
+
+    .btn-row { display: flex; gap: 8px; }
+
+    .btn {
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 7px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.12s;
+      letter-spacing: -0.01em;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .btn-primary:hover { background: #b45309; transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled { background: var(--border2); color: var(--text3); cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text2);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover { background: var(--bg2); color: var(--text); }
+
+    /* ── RESULTS SCROLL ── */
+    .results-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px;
+    }
+
+    .results-scroll::-webkit-scrollbar { width: 3px; }
+    .results-scroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+    /* ── EMPTY ── */
+    .empty-state {
+      min-height: 340px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 10px; color: var(--text3);
+      text-align: center; padding: 40px;
+    }
+
+    .empty-glyph {
+      width: 52px; height: 52px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; margin-bottom: 6px;
+      box-shadow: var(--shadow);
+    }
+
+    .empty-state h3 { font-size: 14px; font-weight: 600; color: var(--text2); }
+    .empty-state p  { font-size: 13px; max-width: 200px; line-height: 1.6; }
+
+    /* ── LOADING ── */
+    .loading-state {
+      min-height: 340px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 14px;
     }
 
     .spinner {
-      width: 36px;
-      height: 36px;
-      border: 3px solid var(--surface2);
-      border-top-color: var(--blue);
+      width: 28px; height: 28px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
       border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 16px;
+      animation: spin 0.65s linear infinite;
     }
 
-    /* FOOTER */
-    footer {
-      text-align: center;
-      padding: 24px 20px;
+    .loading-state span { font-family: var(--mono); font-size: 12px; color: var(--text3); }
+
+    /* ── RISK SUMMARY ── */
+    .risk-summary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow);
+      animation: slideUp 0.25s ease both;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .risk-row {
+      display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 12px;
+    }
+
+    .risk-eyebrow {
+      font-family: var(--mono); font-size: 10px;
+      text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3);
+      margin-bottom: 3px;
+    }
+
+    .risk-verdict {
+      font-size: 19px; font-weight: 700; letter-spacing: -0.03em;
+    }
+
+    .risk-score-badge {
+      font-family: var(--mono); font-size: 13px; font-weight: 600;
+      padding: 6px 14px; border-radius: 6px; border: 1px solid;
+    }
+
+    .risk-bar-wrap {
+      height: 3px; background: var(--bg2); border-radius: 2px;
+      overflow: hidden; margin-bottom: 14px;
+    }
+
+    .risk-bar {
+      height: 100%; border-radius: 2px; width: 0;
+      transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .sev-row {
+      display: grid; grid-template-columns: repeat(4,1fr); gap: 8px;
+    }
+
+    .sev-box {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 6px; padding: 10px 8px; text-align: center;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .sev-n {
+      font-family: var(--mono); font-size: 22px; font-weight: 700;
+      line-height: 1; margin-bottom: 3px;
+    }
+
+    .sev-t {
+      font-size: 10px; text-transform: uppercase;
+      letter-spacing: 0.05em; color: var(--text3);
+    }
+
+    /* ── ISSUE CARD ── */
+    .issue-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 8px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      animation: slideUp 0.25s ease both;
+      transition: box-shadow 0.15s, border-color 0.15s, background 0.2s;
+    }
+
+    .issue-card:hover { border-color: var(--border2); box-shadow: var(--shadow-md); }
+
+    .card-head {
+      padding: 12px 14px;
+      display: flex; align-items: center; gap: 10px;
+      cursor: pointer; user-select: none;
+    }
+
+    .sev-pip {
+      width: 8px; height: 8px;
+      border-radius: 2px; flex-shrink: 0;
+    }
+
+    .pip-critical { background: var(--red); }
+    .pip-high     { background: var(--orange); }
+    .pip-medium   { background: var(--blue); }
+    .pip-low      { background: var(--green); }
+
+    .sev-tag {
+      font-family: var(--mono); font-size: 10px; font-weight: 600;
+      padding: 2px 7px; border-radius: 4px;
+      text-transform: uppercase; letter-spacing: 0.04em;
+      flex-shrink: 0; border: 1px solid;
+    }
+
+    .tag-critical { background: var(--red-bg);  color: var(--red);    border-color: var(--red-border); }
+    .tag-high     { background: var(--org-bg);  color: var(--orange); border-color: var(--org-border); }
+    .tag-medium   { background: var(--blu-bg);  color: var(--blue);   border-color: var(--blu-border); }
+    .tag-low      { background: var(--grn-bg);  color: var(--green);  border-color: var(--grn-border); }
+
+    .card-title { font-size: 13px; font-weight: 500; flex: 1; }
+
+    .line-tag {
+      font-family: var(--mono); font-size: 11px; color: var(--text3);
+      background: var(--bg2); padding: 2px 7px;
+      border-radius: 4px; border: 1px solid var(--border);
+    }
+
+    .arrow {
+      color: var(--text3); font-size: 13px;
+      transition: transform 0.18s; flex-shrink: 0;
+    }
+
+    .arrow.open { transform: rotate(90deg); }
+
+    .card-body {
       border-top: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 13px;
+      padding: 16px; background: var(--bg);
+      display: none;
+      transition: background 0.2s, border-color 0.2s;
     }
 
-    footer a { color: var(--blue); text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
+    .card-body.open { display: block; }
 
-    /* ANIMATIONS */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
+    .explanation {
+      font-size: 13px; color: var(--text2);
+      line-height: 1.7; margin-bottom: 14px;
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    .code-duo {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8px; margin-bottom: 14px;
+    }
+
+    .code-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 6px; overflow: hidden;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .code-box-head {
+      padding: 7px 12px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--bg2);
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .code-tag {
+      font-family: var(--mono); font-size: 10px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+
+    .ct-bad  { color: var(--red); }
+    .ct-good { color: var(--teal); }
+
+    .code-box pre {
+      padding: 12px; font-family: var(--mono); font-size: 12px;
+      line-height: 1.75; white-space: pre-wrap; word-break: break-word;
+      color: var(--text2);
+    }
+
+    .copy-btn {
+      font-family: var(--mono); font-size: 10px;
+      padding: 3px 8px; border-radius: 4px;
+      border: 1px solid var(--teal-border);
+      background: var(--teal-light);
+      color: var(--teal);
+      cursor: pointer; transition: all 0.12s;
+    }
+
+    .copy-btn:hover { opacity: 0.8; }
+    .copy-btn.done  { color: var(--green); border-color: var(--grn-border); background: var(--grn-bg); }
+
+    .fix-head {
+      font-family: var(--mono); font-size: 10px;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      color: var(--text3); margin-bottom: 8px;
+    }
+
+    .fix-steps { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+
+    .fix-steps li {
+      display: flex; gap: 10px; font-size: 13px;
+      color: var(--text2); align-items: flex-start;
+    }
+
+    .step-n {
+      font-family: var(--mono); font-size: 10px;
+      min-width: 20px; height: 20px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 4px; display: flex; align-items: center; justify-content: center;
+      color: var(--text3); flex-shrink: 0; margin-top: 1px;
+    }
+
+    /* ── NO ISSUES ── */
+    .no-issues {
+      background: var(--surface);
+      border: 1px solid var(--grn-border);
+      border-radius: var(--radius); padding: 40px;
+      text-align: center; animation: slideUp 0.25s ease;
+      box-shadow: var(--shadow);
+    }
+
+    .ni-icon { font-size: 36px; display: block; margin-bottom: 12px; }
+    .no-issues h3 { color: var(--green); font-size: 16px; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.02em; }
+    .no-issues p  { color: var(--text3); font-size: 13px; }
+
+    /* ── FOOTER ── */
+    footer {
+      height: 48px;
+      border-top: 1px solid var(--border);
+      padding: 0 28px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--surface);
+      font-size: 12px; color: var(--text3);
+      flex-shrink: 0;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    footer strong { color: var(--text2); font-weight: 500; }
+    footer a { color: var(--text3); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes slideUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes spin    { to{transform:rotate(360deg)} }
+
+    @media (max-width: 768px) {
+      .workspace  { grid-template-columns: 1fr; }
+      .code-duo   { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
 <header>
-  <div class="header-left">
-    <div class="logo">
-      <div class="logo-icon">🛡️</div>
-      <h1>CodeGuard AI</h1>
+  <div class="brand">
+    <!-- Shield SVG logo with amber gradient -->
+    <div class="shield-logo">
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="shieldGrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#fbbf24"/>
+            <stop offset="100%" stop-color="#d97706"/>
+          </linearGradient>
+        </defs>
+        <path d="M16 2L4 7V15C4 21.6 9.4 27.7 16 30C22.6 27.7 28 21.6 28 15V7L16 2Z"
+              fill="url(#shieldGrad)" rx="3"/>
+        <path d="M11 16L14.5 19.5L21 13" stroke="#fff" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
     </div>
-    <div class="header-badges">
-      <span class="hbadge foss">FOSS Hack 2026</span>
-      <span class="hbadge">v1.0</span>
-    </div>
+    <span class="brand-name">code<span class="cg-accent">guard</span></span>
+  </div>
+
+  <div class="header-right">
+    <span class="chip live">FOSS Hack 2026</span>
+    <span class="chip">v1.0</span>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">
+      🌙
+    </button>
   </div>
 </header>
 
-<div class="container">
-  <div class="hero">
-    <h2>Analyze Your Code Instantly</h2>
-    <p>Detects security issues, syntax errors, logic bugs, and bad practices — then teaches you exactly how to fix them.</p>
+<div class="workspace">
+
+  <!-- LEFT: Editor -->
+  <div class="left-panel">
+    <div class="pane-bar">
+      <span class="pane-label">Input</span>
+      <div class="lang-pill">
+        <button class="lang-btn active" onclick="setLang('python',this)">Python</button>
+        <button class="lang-btn" onclick="setLang('javascript',this)">JS</button>
+        <button class="lang-btn" onclick="setLang('general',this)">General</button>
+      </div>
+    </div>
+
+    <textarea
+      id="codeInput"
+      spellcheck="false"
+      placeholder="# Paste your code here and click Analyze →"
+      oninput="updateMeta()"></textarea>
+
+    <div class="editor-foot">
+      <span class="meta" id="metaInfo">Ready</span>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+        <button class="btn btn-primary" id="analyzeBtn" onclick="analyzeCode()">Analyze →</button>
+      </div>
+    </div>
   </div>
 
-  <div class="input-section">
-    <div class="top-bar">
-      <label>Language:</label>
-      <select id="language">
-        <option value="python">Python</option>
-        <option value="javascript">JavaScript</option>
-        <option value="general">General</option>
-      </select>
+  <!-- RIGHT: Results -->
+  <div class="right-panel">
+    <div class="pane-bar">
+      <span class="pane-label">Results</span>
+      <span class="chip" id="resultChip">—</span>
     </div>
-    <div class="editor-wrapper">
-      <textarea id="codeInput"
-        placeholder="# Paste your code here and click Analyze...&#10;# CodeGuard will detect issues and show you how to fix them."
-        oninput="updateCharCount()"></textarea>
-      <span class="char-count" id="charCount">0 chars</span>
-    </div>
-    <div class="btn-row">
-      <button id="analyzeBtn" onclick="analyzeCode()">
-        <span>🔍</span> Analyze Code
-      </button>
-      <button id="clearBtn" onclick="clearCode()">Clear</button>
+
+    <div class="results-scroll" id="results">
+      <div class="empty-state">
+        <div class="empty-glyph">🔍</div>
+        <h3>Nothing to show yet</h3>
+        <p>Paste your code on the left and hit Analyze.</p>
+      </div>
     </div>
   </div>
 
-  <div id="results">
-    <div class="empty-state">
-      <span class="empty-icon">🛡️</span>
-      Paste your code above and click <strong>Analyze Code</strong>
-    </div>
-  </div>
 </div>
 
 <footer>
-  Built by <strong>Chennuru Pushpanjali</strong> for
-  <a href="https://fossunited.org/fosshack" target="_blank">FOSS Hack 2026</a>
-  &nbsp;·&nbsp; Open Source &nbsp;·&nbsp;
-  <a href="https://github.com" target="_blank">GitHub</a>
+  <span>Built by <strong>Chennuru Pushpanjali</strong> &nbsp;·&nbsp; Open Source &nbsp;·&nbsp; Python + Flask</span>
+  <span>
+    <a href="https://fossunited.org/fosshack" target="_blank">FOSS Hack 2026</a>
+    &nbsp;·&nbsp;
+    <a href="https://github.com" target="_blank">GitHub ↗</a>
+  </span>
 </footer>
 
 <script>
-  // ─── Detection Rules ───────────────────────────────────────────────
+  let currentLang = 'python';
+
+  // ── Theme ──────────────────────────────────────────────────────────
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    document.getElementById('themeToggle').textContent = isDark ? '🌙' : '☀️';
+    localStorage.setItem('cg-theme', isDark ? 'light' : 'dark');
+  }
+
+  // Load saved theme
+  const saved = localStorage.getItem('cg-theme');
+  if (saved) {
+    document.documentElement.setAttribute('data-theme', saved);
+    document.getElementById('themeToggle').textContent = saved === 'dark' ? '☀️' : '🌙';
+  }
+
+  // ── Lang ───────────────────────────────────────────────────────────
+  function setLang(lang, btn) {
+    currentLang = lang;
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  // ── Meta ───────────────────────────────────────────────────────────
+  function updateMeta() {
+    const v = document.getElementById('codeInput').value;
+    if (!v) { document.getElementById('metaInfo').textContent = 'Ready'; return; }
+    const lines = v.split('\n').length;
+    document.getElementById('metaInfo').textContent = `${lines} ln · ${v.length} ch`;
+  }
+
+  function clearAll() {
+    document.getElementById('codeInput').value = '';
+    updateMeta();
+    document.getElementById('resultChip').textContent = '—';
+    document.getElementById('results').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-glyph">🔍</div>
+        <h3>Nothing to show yet</h3>
+        <p>Paste your code on the left and hit Analyze.</p>
+      </div>`;
+  }
+
+  function esc(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // ── Rules ──────────────────────────────────────────────────────────
   const rules = [
     {
-      id: "sql_injection",
-      title: "SQL Injection Risk",
-      severity: "critical",
-      languages: ["python", "javascript", "general"],
-      detect: (code) =>
-        (code.includes("SELECT") || code.includes("INSERT") ||
-         code.includes("DELETE") || code.includes("UPDATE")) &&
-        (code.includes(" + ") || code.includes("${")) &&
-        (code.includes("input") || code.includes("request") ||
-         code.includes("req.") || code.includes("params")),
-      explanation: "You are building SQL queries by joining strings with user input. Attackers can inject malicious SQL and steal or destroy your entire database.",
-      badCode: `query = "SELECT * FROM users WHERE id = " + user_id\ncursor.execute(query)`,
-      goodCode: `query = "SELECT * FROM users WHERE id = ?"\ncursor.execute(query, [user_id])`,
-      steps: ["Find where you join user input into SQL strings", "Replace with ? placeholders instead", "Pass values separately to execute()"]
+      id:'sql_injection', title:'SQL Injection Risk', severity:'critical',
+      languages:['python','javascript','general'],
+      detect: c =>
+        (c.includes('SELECT')||c.includes('INSERT')||c.includes('DELETE')||c.includes('UPDATE')) &&
+        (c.includes(' + ')||c.includes('${')) &&
+        (c.includes('input')||c.includes('request')||c.includes('req.')||c.includes('params')),
+      explanation:'SQL queries built by concatenating user input let attackers inject malicious SQL and steal or destroy your entire database.',
+      badCode:`query = "SELECT * FROM users WHERE id = " + user_id\ncursor.execute(query)`,
+      goodCode:`query = "SELECT * FROM users WHERE id = ?"\ncursor.execute(query, [user_id])`,
+      steps:['Find where user input is joined into SQL strings','Replace with parameterized ? placeholders','Pass values separately to cursor.execute()']
     },
     {
-      id: "hardcoded_secret",
-      title: "Hardcoded Password or Secret Key",
-      severity: "critical",
-      languages: ["python", "javascript", "general"],
-      detect: (code) =>
-        (code.toLowerCase().includes("password =") ||
-         code.toLowerCase().includes("password=") ||
-         code.toLowerCase().includes("secret =") ||
-         code.toLowerCase().includes("api_key =") ||
-         code.toLowerCase().includes("api_key=")) &&
-        (code.includes('"') || code.includes("'")),
-      explanation: "Hardcoded passwords or API keys in your code are extremely dangerous. Anyone who sees your GitHub repo can steal your credentials instantly.",
-      badCode: `password = "mypassword123"\napi_key = "sk-abc123xyz"`,
-      goodCode: `import os\npassword = os.getenv("PASSWORD")\napi_key = os.getenv("API_KEY")`,
-      steps: ["Remove all hardcoded secrets from your code", "Create a .env file and put secrets there", "Use os.getenv() to read them in Python", "Add .env to your .gitignore file immediately"]
+      id:'hardcoded_secret', title:'Hardcoded Secret / Credential', severity:'critical',
+      languages:['python','javascript','general'],
+      detect: c =>
+        (c.toLowerCase().includes('password =')||c.toLowerCase().includes('password=')||
+         c.toLowerCase().includes('secret =')||c.toLowerCase().includes('api_key =')||
+         c.toLowerCase().includes('api_key=')) && (c.includes('"')||c.includes("'")),
+      explanation:'Hardcoded credentials are visible to anyone with access to your repository. Always load secrets from environment variables.',
+      badCode:`password = "mypassword123"\napi_key = "sk-abc123xyz"`,
+      goodCode:`import os\npassword = os.getenv("PASSWORD")\napi_key = os.getenv("API_KEY")`,
+      steps:['Remove all hardcoded secrets from source code','Store them in a .env file','Use os.getenv() to load at runtime','Add .env to .gitignore']
     },
     {
-      id: "eval_usage",
-      title: "Dangerous eval() Usage",
-      severity: "critical",
-      languages: ["python", "javascript", "general"],
-      detect: (code) => code.includes("eval("),
-      explanation: "eval() executes any string as real code. If user input ever reaches eval(), attackers can run any command on your server or machine.",
-      badCode: `result = eval(user_input)`,
-      goodCode: `import ast\nresult = ast.literal_eval(user_input)`,
-      steps: ["Remove eval() from your code entirely if possible", "Use ast.literal_eval() for safe Python data parsing", "Validate and sanitize all user inputs before processing"]
+      id:'eval_usage', title:'Dangerous eval() Call', severity:'critical',
+      languages:['python','javascript','general'],
+      detect: c => c.includes('eval('),
+      explanation:'eval() executes arbitrary strings as real code. If user input reaches eval(), an attacker can run any command on your system.',
+      badCode:`result = eval(user_input)`,
+      goodCode:`import ast\nresult = ast.literal_eval(user_input)`,
+      steps:['Remove eval() wherever possible','Use ast.literal_eval() for safe data parsing','Validate all external input']
     },
     {
-      id: "xss_risk",
-      title: "XSS (Cross-Site Scripting) Risk",
-      severity: "critical",
-      languages: ["javascript", "general"],
-      detect: (code) =>
-        code.includes("innerHTML") &&
-        (code.includes("input") || code.includes("value") ||
-         code.includes("params") || code.includes("query")),
-      explanation: "Setting innerHTML with user input lets attackers inject malicious scripts that run in your users' browsers and steal their data.",
-      badCode: `element.innerHTML = userInput`,
-      goodCode: `element.textContent = userInput\n// If HTML needed:\nelement.innerHTML = DOMPurify.sanitize(userInput)`,
-      steps: ["Replace innerHTML with textContent for plain text", "If you need HTML, use DOMPurify library to sanitize first", "Never trust user input directly in the DOM"]
+      id:'xss_risk', title:'XSS via innerHTML', severity:'critical',
+      languages:['javascript','general'],
+      detect: c =>
+        c.includes('innerHTML') &&
+        (c.includes('input')||c.includes('value')||c.includes('params')||c.includes('query')),
+      explanation:'Setting innerHTML from user input lets attackers inject scripts that run in your users\' browsers and steal session data.',
+      badCode:`element.innerHTML = userInput`,
+      goodCode:`element.textContent = userInput\n// If HTML needed:\nelement.innerHTML = DOMPurify.sanitize(userInput)`,
+      steps:['Use textContent instead of innerHTML for plain text','Sanitize with DOMPurify if HTML is needed','Never trust raw user input in the DOM']
     },
     {
-      id: "infinite_loop",
-      title: "Infinite Loop Detected",
-      severity: "high",
-      languages: ["python", "javascript", "general"],
-      detect: (code) =>
-        (code.includes("while True") || code.includes("while(true") ||
-         code.includes("while (true")) &&
-        !code.includes("break"),
-      explanation: "A loop with no exit condition runs forever. This freezes your app, consumes 100% CPU, and eventually crashes everything.",
-      badCode: `while True:\n    process_data()`,
-      goodCode: `while True:\n    process_data()\n    if done:\n        break`,
-      steps: ["Find your while True loop", "Add a break condition inside it", "Test that the loop actually exits when expected"]
+      id:'infinite_loop', title:'Potential Infinite Loop', severity:'high',
+      languages:['python','javascript','general'],
+      detect: c =>
+        (c.includes('while True')||c.includes('while(true')||c.includes('while (true')) &&
+        !c.includes('break'),
+      explanation:'A loop without an exit condition runs forever, consuming 100% CPU and eventually crashing your process.',
+      badCode:`while True:\n    process_data()`,
+      goodCode:`while True:\n    process_data()\n    if done:\n        break`,
+      steps:['Locate the while True loop','Add a break condition inside it','Verify it terminates under all conditions']
     },
     {
-      id: "no_error_handling",
-      title: "No Error Handling Found",
-      severity: "medium",
-      languages: ["python", "javascript", "general"],
-      detect: (code) =>
-        (code.includes("open(") || code.includes("requests.get") ||
-         code.includes("fetch(") || code.includes("urllib")) &&
-        !code.includes("try") && !code.includes("except") &&
-        !code.includes("catch"),
-      explanation: "File operations and network requests can fail anytime. Without error handling, one failure crashes your entire program.",
-      badCode: `file = open("data.txt")\ndata = file.read()`,
-      goodCode: `try:\n    with open("data.txt") as f:\n        data = f.read()\nexcept FileNotFoundError:\n    print("File not found")`,
-      steps: ["Wrap risky operations inside try/except blocks", "Handle specific error types like FileNotFoundError", "Use finally to always close files or connections"]
+      id:'no_error_handling', title:'Missing Error Handling', severity:'medium',
+      languages:['python','javascript','general'],
+      detect: c =>
+        (c.includes('open(')||c.includes('requests.get')||c.includes('fetch(')||c.includes('urllib')) &&
+        !c.includes('try') && !c.includes('except') && !c.includes('catch'),
+      explanation:'File and network operations can fail anytime. Without error handling, one failure terminates your entire program.',
+      badCode:`file = open("data.txt")\ndata = file.read()`,
+      goodCode:`try:\n    with open("data.txt") as f:\n        data = f.read()\nexcept FileNotFoundError:\n    print("File not found")`,
+      steps:['Wrap risky operations in try/except','Catch specific exception types','Use finally to release resources']
     },
     {
-      id: "no_input_validation",
-      title: "Missing Input Validation",
-      severity: "high",
-      languages: ["python", "javascript", "general"],
-      detect: (code) =>
-        (code.includes("input(") || code.includes("request.form") ||
-         code.includes("req.body") || code.includes("argv")) &&
-        !code.includes("if ") && !code.includes("validate") &&
-        !code.includes("len("),
-      explanation: "Accepting user input without checks lets empty, malformed, or malicious data enter your system and cause unexpected crashes.",
-      badCode: `username = request.form["username"]\nsave_to_db(username)`,
-      goodCode: `username = request.form["username"]\nif not username or len(username) < 3:\n    return "Invalid input"\nsave_to_db(username)`,
-      steps: ["Always check if input is empty first", "Validate minimum and maximum length", "Check the expected format like email or number"]
+      id:'no_input_validation', title:'No Input Validation', severity:'high',
+      languages:['python','javascript','general'],
+      detect: c =>
+        (c.includes('input(')||c.includes('request.form')||c.includes('req.body')||c.includes('argv')) &&
+        !c.includes('if ') && !c.includes('validate') && !c.includes('len('),
+      explanation:'Unvalidated input allows empty, malformed, or malicious data to enter your system and cause crashes.',
+      badCode:`username = request.form["username"]\nsave_to_db(username)`,
+      goodCode:`username = request.form["username"]\nif not username or len(username) < 3:\n    return "Invalid input"\nsave_to_db(username)`,
+      steps:['Check that input is not empty','Validate length and format','Reject invalid values with a clear error']
     },
     {
-      id: "division_by_zero",
-      title: "Possible Division by Zero",
-      severity: "high",
-      languages: ["python", "javascript", "general"],
-      detect: (code) => {
-        const lines = code.split("\n");
-        return lines.some(line =>
-          line.includes("/") &&
-          !line.trim().startsWith("#") &&
-          !line.trim().startsWith("//") &&
-          (line.includes("len(") || line.includes("count") ||
-           line.includes("total") || line.includes("size"))
-        );
-      },
-      explanation: "Dividing by a variable that could be zero crashes your program instantly with a ZeroDivisionError.",
-      badCode: `average = total / count`,
-      goodCode: `if count == 0:\n    average = 0\nelse:\n    average = total / count`,
-      steps: ["Find every place you divide by a variable", "Add a check if the variable could be zero", "Return a safe default value when dividing by zero"]
+      id:'division_by_zero', title:'Division by Zero Risk', severity:'high',
+      languages:['python','javascript','general'],
+      detect: c => c.split('\n').some(l =>
+        l.includes('/') && !l.trim().startsWith('#') && !l.trim().startsWith('//') &&
+        (l.includes('len(')||l.includes('count')||l.includes('total')||l.includes('size'))
+      ),
+      explanation:'Dividing by a variable that could equal zero crashes your program with ZeroDivisionError.',
+      badCode:`average = total / count`,
+      goodCode:`average = total / count if count != 0 else 0`,
+      steps:['Find all divisions by variables','Check whether the divisor can be zero','Provide a safe fallback value']
     },
     {
-      id: "debug_prints",
-      title: "Debug Print Statements Left In",
-      severity: "low",
-      languages: ["python", "general"],
-      detect: (code) => {
-        const lines = code.split("\n");
-        return lines.filter(l => l.trim().startsWith("print(")).length > 3;
-      },
-      explanation: "Too many print() statements mean debugging code was left in. This may accidentally expose sensitive data in production.",
-      badCode: `print("user:", user)\nprint("password:", password)\nprint("token:", token)`,
-      goodCode: `import logging\nlogging.info("Processing user: %s", user.id)\n# Never log passwords or secrets`,
-      steps: ["Remove or comment out all debug print statements", "Use Python logging module for proper logs", "Never print passwords, tokens, or sensitive data"]
+      id:'debug_prints', title:'Debug print() Left in Code', severity:'low',
+      languages:['python','general'],
+      detect: c => c.split('\n').filter(l=>l.trim().startsWith('print(')).length > 3,
+      explanation:'Excessive print() calls indicate debug code left in production and may expose sensitive data.',
+      badCode:`print("user:", user)\nprint("token:", token)\nprint("password:", password)`,
+      goodCode:`import logging\nlogging.info("Processing user: %s", user.id)\n# Never log credentials`,
+      steps:['Remove all debug print() calls','Use the logging module for production output','Never log passwords or tokens']
     },
     {
-      id: "missing_colon",
-      title: "Possible Missing Colon in Python",
-      severity: "high",
-      languages: ["python"],
-      detect: (code) => {
-        const lines = code.split("\n");
-        return lines.some(line => {
-          const t = line.trim();
-          return (
-            (t.startsWith("if ") || t.startsWith("for ") ||
-             t.startsWith("while ") || t.startsWith("def ") ||
-             t.startsWith("class ") || t.startsWith("else") ||
-             t.startsWith("elif ") || t.startsWith("try") ||
-             t.startsWith("except")) &&
-            !t.endsWith(":") && !t.endsWith("\\") && t.length > 2
-          );
-        });
-      },
-      explanation: "Python requires a colon at the end of if, for, while, def and class statements. A missing colon causes an immediate SyntaxError.",
-      badCode: `for i in range(10)\n    print(i)`,
-      goodCode: `for i in range(10):\n    print(i)`,
-      steps: ["Look for lines starting with if, for, while, def, class", "Make sure every one of them ends with a colon :", "Check elif, else, try and except lines too"]
+      id:'missing_colon', title:'Missing Colon in Statement', severity:'high',
+      languages:['python'],
+      detect: c => c.split('\n').some(l => {
+        const t = l.trim();
+        return (t.startsWith('if ')||t.startsWith('for ')||t.startsWith('while ')||
+                t.startsWith('def ')||t.startsWith('class ')||t.startsWith('else')||
+                t.startsWith('elif ')||t.startsWith('try')||t.startsWith('except')) &&
+               !t.endsWith(':') && !t.endsWith('\\') && t.length > 2;
+      }),
+      explanation:'Python requires a colon at the end of every compound statement. A missing colon causes an immediate SyntaxError.',
+      badCode:`for i in range(10)\n    print(i)`,
+      goodCode:`for i in range(10):\n    print(i)`,
+      steps:['Check all if, for, while, def, class headers','Ensure every one ends with :','Also check elif, else, try, except']
     },
     {
-      id: "bare_except",
-      title: "Bare except Clause",
-      severity: "medium",
-      languages: ["python"],
-      detect: (code) => code.includes("except:") || code.includes("except :"),
-      explanation: "Using except: without specifying the error type catches ALL exceptions including system exits. This hides real bugs and makes debugging nearly impossible.",
-      badCode: `try:\n    do_something()\nexcept:\n    pass`,
-      goodCode: `try:\n    do_something()\nexcept ValueError as e:\n    print("Error:", e)`,
-      steps: ["Always specify the exception type after except", "Use except ValueError or except TypeError etc", "Never use bare except: silently"]
+      id:'bare_except', title:'Bare except Clause', severity:'medium',
+      languages:['python'],
+      detect: c => c.includes('except:') || c.includes('except :'),
+      explanation:'A bare except: catches every exception including SystemExit, masking real bugs and making debugging very hard.',
+      badCode:`try:\n    do_something()\nexcept:\n    pass`,
+      goodCode:`try:\n    do_something()\nexcept ValueError as e:\n    print("Error:", e)`,
+      steps:['Specify the exception type after except','Use except Exception as e: at minimum','Never silently pass on errors']
     }
   ];
 
-  // ─── Helpers ───────────────────────────────────────────────────────
-  function updateCharCount() {
-    const len = document.getElementById("codeInput").value.length;
-    document.getElementById("charCount").textContent = len + " chars";
+  // ── Risk ───────────────────────────────────────────────────────────
+  function getRisk(issues) {
+    const c = issues.filter(i=>i.severity==='critical').length;
+    const h = issues.filter(i=>i.severity==='high').length;
+    const score = Math.min(100, c*25 + h*12 + issues.length*4);
+    if (score>=75) return {score,verdict:'Critical Risk', color:'var(--red)',    bg:'var(--red-bg)',  border:'var(--red-border)'};
+    if (score>=50) return {score,verdict:'High Risk',     color:'var(--orange)', bg:'var(--org-bg)',  border:'var(--org-border)'};
+    if (score>=20) return {score,verdict:'Medium Risk',   color:'var(--blue)',   bg:'var(--blu-bg)',  border:'var(--blu-border)'};
+    return                {score,verdict:'Low Risk',      color:'var(--green)',  bg:'var(--grn-bg)',  border:'var(--grn-border)'};
   }
 
-  function clearCode() {
-    document.getElementById("codeInput").value = "";
-    document.getElementById("charCount").textContent = "0 chars";
-    document.getElementById("results").innerHTML =
-      `<div class="empty-state"><span class="empty-icon">🛡️</span>Paste your code above and click <strong>Analyze Code</strong></div>`;
-  }
+  // ── Render ─────────────────────────────────────────────────────────
+  function renderResults(issues) {
+    const div = document.getElementById('results');
+    document.getElementById('resultChip').textContent =
+      issues.length === 0 ? '0 issues' : `${issues.length} issue${issues.length!==1?'s':''}`;
 
-  function getRiskLevel(issues) {
-    const critical = issues.filter(i => i.severity === "critical").length;
-    const high     = issues.filter(i => i.severity === "high").length;
-    const score    = Math.min(100, critical * 25 + high * 12 + issues.length * 5);
-    if (score >= 75) return { score, label: "Critical Risk", color: "#f85149", pct: score };
-    if (score >= 50) return { score, label: "High Risk",     color: "#e3b341", pct: score };
-    if (score >= 25) return { score, label: "Medium Risk",   color: "#58a6ff", pct: score };
-    return             { score, label: "Low Risk",      color: "#3fb950", pct: score };
-  }
-
-  function buildRiskMeter(issues) {
-    const counts = {
-      critical: issues.filter(i => i.severity === "critical").length,
-      high:     issues.filter(i => i.severity === "high").length,
-      medium:   issues.filter(i => i.severity === "medium").length,
-      low:      issues.filter(i => i.severity === "low").length
-    };
-    const risk = getRiskLevel(issues);
-
-    let pills = "";
-    if (counts.critical) pills += `<span class="summary-pill pill-red">🔴 ${counts.critical} Critical</span>`;
-    if (counts.high)     pills += `<span class="summary-pill pill-orange">🟠 ${counts.high} High</span>`;
-    if (counts.medium)   pills += `<span class="summary-pill pill-blue">🔵 ${counts.medium} Medium</span>`;
-    if (counts.low)      pills += `<span class="summary-pill pill-green">🟢 ${counts.low} Low</span>`;
-    pills += `<span class="summary-pill pill-gray">${issues.length} issue${issues.length !== 1 ? "s" : ""} found</span>`;
-
-    return `
-      <div class="risk-meter">
-        <div class="risk-score-circle" style="border-color:${risk.color};color:${risk.color}">
-          <span class="score-num">${risk.score}</span>
-          <span class="score-label">/ 100</span>
-        </div>
-        <div class="risk-info">
-          <div class="risk-title" style="color:${risk.color}">${risk.label}</div>
-          <div class="risk-bar-track">
-            <div class="risk-bar-fill" style="width:0%;background:${risk.color}" 
-                 id="riskBarFill"></div>
-          </div>
-          <div class="summary-pills">${pills}</div>
-        </div>
-      </div>`;
-  }
-
-  function buildIssueCard(issue, index) {
-    const stepsHtml = issue.steps.map(s => `<li>${s}</li>`).join("");
-    const delay = index * 0.06;
-    return `
-      <div class="issue-card ${issue.severity}" style="animation-delay:${delay}s">
-        <div class="issue-header">
-          <span class="badge badge-${issue.severity}">${issue.severity}</span>
-          <span class="issue-title">${issue.title}</span>
-          ${issue.line ? `<span class="line-tag">Line ${issue.line}</span>` : ""}
-        </div>
-        <div class="issue-body">
-          <p>${issue.explanation}</p>
-          <div class="code-comparison">
-            <div class="code-block">
-              <div class="code-label label-bad">❌ Bad Code</div>
-              <pre>${escapeHtml(issue.badCode)}</pre>
-            </div>
-            <div class="code-block">
-              <div class="code-label label-good">✅ Fixed Code</div>
-              <pre>${escapeHtml(issue.goodCode)}</pre>
-            </div>
-          </div>
-          <div class="fix-section">
-            <div>
-              <p style="margin-bottom:6px"><strong>How to fix:</strong></p>
-              <ol class="steps-list">${stepsHtml}</ol>
-            </div>
-            <button class="copy-btn" onclick="copyFix(this, ${JSON.stringify(issue.goodCode).replace(/'/g, "&#39;")})">
-              📋 Copy Fix
-            </button>
-          </div>
-        </div>
-      </div>`;
-  }
-
-  function escapeHtml(str) {
-    return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-  }
-
-  function copyFix(btn, code) {
-    navigator.clipboard.writeText(code).then(() => {
-      btn.textContent = "✅ Copied!";
-      btn.classList.add("copied");
-      setTimeout(() => {
-        btn.textContent = "📋 Copy Fix";
-        btn.classList.remove("copied");
-      }, 2000);
-    });
-  }
-
-  // ─── Render Results ────────────────────────────────────────────────
-  function renderResults(issues, resultsDiv) {
     if (issues.length === 0) {
-      resultsDiv.innerHTML = `
+      div.innerHTML = `
         <div class="no-issues">
           <span class="ni-icon">✅</span>
-          <h3>No Issues Detected!</h3>
-          <p>Your code looks clean. Great work!</p>
+          <h3>No Issues Found</h3>
+          <p>Your code passed all checks.</p>
         </div>`;
       return;
     }
 
-    let html = buildRiskMeter(issues);
-    issues.forEach((issue, i) => { html += buildIssueCard(issue, i); });
-    resultsDiv.innerHTML = html;
+    const risk = getRisk(issues);
+    const counts = {
+      critical:issues.filter(i=>i.severity==='critical').length,
+      high:    issues.filter(i=>i.severity==='high').length,
+      medium:  issues.filter(i=>i.severity==='medium').length,
+      low:     issues.filter(i=>i.severity==='low').length,
+    };
 
-    // Animate risk bar
-    const risk = getRiskLevel(issues);
-    setTimeout(() => {
-      const bar = document.getElementById("riskBarFill");
-      if (bar) bar.style.width = risk.pct + "%";
-    }, 100);
+    let html = `
+      <div class="risk-summary">
+        <div class="risk-row">
+          <div>
+            <div class="risk-eyebrow">Risk Assessment</div>
+            <div class="risk-verdict" style="color:${risk.color}">${risk.verdict}</div>
+          </div>
+          <span class="risk-score-badge" style="background:${risk.bg};color:${risk.color};border-color:${risk.border}">
+            ${risk.score} / 100
+          </span>
+        </div>
+        <div class="risk-bar-wrap">
+          <div class="risk-bar" id="riskBar" style="background:${risk.color}"></div>
+        </div>
+        <div class="sev-row">
+          <div class="sev-box"><div class="sev-n" style="color:var(--red)">${counts.critical}</div><div class="sev-t">Critical</div></div>
+          <div class="sev-box"><div class="sev-n" style="color:var(--orange)">${counts.high}</div><div class="sev-t">High</div></div>
+          <div class="sev-box"><div class="sev-n" style="color:var(--blue)">${counts.medium}</div><div class="sev-t">Medium</div></div>
+          <div class="sev-box"><div class="sev-n" style="color:var(--green)">${counts.low}</div><div class="sev-t">Low</div></div>
+        </div>
+      </div>`;
+
+    issues.forEach((issue, idx) => {
+      const delay = (idx * 0.04).toFixed(2);
+      const steps = issue.steps.map((s,i) =>
+        `<li><span class="step-n">${i+1}</span><span>${s}</span></li>`
+      ).join('');
+
+      html += `
+        <div class="issue-card" style="animation-delay:${delay}s">
+          <div class="card-head" onclick="toggleCard(this)">
+            <span class="sev-pip pip-${issue.severity}"></span>
+            <span class="sev-tag tag-${issue.severity}">${issue.severity}</span>
+            <span class="card-title">${issue.title}</span>
+            ${issue.line ? `<span class="line-tag">L${issue.line}</span>` : ''}
+            <span class="arrow">›</span>
+          </div>
+          <div class="card-body">
+            <p class="explanation">${issue.explanation}</p>
+            <div class="code-duo">
+              <div class="code-box">
+                <div class="code-box-head">
+                  <span class="code-tag ct-bad">Before</span>
+                </div>
+                <pre>${esc(issue.badCode)}</pre>
+              </div>
+              <div class="code-box">
+                <div class="code-box-head">
+                  <span class="code-tag ct-good">After</span>
+                  <button class="copy-btn" onclick="copyFix(this,${JSON.stringify(issue.goodCode)})">copy</button>
+                </div>
+                <pre>${esc(issue.goodCode)}</pre>
+              </div>
+            </div>
+            <div class="fix-head">Steps to fix</div>
+            <ol class="fix-steps">${steps}</ol>
+          </div>
+        </div>`;
+    });
+
+    div.innerHTML = html;
+    requestAnimationFrame(() => {
+      const bar = document.getElementById('riskBar');
+      if (bar) bar.style.width = risk.score + '%';
+    });
   }
 
-  // ─── Main Analyze ──────────────────────────────────────────────────
+  function toggleCard(head) {
+    const body = head.nextElementSibling;
+    const arrow = head.querySelector('.arrow');
+    body.classList.toggle('open');
+    arrow.classList.toggle('open');
+  }
+
+  function copyFix(btn, code) {
+    navigator.clipboard.writeText(code).then(() => {
+      btn.textContent = 'done ✓';
+      btn.classList.add('done');
+      setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('done'); }, 2000);
+    });
+  }
+
+  // ── Analyze ────────────────────────────────────────────────────────
   function analyzeCode() {
-    const code = document.getElementById("codeInput").value.trim();
-    const language = document.getElementById("language").value;
-    const btn = document.getElementById("analyzeBtn");
-    const resultsDiv = document.getElementById("results");
+    const code = document.getElementById('codeInput').value.trim();
+    const btn = document.getElementById('analyzeBtn');
+    const div = document.getElementById('results');
 
     if (!code) {
-      resultsDiv.innerHTML = `<div class="empty-state"><span class="empty-icon">⚠️</span>Please paste some code first!</div>`;
+      div.innerHTML = `<div class="empty-state"><div class="empty-glyph">⚠️</div><h3>No code found</h3><p>Paste something first.</p></div>`;
       return;
     }
 
     btn.disabled = true;
-    btn.innerHTML = "<span>⏳</span> Analyzing...";
-    resultsDiv.innerHTML = `<div class="analyzing"><div class="spinner"></div>Scanning your code for issues...</div>`;
+    btn.textContent = 'Analyzing...';
+    document.getElementById('resultChip').textContent = '—';
+    div.innerHTML = `<div class="loading-state"><div class="spinner"></div><span>Scanning for issues...</span></div>`;
 
-    fetch("http://127.0.0.1:5000/analyze", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code, language })
+    fetch('http://127.0.0.1:5000/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, language: currentLang })
     })
-    .then(res => res.json())
+    .then(r => r.json())
     .then(data => {
-      if (data.issues && data.issues.length > 0) {
-        renderResults(data.issues, resultsDiv);
-      } else {
-        runFrontendAnalysis(code, language, resultsDiv);
-      }
+      if (data.issues && data.issues.length > 0) renderResults(data.issues);
+      else runFrontend(code, currentLang);
     })
-    .catch(() => runFrontendAnalysis(code, language, resultsDiv))
-    .finally(() => {
-      btn.disabled = false;
-      btn.innerHTML = "<span>🔍</span> Analyze Code";
-    });
+    .catch(() => runFrontend(code, currentLang))
+    .finally(() => { btn.disabled = false; btn.textContent = 'Analyze →'; });
   }
 
-  function runFrontendAnalysis(code, language, resultsDiv) {
+  function runFrontend(code, language) {
     setTimeout(() => {
-      const found = rules.filter(rule =>
-        (rule.languages.includes(language) || rule.languages.includes("general")) &&
-        rule.detect(code)
+      const found = rules.filter(r =>
+        (r.languages.includes(language) || r.languages.includes('general')) && r.detect(code)
       );
-      renderResults(found, resultsDiv);
-    }, 800);
+      renderResults(found);
+    }, 500);
   }
 </script>
-
 </body>
 </html>
