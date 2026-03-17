@@ -366,6 +366,70 @@ def check_logic(code):
                     "Same fix for '!= None' → use 'is not None'"
                 ]
             })
+        
+         # Check for == True / == False comparisons
+    for i, line in enumerate(lines, 1):
+        stripped = line.strip()
+        if ("== True" in stripped or "== False" in stripped) and not stripped.startswith("#"):
+            issues.append({
+                "id": "bool_comparison",
+                "title": "Unnecessary Boolean Comparison",
+                "severity": "low",
+                "line": i,
+                "explanation": f"Line {i}: Comparing directly to True or False is "
+                              f"unnecessary and considered bad practice in Python.",
+                "badCode": "if is_valid == True:\n    do_something()",
+                "goodCode": "if is_valid:\n    do_something()",
+                "steps": [
+                    "Find the boolean comparison on line " + str(i),
+                    "Replace 'if x == True:' with just 'if x:'",
+                    "Replace 'if x == False:' with 'if not x:'"
+                ]
+            })
+
+    # Check for var usage in JavaScript
+    for i, line in enumerate(lines, 1):
+        stripped = line.strip()
+        if stripped.startswith("var ") and not stripped.startswith("#"):
+            issues.append({
+                "id": "var_usage",
+                "title": "Outdated 'var' Keyword Used",
+                "severity": "medium",
+                "line": i,
+                "explanation": f"Line {i}: 'var' is outdated JavaScript. It has "
+                              f"confusing scope rules and can cause hard-to-find bugs. "
+                              f"Use 'let' or 'const' instead.",
+                "badCode": "var username = 'john'\nvar count = 0",
+                "goodCode": "const username = 'john'\nlet count = 0",
+                "steps": [
+                    "Find 'var' on line " + str(i),
+                    "Replace with 'const' if the value never changes",
+                    "Replace with 'let' if the value will be reassigned"
+                ]
+            })
+
+    # Check for input() used directly in math without int()
+    for i, line in enumerate(lines, 1):
+        stripped = line.strip()
+        if "input(" in stripped and not stripped.startswith("#"):
+            if any(op in stripped for op in [" + ", " - ", " * ", " / ", " > ", " < ", " >= ", " <= "]):
+                issues.append({
+                    "id": "input_no_cast",
+                    "title": "input() Used in Math Without int()",
+                    "severity": "high",
+                    "line": i,
+                    "explanation": f"Line {i}: input() always returns a string. "
+                                  f"Using it directly in math or comparisons will "
+                                  f"crash your program with a TypeError.",
+                    "badCode": "age = input('Enter age: ')\nif age > 18:",
+                    "goodCode": "age = int(input('Enter age: '))\nif age > 18:",
+                    "steps": [
+                        "Find input() on line " + str(i),
+                        "Wrap it with int() for numbers: int(input(...))",
+                        "Or float() if you need decimal numbers"
+                    ]
+                })
+
     return issues
 
 @app.route("/")
