@@ -241,7 +241,7 @@ def check_logic(code):
                             ]
                         })
 
-# Check for print statements left in code (debug leftovers)
+    # Check for print statements left in code (debug leftovers)
     for i, line in enumerate(lines, 1):
         stripped = line.strip()
         if stripped.startswith("print(") and not line.strip().startswith("#"):
@@ -385,6 +385,8 @@ def analyze():
 
     if language == "python":
         results += check_syntax(code)
+        results += check_logic(code)
+    elif language in ["javascript", "general"]:
         results += check_logic(code)
 
     return jsonify({
