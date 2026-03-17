@@ -192,6 +192,51 @@
   }
   .hi-delete:hover { background: var(--red-bg); color: var(--red); border-color: var(--red-border); }
 
+  .examples-bar {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.examples-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--text3);
+  white-space: nowrap;
+}
+
+.examples-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.ex-btn {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text2);
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+
+.ex-btn:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
     /* FOOTER */
     footer{height:48px;border-top:1px solid var(--border);padding:0 28px;display:flex;align-items:center;justify-content:space-between;background:var(--surface);font-size:12px;color:var(--text3);flex-shrink:0;transition:background .2s,border-color .2s}
     footer strong{color:var(--text2);font-weight:500}
@@ -244,6 +289,18 @@
         <button class="lang-btn" onclick="setLang('general',this)">General</button>
       </div>
     </div>
+    <!-- Example Library -->
+    <div class="examples-bar">
+      <span class="examples-label">Try an example:</span>
+      <div class="examples-pills">
+        <button class="ex-btn" onclick="loadExample('sqli')">💉 SQL Injection</button>
+        <button class="ex-btn" onclick="loadExample('secret')">🔑 Hardcoded Secret</button>
+        <button class="ex-btn" onclick="loadExample('xss')">⚠️ XSS Attack</button>
+        <button class="ex-btn" onclick="loadExample('loop')">♾️ Infinite Loop</button>
+        <button class="ex-btn" onclick="loadExample('mixed')">🔥 Mixed Bugs</button>
+      </div>
+    </div>
+
     <textarea id="codeInput" spellcheck="false"
       placeholder="# Paste your code here and click Analyze →"
       oninput="updateMeta()"></textarea>
@@ -692,6 +749,51 @@
       setTimeout(()=>{btn.textContent='copy';btn.classList.remove('done');},2000);
     });
   }
+
+  function loadExample(type) {
+  const examples = {
+    sqli: {
+      lang: 'python',
+      code: `import sqlite3\n\ndef get_user(user_id):\n    conn = sqlite3.connect("users.db")\n    cursor = conn.cursor()\n    query = "SELECT * FROM users WHERE id = " + user_id\n    cursor.execute(query)\n    return cursor.fetchone()\n\nresult = get_user(input("Enter user ID: "))`
+    },
+    secret: {
+      lang: 'python',
+      code: `import requests\n\n# Application configuration\nDATABASE_HOST = "localhost"\nDATABASE_NAME = "myapp"\npassword = "admin123"\napi_key = "sk-abc123xyz789"\nsecret = "my_jwt_secret_key"\n\ndef connect():\n    return f"host={DATABASE_HOST} password={password}"`
+    },
+    xss: {
+      lang: 'javascript',
+      code: `// User profile page\nfunction loadProfile() {\n  const username = new URLSearchParams(window.location.search).get('user')\n  const query = "SELECT * FROM users WHERE name = '" + username + "'"\n  \n  document.getElementById('profile').innerHTML = userInput\n  document.getElementById('bio').innerHTML = userData.bio\n}`
+    },
+    loop: {
+      lang: 'python',
+      code: `import time\n\ndef monitor_server():\n    while True:\n        status = check_server()\n        log_status(status)\n        time.sleep(5)\n\ndef process_queue():\n    while True:\n        item = queue.get()\n        process(item)\n\nmonitor_server()`
+    },
+    mixed: {
+      lang: 'python',
+      code: `import os\nimport unused_lib\n\npassword = "supersecret123"\napi_key = "sk-prod-abc123"\n\ndef calculate(total, count):\n    result = eval(input("Enter formula: "))\n    average = total / count\n    return average\n\ndef login(username):\n    query = "SELECT * FROM users WHERE name = '" + username + "'"\n    cursor.execute(query)\n\nwhile True:\n    data = process()\n    print("data:", data)\n    print("result:", result)\n    print("user:", username)\n    print("token:", token)`
+    }
+  };
+
+  const ex = examples[type];
+  if (!ex) return;
+
+  // Set language
+  currentLang = ex.lang;
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active',
+      b.textContent.toLowerCase() === ex.lang ||
+      (ex.lang === 'javascript' && b.textContent === 'JS')
+    );
+  });
+
+  // Load code
+  document.getElementById('codeInput').value = ex.code;
+  updateMeta();
+
+  // Auto analyze
+  analyzeCode();
+}
+
 
   // ANALYZE
   function analyzeCode(){
