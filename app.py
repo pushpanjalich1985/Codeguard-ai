@@ -240,6 +240,131 @@ def check_logic(code):
                             ]
                         })
 
+# Check for print statements left in code (debug leftovers)
+    for i, line in enumerate(lines, 1):
+        stripped = line.strip()
+        if stripped.startswith("print(") and not line.strip().startswith("#"):
+            issues.append({
+                "id": "debug_print",
+                "title": "Debug print() Left in Code",
+                "severity": "low",
+                "line": i,
+                "explanation": f"Line {i}: You left a print() statement in your code. "
+                              f"In production, use logging instead of print().",
+                "badCode": 'print("user data:", user)',
+                "goodCode": "import logging\nlogging.info('user data: %s', user)",
+                "steps": [
+                    "Find the print() on line " + str(i),
+                    "Replace it with logging.info() or logging.debug()",
+                    "Set up logging at the top: logging.basicConfig(level=logging.INFO)"
+                ]
+            })
+
+    # Check for mutable default arguments
+    for i, line in enumerate(lines, 1):
+        stripped = line.strip()
+        if stripped.startswith("def ") and ("=[]" in stripped or "= []" in stripped or
+           "={}" in stripped or "= {}" in stripped):
+            issues.append({
+                "id": "mutable_default_arg",
+                "title": "Mutable Default Argument",
+                "severity": "high",
+                "line": i,
+                "explanation": f"Line {i}: Using a list or dict as a default argument "
+                              f"is a classic Python bug. The same object is shared "
+                              f"across all function calls.",
+                "badCode": "def add_item(item, items=[]):\n    items.append(item)\n    return items",
+                "goodCode": "def add_item(item, items=None):\n    if items is None:\n        items = []\n    items.append(item)\n    return items",
+                "steps": [
+                    "Find the function at line " + str(i),
+                    "Replace the default [] or {} with None",
+                    "Inside the function, set items = [] if items is None"
+                ]
+            })
+
+    # Check for bare except (catches everything including KeyboardInterrupt)
+    for i, line in enumerate(lines, 1):
+        stripped = line.strip()
+        if stripped == "except:":
+            issues.append({
+                "id": "bare_except",
+                "title": "Bare except Clause",
+                "severity": "high",
+                "line": i,
+                "explanation": f"Line {i}: A bare except: catches every possible error, "
+                              f"including system exits and keyboard interrupts. "
+                              f"This can hide serious problems.",
+                "badCode": "try:\n    risky()\nexcept:\n    pass",
+                "goodCode": "try:\n    risky()\nexcept Exception as e:\n    print('Error:', e)",
+                "steps": [
+                    "Find the bare except on line " + str(i),
+                    "Change it to: except Exception as e:",
+                    "Log or handle the error properly"
+                ]
+            })
+
+    # Check for use of input() in non-interactive scripts
+    for i, line in enumerate(lines, 1):
+        stripped = line.strip()
+        if "input(" in stripped and not stripped.startswith("#"):
+            issues.append({
+                "id": "input_usage",
+                "title": "input() Found — Validate User Input",
+                "severity": "medium",
+                "line": i,
+                "explanation": f"Line {i}: input() accepts raw user data with no "
+                              f"validation. Always validate and sanitize what "
+                              f"users type in.",
+                "badCode": 'age = input("Enter age: ")',
+                "goodCode": 'age_str = input("Enter age: ")\nif not age_str.isdigit():\n    print("Invalid input")\nelse:\n    age = int(age_str)',
+                "steps": [
+                    "Find input() on line " + str(i),
+                    "Add type checking after the input()",
+                    "Handle invalid input with a helpful error message"
+                ]
+            })
+
+    # Check for open() without context manager (with statement)
+    for i, line in enumerate(lines, 1):
+        stripped = line.strip()
+        if re.search(r'\bopen\(', stripped) and not stripped.startswith("with") and not stripped.startswith("#"):
+            issues.append({
+                "id": "file_not_closed",
+                "title": "File Opened Without Context Manager",
+                "severity": "high",
+                "line": i,
+                "explanation": f"Line {i}: You opened a file without using 'with'. "
+                              f"If an error occurs, the file will never be closed, "
+                              f"causing memory leaks.",
+                "badCode": 'f = open("data.txt", "r")\ndata = f.read()',
+                "goodCode": 'with open("data.txt", "r") as f:\n    data = f.read()',
+                "steps": [
+                    "Find the open() call on line " + str(i),
+                    "Wrap it in a with statement",
+                    "The file will close automatically even if errors occur"
+                ]
+            })
+
+    # Check for == None instead of is None
+    for i, line in enumerate(lines, 1):
+        stripped = line.strip()
+        if "== None" in stripped and not stripped.startswith("#"):
+            issues.append({
+                "id": "equality_none",
+                "title": "Use 'is None' Instead of '== None'",
+                "severity": "low",
+                "line": i,
+                "explanation": f"Line {i}: Comparing to None with == can give wrong "
+                              f"results if an object overrides __eq__. "
+                              f"Always use 'is None'.",
+                "badCode": "if result == None:\n    print('empty')",
+                "goodCode": "if result is None:\n    print('empty')",
+                "steps": [
+                    "Find '== None' on line " + str(i),
+                    "Replace it with 'is None'",
+                    "Same fix for '!= None' → use 'is not None'"
+                ]
+            })
     return issues
 
 @app.route("/")
