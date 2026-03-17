@@ -884,7 +884,38 @@
       badCode:`try:\n    do_something()\nexcept:\n    pass`,
       goodCode:`try:\n    do_something()\nexcept ValueError as e:\n    print("Error:", e)`,
       steps:['Specify the exception type after except','Use except Exception as e: at minimum','Never silently pass on errors']
-    }
+    },
+    {
+      id:'bool_comparison', title:'Unnecessary Boolean Comparison', severity:'low',
+      languages:['python'],
+      detect: c => c.includes('== True') || c.includes('== False'),
+      explanation:'Comparing directly to True or False is unnecessary and considered bad practice in Python.',
+      badCode:`if is_valid == True:\n    do_something()`,
+      goodCode:`if is_valid:\n    do_something()`,
+      steps:['Find the boolean comparison','Replace "if x == True:" with just "if x:"','Replace "if x == False:" with "if not x:"']
+    },
+    {
+      id:'var_usage', title:"Outdated 'var' Keyword Used", severity:'medium',
+      languages:['javascript'],
+      detect: c => c.split('\n').some(l => l.trim().startsWith('var ')),
+      explanation:"'var' is outdated JavaScript with confusing scope rules. Use 'let' or 'const' instead.",
+      badCode:`var username = "john"\nvar count = 0`,
+      goodCode:`const username = "john"\nlet count = 0`,
+      steps:["Find 'var' in your code","Replace with 'const' if the value never changes","Replace with 'let' if the value will be reassigned"]
+    },
+    {
+      id:'input_no_cast', title:'input() Used in Math Without int()', severity:'high',
+      languages:['python'],
+      detect: c => c.split('\n').some(l =>
+        l.includes('input(') && !l.trim().startsWith('#') &&
+        (l.includes(' + ')||l.includes(' - ')||l.includes(' * ')||l.includes(' / ')||
+         l.includes(' > ')||l.includes(' < ')||l.includes(' >= ')||l.includes(' <= '))
+      ),
+      explanation:'input() always returns a string. Using it directly in math or comparisons will crash with a TypeError.',
+      badCode:`age = input("Enter age: ")\nif age > 18:`,
+      goodCode:`age = int(input("Enter age: "))\nif age > 18:`,
+      steps:['Find input() used in math or comparisons','Wrap with int() for numbers','Or float() if you need decimals']
+    },
   ];
 
   // ── Risk ───────────────────────────────────────────────────────────
