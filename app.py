@@ -12,6 +12,7 @@ CORS(app)
 
 def check_syntax(code):
     issues = []
+    lines = code.split("\n")
     try:
         ast.parse(code)
     except IndentationError as e:
@@ -23,8 +24,8 @@ def check_syntax(code):
             "explanation": f"Line {e.lineno}: Your code has wrong indentation. "
                           f"Python is very strict about spaces and tabs. "
                           f"Problem: {e.msg}",
-            "badCode": "if True:\nprint('hello')",
-            "goodCode": "if True:\n    print('hello')",
+            "badCode": lines[e.lineno - 1].rstrip() if e.lineno and e.lineno <= len(lines) else "if True:\nprint('hello')",
+            "goodCode": "    " + lines[e.lineno - 1].strip() if e.lineno and e.lineno <= len(lines) else "if True:\n    print('hello')",
             "steps": [
                 "Find line " + str(e.lineno) + " in your code",
                 "Make sure it is indented with 4 spaces",
@@ -40,8 +41,8 @@ def check_syntax(code):
             "explanation": f"Line {e.lineno}: Your code has a syntax error. "
                           f"Python cannot even read this code. "
                           f"Problem: {e.msg}",
-            "badCode": "for i in range(10)\n    print(i)",
-            "goodCode": "for i in range(10):\n    print(i)",
+            "badCode": lines[e.lineno - 1].rstrip() if e.lineno and e.lineno <= len(lines) else "for i in range(10)\n    print(i)",
+            "goodCode": "# Fix the syntax error on this line\n" + lines[e.lineno - 1].rstrip(),
             "steps": [
                 "Go to line " + str(e.lineno) + " in your code",
                 "Check for missing colons after if, for, while, def",
