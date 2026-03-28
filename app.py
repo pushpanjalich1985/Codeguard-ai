@@ -146,7 +146,7 @@ def check_logic(code):
     # Check for empty except blocks
     for i, line in enumerate(lines, 1):
         stripped = line.strip()
-        if stripped == "except:" or stripped.startswith("except "):
+        if stripped.startswith("except ") and stripped != "except:":
             if i < len(lines):
                 next_line = lines[i].strip() if i < len(lines) else ""
                 if next_line == "pass":
@@ -171,10 +171,16 @@ def check_logic(code):
     for i, line in enumerate(lines, 1):
         stripped = line.strip()
         if stripped.startswith("def ") and stripped.endswith(":"):
-            func_lines = lines[i:i+20]
-            has_return = any("return" in l for l in func_lines)
-            has_print = any("print(" in l for l in func_lines)
-            if not has_return and not has_print:
+            VOID_FUNCS = {"__init__", "__del__", "__str__", "__repr__", "__enter__", "__exit__", "setUp", "tearDown", "main"}
+        try:
+            func_name = stripped[4:stripped.index("(")].strip()
+        except ValueError:
+            continue
+        if func_name in VOID_FUNCS:
+            continue
+        func_lines = lines[i:i+20]
+        has_return = any("return" in l for l in func_lines)
+        if not has_return:
                 issues.append({
                     "id": "no_return",
                     "title": "Function Has No Return Statement",
@@ -368,7 +374,7 @@ def check_logic(code):
                 ]
             })
         
-         # Check for == True / == False comparisons
+     # Check for == True / == False comparisons
     for i, line in enumerate(lines, 1):
         stripped = line.strip()
         if ("== True" in stripped or "== False" in stripped) and not stripped.startswith("#"):
@@ -437,6 +443,10 @@ def check_logic(code):
 def home():
     return "CodeGuard AI backend is running."
 
+@app.route("/health")
+def health():
+    return jsonify({"status": "ok", "version": "1.0"})
+
 @app.route("/analyze", methods=["POST"])
 def analyze():
     data = request.get_json()
@@ -445,6 +455,9 @@ def analyze():
 
     if not code:
         return jsonify({"error": "No code provided"}), 400
+    
+    if len(code) > 10000:
+        return jsonify({"error": "Code too long. Max 10,000 characters."}), 400
 
     results = []
 
@@ -454,6 +467,15 @@ def analyze():
     elif language in ["javascript", "general"]:
         results += check_logic(code)
 
+    seen = set()
+    unique_results = []
+    for issue in results:
+        key = (issue["id"], issue.get("line"))
+        if key not in seen:
+            seen.add(key)
+            unique_results.append(issue)
+    results = unique_results
+
     return jsonify({
         "language": language,
         "issues": results,
@@ -461,4 +483,4 @@ def analyze():
     })
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
