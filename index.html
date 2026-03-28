@@ -782,7 +782,7 @@
   document.querySelectorAll('.lang-btn').forEach(b => {
     b.classList.toggle('active',
       b.textContent.toLowerCase() === ex.lang ||
-      (ex.lang === 'javascript' && b.textContent === 'JS')
+      (ex.lang  === 'javascript' && b.textContent === 'JS')
     );
   });
 
@@ -794,6 +794,9 @@
   analyzeCode();
 }
 
+ const API_BASE = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
+  ? 'http://127.0.0.1:5000'
+  : window.location.origin;
 
   // ANALYZE
   function analyzeCode(){
@@ -810,7 +813,7 @@
     document.getElementById('resultChip').textContent='—';
     div.innerHTML=`<div class="loading-state"><div class="spinner"></div><span>Scanning for issues...</span></div>`;
 
-    fetch('http://127.0.0.1:5000/analyze',{
+      fetch(`${API_BASE}/analyze`, {
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({code,language:currentLang})
