@@ -1,397 +1,1112 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CodeGuard AI</title>
-  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    [data-theme="light"] {
-      --bg:#fafaf9; --bg2:#f3f2ee; --surface:#ffffff;
-      --border:#e5e2da; --border2:#ccc8bd;
-      --text:#1a1814; --text2:#6b6460; --text3:#a8a29c;
-    }
-    [data-theme="dark"] {
-      --bg:#0d0f12; --bg2:#141720; --surface:#161b24;
-      --border:#1e2535; --border2:#2a3349;
-      --text:#e8eaf0; --text2:#8892a4; --text3:#4a556a;
-    }
-    :root {
-      --accent:#d97706; --teal:#0d9488;
-      --red:#ef4444; --orange:#ea580c; --blue:#3b82f6; --green:#16a34a;
-      --mono:'Geist Mono',monospace; --sans:'Geist',sans-serif;
-      --radius:8px;
-    }
-    [data-theme="light"] {
-      --shadow:0 1px 3px rgba(0,0,0,0.07); --shadow-md:0 4px 14px rgba(0,0,0,0.09);
-      --teal-light:#ccfbf1; --teal-border:#5eead4;
-      --red-bg:#fef2f2; --red-border:#fca5a5;
-      --org-bg:#fff7ed; --org-border:#fdba74;
-      --blu-bg:#eff6ff; --blu-border:#93c5fd;
-      --grn-bg:#f0fdf4; --grn-border:#86efac;
-    }
-    [data-theme="dark"] {
-      --shadow:0 1px 3px rgba(0,0,0,0.3); --shadow-md:0 4px 14px rgba(0,0,0,0.4);
-      --teal-light:rgba(13,148,136,0.12); --teal-border:rgba(13,148,136,0.35);
-      --red-bg:rgba(239,68,68,0.10); --red-border:rgba(239,68,68,0.30);
-      --org-bg:rgba(234,88,12,0.10); --org-border:rgba(234,88,12,0.30);
-      --blu-bg:rgba(59,130,246,0.10); --blu-border:rgba(59,130,246,0.30);
-      --grn-bg:rgba(22,163,74,0.10);  --grn-border:rgba(22,163,74,0.30);
-    }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CodeGuard AI — Security Scanner</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 
-    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-    body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;display:flex;flex-direction:column;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+:root {
+  --bg:        #050608;
+  --bg2:       #090b0f;
+  --panel:     #0c0f14;
+  --panel2:    #0f1319;
+  --border:    #161c26;
+  --border2:   #1e2738;
+  --border-hi: #253040;
 
-    /* HEADER */
-    header{background:var(--surface);border-bottom:1px solid var(--border);height:56px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;transition:background .2s,border-color .2s}
-    .brand{display:flex;align-items:center;gap:10px}
-    .shield-logo{width:30px;height:30px;flex-shrink:0}
-    .shield-logo svg{width:100%;height:100%}
-    .brand-name{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--text);letter-spacing:-.02em}
-    .brand-name .cg-accent{color:var(--accent)}
-    .header-right{display:flex;align-items:center;gap:8px}
-    .chip{font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:99px;border:1px solid var(--border);color:var(--text3);background:var(--bg2);transition:all .2s}
-    .chip.live{color:var(--teal);background:var(--teal-light);border-color:var(--teal-border);display:flex;align-items:center;gap:5px}
-    .chip.live::before{content:'';width:6px;height:6px;background:var(--teal);border-radius:50%;animation:pulse 2s infinite}
+  --text:      #c9d1d9;
+  --text2:     #6e7f96;
+  --text3:     #2d3d52;
+  --text-dim:  #1a2535;
 
-    .icon-btn{width:34px;height:34px;border-radius:7px;border:1px solid var(--border);background:var(--bg2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .15s;flex-shrink:0;position:relative}
-    .icon-btn:hover{background:var(--border)}
-    .icon-btn.active{background:var(--accent);border-color:var(--accent)}
+  --green:     #39d353;
+  --green-dim: rgba(57,211,83,0.08);
+  --green-bd:  rgba(57,211,83,0.2);
 
-    .history-count{position:absolute;top:-5px;right:-5px;background:var(--accent);color:#fff;border-radius:99px;font-size:9px;font-family:var(--mono);font-weight:600;padding:1px 5px;min-width:16px;text-align:center;display:none}
+  --red:       #ff4d4d;
+  --red-dim:   rgba(255,77,77,0.08);
+  --red-bd:    rgba(255,77,77,0.2);
 
-    /* WORKSPACE */
-    .workspace{display:grid;grid-template-columns:1fr 1fr;flex:1;min-height:calc(100vh - 56px - 48px)}
+  --orange:    #ff8c42;
+  --org-dim:   rgba(255,140,66,0.08);
+  --org-bd:    rgba(255,140,66,0.2);
 
-    /* PANELS */
-    .left-panel{border-right:1px solid var(--border);display:flex;flex-direction:column;background:var(--surface);transition:background .2s,border-color .2s}
-    .right-panel{display:flex;flex-direction:column;background:var(--bg);transition:background .2s}
-    .pane-bar{height:42px;padding:0 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg2);flex-shrink:0;transition:background .2s,border-color .2s}
-    .pane-label{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em}
-    .lang-pill{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden}
-    .lang-btn{font-family:var(--mono);font-size:11px;padding:4px 10px;border:none;background:transparent;color:var(--text3);cursor:pointer;transition:all .12s}
-    .lang-btn.active{background:var(--accent);color:#fff}
+  --blue:      #58a6ff;
+  --blu-dim:   rgba(88,166,255,0.08);
+  --blu-bd:    rgba(88,166,255,0.2);
 
-    textarea{flex:1;width:100%;background:var(--surface);color:var(--text);border:none;outline:none;resize:none;padding:20px;font-family:var(--mono);font-size:13px;line-height:1.85;caret-color:var(--accent);min-height:320px;transition:background .2s,color .2s}
-    textarea::placeholder{color:var(--text3)}
+  --amber:     #e3a03c;
+  --amber-dim: rgba(227,160,60,0.08);
+  --amber-bd:  rgba(227,160,60,0.2);
 
-    .editor-foot{height:48px;padding:0 16px;border-top:1px solid var(--border);background:var(--bg2);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;transition:background .2s,border-color .2s}
-    .meta{font-family:var(--mono);font-size:11px;color:var(--text3)}
-    .btn-row{display:flex;gap:8px}
-    .btn{font-family:var(--sans);font-size:13px;font-weight:500;padding:7px 16px;border-radius:6px;border:none;cursor:pointer;transition:all .12s;letter-spacing:-.01em}
-    .btn-primary{background:var(--accent);color:#fff;box-shadow:var(--shadow)}
-    .btn-primary:hover{background:#b45309;transform:translateY(-1px)}
-    .btn-primary:active{transform:translateY(0)}
-    .btn-primary:disabled{background:var(--border2);color:var(--text3);cursor:not-allowed;transform:none;box-shadow:none}
-    .btn-secondary{background:transparent;color:var(--text2);border:1px solid var(--border)}
-    .btn-secondary:hover{background:var(--bg2);color:var(--text)}
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+}
 
-    .results-scroll{flex:1;overflow-y:auto;padding:18px}
-    .results-scroll::-webkit-scrollbar{width:3px}
-    .results-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+html { height: 100%; }
 
-    .empty-state{min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--text3);text-align:center;padding:40px}
-    .empty-glyph{width:52px;height:52px;background:var(--surface);border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:6px;box-shadow:var(--shadow)}
-    .empty-state h3{font-size:14px;font-weight:600;color:var(--text2)}
-    .empty-state p{font-size:13px;max-width:200px;line-height:1.6}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  /* Subtle scanline texture */
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255,255,255,0.008) 2px,
+    rgba(255,255,255,0.008) 4px
+  );
+}
 
-    .loading-state{min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
-    .spinner{width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .65s linear infinite}
-    .loading-state span{font-family:var(--mono);font-size:12px;color:var(--text3)}
-
-    .risk-summary{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px;box-shadow:var(--shadow);animation:slideUp .25s ease both;transition:background .2s,border-color .2s}
-    .risk-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-    .risk-eyebrow{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:3px}
-    .risk-verdict{font-size:19px;font-weight:700;letter-spacing:-.03em}
-    .risk-score-badge{font-family:var(--mono);font-size:13px;font-weight:600;padding:6px 14px;border-radius:6px;border:1px solid}
-    .risk-bar-wrap{height:3px;background:var(--bg2);border-radius:2px;overflow:hidden;margin-bottom:14px}
-    .risk-bar{height:100%;border-radius:2px;width:0;transition:width .8s cubic-bezier(.4,0,.2,1)}
-    .sev-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-    .sev-box{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:10px 8px;text-align:center;transition:background .2s,border-color .2s}
-    .sev-n{font-family:var(--mono);font-size:22px;font-weight:700;line-height:1;margin-bottom:3px}
-    .sev-t{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3)}
-
-    .issue-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;overflow:hidden;box-shadow:var(--shadow);animation:slideUp .25s ease both;transition:box-shadow .15s,border-color .15s,background .2s}
-    .issue-card:hover{border-color:var(--border2);box-shadow:var(--shadow-md)}
-    .card-head{padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
-    .sev-pip{width:8px;height:8px;border-radius:2px;flex-shrink:0}
-    .pip-critical{background:var(--red)} .pip-high{background:var(--orange)} .pip-medium{background:var(--blue)} .pip-low{background:var(--green)}
-    .sev-tag{font-family:var(--mono);font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:.04em;flex-shrink:0;border:1px solid}
-    .tag-critical{background:var(--red-bg);color:var(--red);border-color:var(--red-border)}
-    .tag-high{background:var(--org-bg);color:var(--orange);border-color:var(--org-border)}
-    .tag-medium{background:var(--blu-bg);color:var(--blue);border-color:var(--blu-border)}
-    .tag-low{background:var(--grn-bg);color:var(--green);border-color:var(--grn-border)}
-    .card-title{font-size:13px;font-weight:500;flex:1}
-    .line-tag{font-family:var(--mono);font-size:11px;color:var(--text3);background:var(--bg2);padding:2px 7px;border-radius:4px;border:1px solid var(--border)}
-    .arrow{color:var(--text3);font-size:13px;transition:transform .18s;flex-shrink:0}
-    .arrow.open{transform:rotate(90deg)}
-    .card-body{border-top:1px solid var(--border);padding:16px;background:var(--bg);display:none;transition:background .2s,border-color .2s}
-    .card-body.open{display:block}
-    .explanation{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:14px}
-    .code-duo{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-    .code-box{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;transition:background .2s,border-color .2s}
-    .code-box-head{padding:7px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg2);transition:background .2s,border-color .2s}
-    .code-tag{font-family:var(--mono);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
-    .ct-bad{color:var(--red)} .ct-good{color:var(--teal)}
-    .code-box pre{padding:12px;font-family:var(--mono);font-size:12px;line-height:1.75;white-space:pre-wrap;word-break:break-word;color:var(--text2)}
-    .copy-btn{font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:4px;border:1px solid var(--teal-border);background:var(--teal-light);color:var(--teal);cursor:pointer;transition:all .12s}
-    .copy-btn:hover{opacity:.8}
-    .copy-btn.done{color:var(--green);border-color:var(--grn-border);background:var(--grn-bg)}
-    .fix-head{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:8px}
-    .fix-steps{list-style:none;display:flex;flex-direction:column;gap:7px}
-    .fix-steps li{display:flex;gap:10px;font-size:13px;color:var(--text2);align-items:flex-start}
-    .step-n{font-family:var(--mono);font-size:10px;min-width:20px;height:20px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--text3);flex-shrink:0;margin-top:1px}
-    .no-issues{background:var(--surface);border:1px solid var(--grn-border);border-radius:var(--radius);padding:40px;text-align:center;animation:slideUp .25s ease;box-shadow:var(--shadow)}
-    .ni-icon{font-size:36px;display:block;margin-bottom:12px}
-    .no-issues h3{color:var(--green);font-size:16px;font-weight:700;margin-bottom:6px;letter-spacing:-.02em}
-    .no-issues p{color:var(--text3);font-size:13px}
-
-    /* HISTORY PANEL */
-    .history-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:299;opacity:0;pointer-events:none;transition:opacity .2s}
-    .history-overlay.open{opacity:1;pointer-events:all}
-    .history-panel{position:fixed;top:0;right:0;width:360px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:300;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s cubic-bezier(.4,0,.2,1);box-shadow:-8px 0 32px rgba(0,0,0,0.15)}
-    .history-panel.open{transform:translateX(0)}
-    .history-header{height:56px;padding:0 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--bg2)}
-    .history-title{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--text)}
-    .history-close{width:28px;height:28px;border-radius:5px;border:1px solid var(--border);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:16px;transition:all .12s}
-    .history-close:hover{background:var(--border);color:var(--text)}
-    .history-list{flex:1;overflow-y:auto;padding:12px}
-    .history-list::-webkit-scrollbar{width:3px}
-    .history-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-    .history-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;color:var(--text3);text-align:center;padding:40px}
-    .history-empty span{font-size:32px}
-    .history-empty p{font-size:13px;line-height:1.6;max-width:180px}
-    .history-item{background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:all .15s;position:relative}
-    .history-item:hover{border-color:var(--border2);box-shadow:var(--shadow)}
-    .history-item:hover .restore-hint{opacity:1}
-    .hi-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-    .hi-lang{font-family:var(--mono);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:4px;background:var(--surface);border:1px solid var(--border);color:var(--text2)}
-    .hi-time{font-family:var(--mono);font-size:10px;color:var(--text3)}
-    .hi-risk{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-    .hi-verdict{font-size:13px;font-weight:600;letter-spacing:-.01em}
-    .hi-score{font-family:var(--mono);font-size:11px;color:var(--text3)}
-    .hi-counts{display:flex;gap:6px;flex-wrap:wrap}
-    .hi-pill{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:4px;border:1px solid}
-    .hi-code{font-family:var(--mono);font-size:11px;color:var(--text3);background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:6px 8px;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .restore-hint{display:block;font-size:10px;font-family:var(--mono);color:var(--accent);margin-top:8px;text-align:right;opacity:0;transition:opacity .15s}    .history-footer{padding:12px;border-top:1px solid var(--border);flex-shrink:0}
-    .clear-history-btn{width:100%;padding:8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text3);font-family:var(--mono);font-size:11px;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.05em}
-    .clear-history-btn:hover{background:var(--red-bg);color:var(--red);border-color:var(--red-border)}
-
-      .hi-delete {
-    width: 20px; height: 20px;
-    border-radius: 4px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text3);
-    font-size: 11px;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: all .12s;
-    margin-left: auto;
-    flex-shrink: 0;
-  }
-  .hi-delete:hover { background: var(--red-bg); color: var(--red); border-color: var(--red-border); }
-
-  .examples-bar {
-  padding: 10px 16px;
+/* ── TOPBAR ─────────────────────────────────────────── */
+.topbar {
+  height: 52px;
+  background: var(--panel);
   border-bottom: 1px solid var(--border);
-  background: var(--bg2);
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 0 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
   flex-shrink: 0;
 }
 
-.examples-label {
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-shield {
+  width: 28px; height: 28px;
+  flex-shrink: 0;
+}
+
+.brand-text {
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -.02em;
+}
+.brand-text .hi { color: var(--green); }
+
+.brand-sub {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text3);
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  margin-left: 4px;
+  border: 1px solid var(--border2);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.topbar-right { display: flex; align-items: center; gap: 8px; }
+
+.status-dot {
+  display: flex; align-items: center; gap: 6px;
   font-family: var(--mono);
   font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: .07em;
-  color: var(--text3);
-  white-space: nowrap;
-}
-
-.examples-pills {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.ex-btn {
-  font-family: var(--mono);
-  font-size: 11px;
-  padding: 4px 10px;
-  border-radius: 99px;
+  color: var(--text2);
+  letter-spacing: .05em;
+  background: var(--panel2);
   border: 1px solid var(--border);
-  background: var(--surface);
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+.status-dot::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  box-shadow: 0 0 6px var(--green);
+  animation: blink 2s ease-in-out infinite;
+}
+
+.tb-btn {
+  width: 32px; height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel2);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  transition: all .15s;
+  position: relative;
+  color: var(--text2);
+}
+.tb-btn:hover { border-color: var(--border2); background: var(--border); color: var(--text); }
+.tb-btn.active { border-color: var(--amber-bd); background: var(--amber-dim); }
+
+.hist-badge {
+  position: absolute; top: -5px; right: -5px;
+  background: var(--amber);
+  color: #000;
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 700;
+  border-radius: 99px;
+  padding: 1px 4px;
+  min-width: 14px;
+  text-align: center;
+  display: none;
+}
+
+/* ── LAYOUT ─────────────────────────────────────────── */
+.shell {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  flex: 1;
+  min-height: calc(100vh - 52px - 44px);
+  overflow: hidden;
+}
+
+/* ── LEFT PANE ──────────────────────────────────────── */
+.left-pane {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  background: var(--bg2);
+}
+
+.pane-header {
+  height: 38px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  flex-shrink: 0;
+}
+
+.pane-title {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--text3);
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+.lang-tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 2px;
+}
+.lang-btn {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border: none;
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all .12s;
+  letter-spacing: .04em;
+}
+.lang-btn.active {
+  background: var(--green);
+  color: #000;
+}
+.lang-btn:hover:not(.active) { color: var(--text2); }
+
+/* Example chips */
+.examples-strip {
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+.ex-label {
+  font-family: var(--mono);
+  font-size: 8px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  white-space: nowrap;
+  font-weight: 600;
+}
+.ex-chips { display: flex; gap: 5px; flex-wrap: wrap; }
+.ex-chip {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 3px;
+  border: 1px solid var(--border2);
+  background: var(--panel);
   color: var(--text2);
   cursor: pointer;
-  transition: all .15s;
+  transition: all .12s;
+  letter-spacing: .03em;
   white-space: nowrap;
 }
-
-.ex-btn:hover {
-  background: var(--accent);
-  color: #fff;
-  border-color: var(--accent);
+.ex-chip:hover {
+  border-color: var(--green-bd);
+  color: var(--green);
+  background: var(--green-dim);
+  box-shadow: 0 0 8px rgba(57,211,83,0.1);
 }
 
-    /* FOOTER */
-    footer{height:48px;border-top:1px solid var(--border);padding:0 28px;display:flex;align-items:center;justify-content:space-between;background:var(--surface);font-size:12px;color:var(--text3);flex-shrink:0;transition:background .2s,border-color .2s}
-    footer strong{color:var(--text2);font-weight:500}
-    footer a{color:var(--text3);text-decoration:none}
-    footer a:hover{color:var(--text)}
+/* Code editor */
+.editor-wrap {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
 
-    @keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes spin{to{transform:rotate(360deg)}}
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+/* Line numbers feel */
+.editor-wrap::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 44px;
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  z-index: 1;
+  pointer-events: none;
+}
 
-    @media(max-width:768px){.workspace{grid-template-columns:1fr}.code-duo{grid-template-columns:1fr}.history-panel{width:100%}}
-  </style>
+textarea#codeInput {
+  flex: 1;
+  width: 100%;
+  background: transparent;
+  color: var(--text);
+  border: none;
+  outline: none;
+  resize: none;
+  padding: 14px 16px 14px 60px;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.85;
+  caret-color: var(--green);
+  min-height: 300px;
+  position: relative;
+  z-index: 2;
+}
+textarea#codeInput::placeholder { color: var(--text3); }
+
+.editor-footer {
+  height: 44px;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  flex-shrink: 0;
+}
+
+.meta-info {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: .03em;
+}
+
+.btn-group { display: flex; gap: 8px; }
+
+.btn-clear {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 4px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all .12s;
+  letter-spacing: .03em;
+}
+.btn-clear:hover { border-color: var(--red-bd); color: var(--red); background: var(--red-dim); }
+
+.btn-scan {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 18px;
+  border-radius: 4px;
+  border: 1px solid var(--green-bd);
+  background: var(--green-dim);
+  color: var(--green);
+  cursor: pointer;
+  transition: all .15s;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+}
+.btn-scan::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(57,211,83,0.06), transparent);
+  transform: translateX(-100%);
+  transition: transform .4s;
+}
+.btn-scan:hover::before { transform: translateX(100%); }
+.btn-scan:hover {
+  background: var(--green);
+  color: #000;
+  box-shadow: 0 0 20px rgba(57,211,83,0.25);
+}
+.btn-scan:disabled {
+  opacity: .4; cursor: not-allowed;
+  background: transparent;
+  color: var(--text3);
+  border-color: var(--border);
+  box-shadow: none;
+}
+
+/* ── RIGHT PANE ─────────────────────────────────────── */
+.right-pane {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.results-header {
+  height: 38px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  flex-shrink: 0;
+}
+
+.result-count {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: .05em;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 2px 8px;
+  border-radius: 3px;
+}
+
+.results-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+}
+.results-body::-webkit-scrollbar { width: 3px; }
+.results-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* Empty / loading */
+.empty-state {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: var(--text3);
+  text-align: center;
+  padding: 40px;
+}
+.empty-icon {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+  border: 1px solid var(--border);
+  padding: 10px 16px;
+  border-radius: 4px;
+  letter-spacing: .05em;
+  background: var(--panel);
+}
+.empty-state p {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+  line-height: 1.8;
+}
+
+.loading-state {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+.scan-bar-wrap {
+  width: 200px;
+  height: 2px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.scan-bar {
+  height: 100%;
+  background: var(--green);
+  border-radius: 2px;
+  box-shadow: 0 0 8px var(--green);
+  animation: scanAnim 1.2s ease-in-out infinite;
+}
+.scan-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--green);
+  letter-spacing: .1em;
+  animation: textFlicker 1.2s ease-in-out infinite;
+}
+
+/* ── RISK SUMMARY ───────────────────────────────────── */
+.risk-block {
+  background: var(--panel);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 0;
+  margin-bottom: 12px;
+  overflow: hidden;
+  animation: fadeUp .3s ease both;
+}
+
+.risk-top {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.risk-label {
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--text3);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.risk-verdict {
+  font-family: var(--mono);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  line-height: 1;
+}
+
+.risk-score {
+  font-family: var(--mono);
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1;
+  text-align: right;
+}
+.risk-score-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text3);
+  letter-spacing: .1em;
+  text-align: right;
+  margin-top: 2px;
+}
+
+.risk-bar-track {
+  height: 3px;
+  background: var(--bg);
+  margin: 0 18px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.risk-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  width: 0;
+  transition: width 1.2s cubic-bezier(.4,0,.2,1);
+}
+
+.sev-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  margin-top: 0;
+}
+
+.sev-cell {
+  padding: 12px 0;
+  text-align: center;
+  border-right: 1px solid var(--border);
+  border-top: 1px solid var(--border);
+  position: relative;
+}
+.sev-cell:last-child { border-right: none; }
+
+.sev-num {
+  font-family: var(--mono);
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.sev-lbl {
+  font-family: var(--mono);
+  font-size: 8px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  font-weight: 600;
+}
+
+/* ── ISSUE CARDS ────────────────────────────────────── */
+.issue-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  margin-bottom: 6px;
+  overflow: hidden;
+  animation: fadeUp .25s ease both;
+  transition: border-color .15s, box-shadow .15s;
+  border-left: 3px solid transparent;
+}
+.issue-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+
+.ic-critical { border-left-color: var(--red); }
+.ic-high     { border-left-color: var(--orange); }
+.ic-medium   { border-left-color: var(--blue); }
+.ic-low      { border-left-color: var(--text3); }
+
+.card-head {
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+.card-head:hover { background: rgba(255,255,255,0.015); }
+
+.sev-badge {
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  flex-shrink: 0;
+  border: 1px solid;
+}
+.sb-critical { background: var(--red-dim);  color: var(--red);    border-color: var(--red-bd); }
+.sb-high     { background: var(--org-dim);  color: var(--orange); border-color: var(--org-bd); }
+.sb-medium   { background: var(--blu-dim);  color: var(--blue);   border-color: var(--blu-bd); }
+.sb-low      { background: var(--panel2);   color: var(--text3);  border-color: var(--border2); }
+
+.card-title {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  flex: 1;
+}
+
+.line-badge {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text3);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 2px 7px;
+  border-radius: 3px;
+  letter-spacing: .03em;
+}
+
+.card-arrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text3);
+  transition: transform .15s, color .15s;
+  flex-shrink: 0;
+}
+.card-arrow.open { transform: rotate(90deg); color: var(--green); }
+
+.card-body {
+  border-top: 1px solid var(--border);
+  padding: 14px;
+  background: var(--bg2);
+  display: none;
+}
+.card-body.open { display: block; animation: fadeIn .15s ease; }
+
+.explain {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.75;
+  margin-bottom: 14px;
+  font-family: var(--sans);
+  border-left: 2px solid var(--border2);
+  padding-left: 12px;
+}
+
+.code-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.code-block {
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.code-block-head {
+  padding: 5px 10px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.code-lbl {
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+.lbl-bad  { color: var(--red); }
+.lbl-good { color: var(--green); }
+
+.code-block pre {
+  padding: 12px;
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--text2);
+  background: var(--bg);
+}
+
+.copy-btn {
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 3px;
+  border: 1px solid var(--green-bd);
+  background: transparent;
+  color: var(--green);
+  cursor: pointer;
+  transition: all .12s;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.copy-btn:hover { background: var(--green); color: #000; }
+.copy-btn.done  { border-color: var(--amber-bd); color: var(--amber); }
+
+.steps-label {
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .15em;
+  margin-bottom: 8px;
+}
+.steps-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.steps-list li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+.step-num {
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  background: var(--green-dim);
+  border: 1px solid var(--green-bd);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--green);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* Clean result */
+.clean-state {
+  background: var(--panel);
+  border: 1px solid var(--green-bd);
+  border-radius: 6px;
+  padding: 40px;
+  text-align: center;
+  animation: fadeUp .3s ease;
+  box-shadow: 0 0 40px rgba(57,211,83,0.05);
+}
+.clean-icon { font-size: 32px; display: block; margin-bottom: 12px; }
+.clean-state h3 {
+  font-family: var(--mono);
+  font-size: 16px;
+  color: var(--green);
+  margin-bottom: 6px;
+  letter-spacing: -.02em;
+}
+.clean-state p { font-family: var(--mono); font-size: 11px; color: var(--text3); }
+
+/* ── HISTORY PANEL ──────────────────────────────────── */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(6px);
+  z-index: 299;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s;
+}
+.overlay.open { opacity: 1; pointer-events: all; }
+
+.history-panel {
+  position: fixed; top: 0; right: 0;
+  width: 360px; height: 100vh;
+  background: var(--panel);
+  border-left: 1px solid var(--border);
+  z-index: 300;
+  display: flex; flex-direction: column;
+  transform: translateX(100%);
+  transition: transform .25s cubic-bezier(.4,0,.2,1);
+  box-shadow: -20px 0 60px rgba(0,0,0,0.6);
+}
+.history-panel.open { transform: translateX(0); }
+
+.hist-header {
+  height: 52px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+  background: var(--bg);
+}
+.hist-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text2);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.hist-close {
+  width: 26px; height: 26px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  font-size: 12px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .12s;
+  font-family: var(--mono);
+}
+.hist-close:hover { border-color: var(--red-bd); color: var(--red); background: var(--red-dim); }
+
+.hist-list { flex: 1; overflow-y: auto; padding: 12px; }
+.hist-list::-webkit-scrollbar { width: 2px; }
+.hist-list::-webkit-scrollbar-thumb { background: var(--border2); }
+
+.hist-empty {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; height: 100%;
+  gap: 12px; color: var(--text3); text-align: center; padding: 40px;
+}
+.hist-empty p { font-family: var(--mono); font-size: 11px; line-height: 1.7; }
+
+.hist-item {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 12px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: all .15s;
+  position: relative;
+}
+.hist-item:hover { border-color: var(--border-hi); transform: translateX(-2px); }
+.hist-item:hover .restore-hint { opacity: 1; }
+
+.hi-top { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.hi-lang {
+  font-family: var(--mono); font-size: 9px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .08em;
+  padding: 2px 7px; border-radius: 3px;
+  background: var(--panel); border: 1px solid var(--border); color: var(--text2);
+}
+.hi-time { font-family: var(--mono); font-size: 9px; color: var(--text3); margin-left: auto; }
+.hi-del {
+  width: 18px; height: 18px; border-radius: 3px;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--text3); font-size: 9px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .12s; font-family: var(--mono);
+}
+.hi-del:hover { border-color: var(--red-bd); color: var(--red); background: var(--red-dim); }
+
+.hi-verdict { font-family: var(--mono); font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+.hi-pills { display: flex; gap: 5px; flex-wrap: wrap; }
+.hi-pill {
+  font-family: var(--mono); font-size: 8px; font-weight: 700;
+  padding: 2px 7px; border-radius: 3px; border: 1px solid;
+}
+.hi-preview {
+  font-family: var(--mono); font-size: 10px; color: var(--text3);
+  margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 3px;
+  padding: 5px 8px;
+}
+.restore-hint {
+  font-family: var(--mono); font-size: 8px; color: var(--amber);
+  text-transform: uppercase; letter-spacing: .08em;
+  margin-top: 8px; text-align: right; opacity: 0; transition: opacity .15s;
+}
+
+.hist-footer { padding: 12px; border-top: 1px solid var(--border); flex-shrink: 0; }
+.clear-btn {
+  width: 100%; padding: 8px;
+  border-radius: 4px; border: 1px solid var(--border);
+  background: transparent; color: var(--text3);
+  font-family: var(--mono); font-size: 9px; font-weight: 700;
+  cursor: pointer; transition: all .15s;
+  text-transform: uppercase; letter-spacing: .1em;
+}
+.clear-btn:hover { border-color: var(--red-bd); color: var(--red); background: var(--red-dim); }
+
+/* ── STATUS BAR ─────────────────────────────────────── */
+.statusbar {
+  height: 44px;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+  flex-shrink: 0;
+}
+.sb-left {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  display: flex; align-items: center; gap: 16px;
+}
+.sb-left strong { color: var(--text2); font-weight: 500; }
+.sb-right {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  display: flex; align-items: center; gap: 16px;
+}
+.sb-right a { color: var(--text3); text-decoration: none; transition: color .15s; }
+.sb-right a:hover { color: var(--amber); }
+.sb-sep { color: var(--border2); }
+
+/* ── ANIMATIONS ─────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes blink {
+  0%,100% { opacity: 1; }
+  50%      { opacity: .3; }
+}
+@keyframes scanAnim {
+  0%   { transform: translateX(-100%); }
+  50%  { transform: translateX(0); }
+  100% { transform: translateX(100%); }
+}
+@keyframes textFlicker {
+  0%,100% { opacity: 1; }
+  45%,55% { opacity: .5; }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media(max-width:768px){
+  .shell { grid-template-columns: 1fr; }
+  .code-pair { grid-template-columns: 1fr; }
+  .history-panel { width: 100%; }
+  .sev-grid { grid-template-columns: repeat(2,1fr); }
+}
+</style>
 </head>
 <body>
 
-<header>
+<!-- TOPBAR -->
+<div class="topbar">
   <div class="brand">
-    <div class="shield-logo">
-      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="sg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#fbbf24"/>
-            <stop offset="100%" stop-color="#d97706"/>
-          </linearGradient>
-        </defs>
-        <path d="M16 2L4 7V15C4 21.6 9.4 27.7 16 30C22.6 27.7 28 21.6 28 15V7L16 2Z" fill="url(#sg)"/>
-        <path d="M11 16L14.5 19.5L21 13" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </div>
-    <span class="brand-name">code<span class="cg-accent">guard</span></span>
+    <svg class="brand-shield" viewBox="0 0 28 28" fill="none">
+      <defs>
+        <linearGradient id="sg" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#4ade80"/>
+          <stop offset="100%" stop-color="#22c55e"/>
+        </linearGradient>
+      </defs>
+      <path d="M14 1.5L3 6v8c0 5.8 4.7 11.2 11 13.5C20.3 25.2 25 19.8 25 14V6L14 1.5Z" fill="url(#sg)" opacity=".15"/>
+      <path d="M14 1.5L3 6v8c0 5.8 4.7 11.2 11 13.5C20.3 25.2 25 19.8 25 14V6L14 1.5Z" stroke="#39d353" stroke-width="1.5" fill="none"/>
+      <path d="M9.5 14l3.2 3.2L18.5 11" stroke="#39d353" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="brand-text">code<span class="hi">guard</span></span>
+    <span class="brand-sub">AI Security Scanner</span>
   </div>
-  <div class="header-right">
-    <span class="chip live">FOSS Hack 2026</span>
-    <span class="chip">v1.0</span>
-    <button class="icon-btn" id="historyBtn" onclick="toggleHistory()" title="History">
-      🕐
-      <span class="history-count" id="historyCount"></span>
+  <div class="topbar-right">
+    <span class="status-dot">SYSTEM ONLINE</span>
+    <span style="font-family:var(--mono);font-size:10px;color:var(--text3);background:var(--panel2);border:1px solid var(--border);padding:4px 10px;border-radius:4px;">v1.0</span>
+    <button class="tb-btn" id="historyBtn" onclick="toggleHistory()" title="History">
+      ⏱
+      <span class="hist-badge" id="historyCount"></span>
     </button>
-    <button class="icon-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
   </div>
-</header>
+</div>
 
-<div class="workspace">
-  <div class="left-panel">
-    <div class="pane-bar">
-      <span class="pane-label">Input</span>
-      <div class="lang-pill">
+<!-- MAIN SHELL -->
+<div class="shell">
+
+  <!-- LEFT: EDITOR -->
+  <div class="left-pane">
+    <div class="pane-header">
+      <span class="pane-title">// source input</span>
+      <div class="lang-tabs">
         <button class="lang-btn active" onclick="setLang('python',this)">Python</button>
         <button class="lang-btn" onclick="setLang('javascript',this)">JS</button>
         <button class="lang-btn" onclick="setLang('general',this)">General</button>
       </div>
     </div>
-    <!-- Example Library -->
-    <div class="examples-bar">
-      <span class="examples-label">Try an example:</span>
-      <div class="examples-pills">
-        <button class="ex-btn" onclick="loadExample('sqli')">💉 SQL Injection</button>
-        <button class="ex-btn" onclick="loadExample('secret')">🔑 Hardcoded Secret</button>
-        <button class="ex-btn" onclick="loadExample('xss')">⚠️ XSS Attack</button>
-        <button class="ex-btn" onclick="loadExample('loop')">♾️ Infinite Loop</button>
-        <button class="ex-btn" onclick="loadExample('mixed')">🔥 Mixed Bugs</button>
+
+    <div class="examples-strip">
+      <span class="ex-label">load example →</span>
+      <div class="ex-chips">
+        <button class="ex-chip" onclick="loadExample('sqli')">SQL Inject</button>
+        <button class="ex-chip" onclick="loadExample('secret')">Hardcoded Secret</button>
+        <button class="ex-chip" onclick="loadExample('xss')">XSS Attack</button>
+        <button class="ex-chip" onclick="loadExample('loop')">Infinite Loop</button>
+        <button class="ex-chip" onclick="loadExample('mixed')">Mixed Bugs</button>
       </div>
     </div>
 
-    <textarea id="codeInput" spellcheck="false"
-      placeholder="# Paste your code here and click Analyze →"
-      oninput="updateMeta()"></textarea>
-    <div class="editor-foot">
-      <span class="meta" id="metaInfo">Ready</span>
-      <div class="btn-row">
-        <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
-        <button class="btn btn-primary" id="analyzeBtn" onclick="analyzeCode()">Analyze →</button>
+    <div class="editor-wrap">
+      <textarea id="codeInput" spellcheck="false"
+        placeholder="# paste your code here..."
+        oninput="updateMeta()"></textarea>
+    </div>
+
+    <div class="editor-footer">
+      <span class="meta-info" id="metaInfo">ready</span>
+      <div class="btn-group">
+        <button class="btn-clear" onclick="clearAll()">clear</button>
+        <button class="btn-scan" id="analyzeBtn" onclick="analyzeCode()">▶ RUN SCAN</button>
       </div>
     </div>
   </div>
 
-  <div class="right-panel">
-    <div class="pane-bar">
-      <span class="pane-label">Results</span>
-      <span class="chip" id="resultChip">—</span>
+  <!-- RIGHT: RESULTS -->
+  <div class="right-pane">
+    <div class="results-header">
+      <span class="pane-title">// scan results</span>
+      <span class="result-count" id="resultChip">no scan</span>
     </div>
-    <div class="results-scroll" id="results">
+    <div class="results-body" id="results">
       <div class="empty-state">
-        <div class="empty-glyph">🔍</div>
-        <h3>Nothing to show yet</h3>
-        <p>Paste your code on the left and hit Analyze.</p>
+        <div class="empty-icon">$ codeguard --scan &lt;file&gt;</div>
+        <p>paste your code on the left<br>and run a scan to detect issues</p>
       </div>
     </div>
   </div>
 </div>
 
-<!-- History -->
-<div class="history-overlay" id="historyOverlay" onclick="closeHistory()"></div>
+<!-- HISTORY OVERLAY -->
+<div class="overlay" id="overlay" onclick="closeHistory()"></div>
 <div class="history-panel" id="historyPanel">
-  <div class="history-header">
-    <span class="history-title">📋 Analysis History</span>
-    <button class="history-close" onclick="closeHistory()">✕</button>
+  <div class="hist-header">
+    <span class="hist-title">// scan history</span>
+    <button class="hist-close" onclick="closeHistory()">✕</button>
   </div>
-  <div class="history-list" id="historyList"></div>
-  <div class="history-footer">
-    <button class="clear-history-btn" onclick="clearHistory()">Clear all history</button>
+  <div class="hist-list" id="historyList"></div>
+  <div class="hist-footer">
+    <button class="clear-btn" onclick="clearHistory()">clear all history</button>
   </div>
 </div>
 
-<footer>
-  <span>Built by <strong>Chennuru Pushpanjali</strong> &nbsp;·&nbsp; Open Source &nbsp;·&nbsp; Python + Flask</span>
-  <span>
+<!-- STATUS BAR -->
+<div class="statusbar">
+  <div class="sb-left">
+    <span>Built by <strong>Chennuru Pushpanjali</strong></span>
+    <span class="sb-sep">|</span>
+    <span>Python · Flask · AST · Open Source</span>
+  </div>
+  <div class="sb-right">
     <a href="https://fossunited.org/fosshack" target="_blank">FOSS Hack 2026</a>
-    &nbsp;·&nbsp;
-    <a href="https://github.com/pushpanjalich1985/Codeguard-ai.git" target="_blank">GitHub ↗</a>
-  </span>
-</footer>
+    <span class="sb-sep">|</span>
+    <a href="https://github.com/pushpanjalich1985/Codeguard-ai.git" target="_blank">github ↗</a>
+  </div>
+</div>
 
 <script>
   let currentLang = 'python';
   let lastIssues = [];
 
-  // THEME
-  function toggleTheme() {
-    const html = document.documentElement;
-    const isDark = html.getAttribute('data-theme') === 'dark';
-    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
-    document.getElementById('themeToggle').textContent = isDark ? '🌙' : '☀️';
-    localStorage.setItem('cg-theme', isDark ? 'light' : 'dark');
-  }
-  const savedTheme = localStorage.getItem('cg-theme');
-  if (savedTheme) {
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    document.getElementById('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
-  }
-
-  // LANG
   function setLang(lang, btn) {
     currentLang = lang;
     document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
   }
 
-  // META
   function updateMeta() {
     const v = document.getElementById('codeInput').value;
-    if (!v) { document.getElementById('metaInfo').textContent = 'Ready'; return; }
+    if (!v) { document.getElementById('metaInfo').textContent = 'ready'; return; }
     const lines = v.split('\n').length;
-    document.getElementById('metaInfo').textContent = `${lines} ln · ${v.length} ch`;
+    document.getElementById('metaInfo').textContent = `${lines} lines · ${v.length} chars`;
   }
 
   function clearAll() {
     document.getElementById('codeInput').value = '';
     updateMeta();
-    document.getElementById('resultChip').textContent = '—';
+    document.getElementById('resultChip').textContent = 'no scan';
     document.getElementById('results').innerHTML = `
       <div class="empty-state">
-        <div class="empty-glyph">🔍</div>
-        <h3>Nothing to show yet</h3>
-        <p>Paste your code on the left and hit Analyze.</p>
+        <div class="empty-icon">$ codeguard --scan &lt;file&gt;</div>
+        <p>paste your code on the left<br>and run a scan to detect issues</p>
       </div>`;
   }
 
@@ -409,10 +1124,10 @@
     const history = getHistory();
     const risk = getRisk(issues);
     const counts = {
-      critical:issues.filter(i=>i.severity==='critical').length,
-      high:    issues.filter(i=>i.severity==='high').length,
-      medium:  issues.filter(i=>i.severity==='medium').length,
-      low:     issues.filter(i=>i.severity==='low').length,
+      critical: issues.filter(i=>i.severity==='critical').length,
+      high:     issues.filter(i=>i.severity==='high').length,
+      medium:   issues.filter(i=>i.severity==='medium').length,
+      low:      issues.filter(i=>i.severity==='low').length,
     };
     const entry = {
       id: Date.now(), code, language, issues, counts,
@@ -440,7 +1155,7 @@
     if (isOpen) closeHistory();
     else {
       panel.classList.add('open');
-      document.getElementById('historyOverlay').classList.add('open');
+      document.getElementById('overlay').classList.add('open');
       document.getElementById('historyBtn').classList.add('active');
       renderHistoryList();
     }
@@ -448,7 +1163,7 @@
 
   function closeHistory() {
     document.getElementById('historyPanel').classList.remove('open');
-    document.getElementById('historyOverlay').classList.remove('open');
+    document.getElementById('overlay').classList.remove('open');
     document.getElementById('historyBtn').classList.remove('active');
   }
 
@@ -456,32 +1171,29 @@
     const history = getHistory();
     const listEl = document.getElementById('historyList');
     if (history.length === 0) {
-      listEl.innerHTML = `<div class="history-empty"><span>📭</span><p>No analyses yet. Run your first scan to see history here.</p></div>`;
+      listEl.innerHTML = `<div class="hist-empty"><p>no scan history yet.<br>run your first scan<br>to see results here.</p></div>`;
       return;
     }
     listEl.innerHTML = history.map(entry => {
       const c = entry.counts;
       let pills = '';
-      if (c.critical) pills += `<span class="hi-pill" style="background:var(--red-bg);color:var(--red);border-color:var(--red-border)">${c.critical} critical</span>`;
-      if (c.high)     pills += `<span class="hi-pill" style="background:var(--org-bg);color:var(--orange);border-color:var(--org-border)">${c.high} high</span>`;
-      if (c.medium)   pills += `<span class="hi-pill" style="background:var(--blu-bg);color:var(--blue);border-color:var(--blu-border)">${c.medium} med</span>`;
-      if (c.low)      pills += `<span class="hi-pill" style="background:var(--grn-bg);color:var(--green);border-color:var(--grn-border)">${c.low} low</span>`;
-      if (!pills)     pills  = `<span class="hi-pill" style="background:var(--grn-bg);color:var(--green);border-color:var(--grn-border)">✓ clean</span>`;
+      if (c.critical) pills += `<span class="hi-pill" style="background:var(--red-dim);color:var(--red);border-color:var(--red-bd)">${c.critical} crit</span>`;
+      if (c.high)     pills += `<span class="hi-pill" style="background:var(--org-dim);color:var(--orange);border-color:var(--org-bd)">${c.high} high</span>`;
+      if (c.medium)   pills += `<span class="hi-pill" style="background:var(--blu-dim);color:var(--blue);border-color:var(--blu-bd)">${c.medium} med</span>`;
+      if (c.low)      pills += `<span class="hi-pill" style="background:var(--panel2);color:var(--text3);border-color:var(--border2)">${c.low} low</span>`;
+      if (!pills)     pills  = `<span class="hi-pill" style="background:var(--green-dim);color:var(--green);border-color:var(--green-bd)">✓ clean</span>`;
       return `
-        <div class="history-item" id="hi-${entry.id}">
+        <div class="hist-item" id="hi-${entry.id}">
           <div class="hi-top">
             <span class="hi-lang">${entry.language}</span>
             <span class="hi-time">${entry.timestamp}</span>
-            <button class="hi-delete" onclick="deleteEntry(${entry.id}, event)" title="Delete">✕</button>
+            <button class="hi-del" onclick="deleteEntry(${entry.id}, event)" title="Delete">✕</button>
           </div>
-          <div onclick="restoreEntry(${entry.id})" style="cursor:pointer">
-            <div class="hi-risk">
-              <span class="hi-verdict" style="color:${entry.risk.color}">${entry.risk.verdict}</span>
-              <span class="hi-score">${entry.risk.score}/100</span>
-            </div>
-            <div class="hi-counts">${pills}</div>
-            <div class="hi-code">${esc(entry.preview)}</div>
-            <span class="restore-hint">click to restore →</span>
+          <div onclick="restoreEntry(${entry.id})">
+            <div class="hi-verdict" style="color:${entry.risk.color}">${entry.risk.verdict} — ${entry.risk.score}/100</div>
+            <div class="hi-pills">${pills}</div>
+            <div class="hi-preview">${esc(entry.preview)}</div>
+            <span class="restore-hint">↩ restore scan</span>
           </div>
         </div>`;
     }).join('');
@@ -508,14 +1220,14 @@
     updateHistoryCount();
     renderHistoryList();
   }
-  function deleteEntry(id, event) {
-  event.stopPropagation();
-  const history = getHistory().filter(e => e.id !== id);
-  localStorage.setItem('cg-history', JSON.stringify(history));
-  updateHistoryCount();
-  renderHistoryList(); 
-  }
 
+  function deleteEntry(id, event) {
+    event.stopPropagation();
+    const history = getHistory().filter(e => e.id !== id);
+    localStorage.setItem('cg-history', JSON.stringify(history));
+    updateHistoryCount();
+    renderHistoryList();
+  }
 
   // RULES
   const rules = [
@@ -649,196 +1361,221 @@
 
   // RISK
   function getRisk(issues) {
-    const c=issues.filter(i=>i.severity==='critical').length;
-    const h=issues.filter(i=>i.severity==='high').length;
-    const score=Math.min(100,c*25+h*12+issues.length*4);
-    if(score>=75) return{score,verdict:'Critical Risk',color:'var(--red)',bg:'var(--red-bg)',border:'var(--red-border)'};
-    if(score>=50) return{score,verdict:'High Risk',color:'var(--orange)',bg:'var(--org-bg)',border:'var(--org-border)'};
-    if(score>=20) return{score,verdict:'Medium Risk',color:'var(--blue)',bg:'var(--blu-bg)',border:'var(--blu-border)'};
-    return{score,verdict:'Low Risk',color:'var(--green)',bg:'var(--grn-bg)',border:'var(--grn-border)'};
+    const c = issues.filter(i=>i.severity==='critical').length;
+    const h = issues.filter(i=>i.severity==='high').length;
+    const score = Math.min(100, c*25 + h*12 + issues.length*4);
+    if (score>=75) return {score, verdict:'CRITICAL RISK', color:'var(--red)',    barColor:'#ff4d4d'};
+    if (score>=50) return {score, verdict:'HIGH RISK',     color:'var(--orange)', barColor:'#ff8c42'};
+    if (score>=20) return {score, verdict:'MEDIUM RISK',   color:'var(--blue)',   barColor:'#58a6ff'};
+    return              {score, verdict:'LOW RISK',      color:'var(--green)',  barColor:'#39d353'};
   }
 
   // RENDER
   function renderResults(issues) {
     lastIssues = issues;
-    const div=document.getElementById('results');
-    document.getElementById('resultChip').textContent=
-      issues.length===0?'0 issues':`${issues.length} issue${issues.length!==1?'s':''}`;
+    const div = document.getElementById('results');
+    document.getElementById('resultChip').textContent =
+      issues.length === 0 ? '0 issues' : `${issues.length} issue${issues.length!==1?'s':''}`;
 
-    if(issues.length===0){
-      div.innerHTML=`<div class="no-issues"><span class="ni-icon">✅</span><h3>No Issues Found</h3><p>Your code passed all checks.</p></div>`;
+    if (issues.length === 0) {
+      div.innerHTML = `
+        <div class="clean-state">
+          <span class="clean-icon">✓</span>
+          <h3>NO ISSUES FOUND</h3>
+          <p>all checks passed. code looks clean.</p>
+        </div>`;
       return;
     }
 
-    const risk=getRisk(issues);
-    const counts={
-      critical:issues.filter(i=>i.severity==='critical').length,
-      high:issues.filter(i=>i.severity==='high').length,
-      medium:issues.filter(i=>i.severity==='medium').length,
-      low:issues.filter(i=>i.severity==='low').length,
+    const risk = getRisk(issues);
+    const counts = {
+      critical: issues.filter(i=>i.severity==='critical').length,
+      high:     issues.filter(i=>i.severity==='high').length,
+      medium:   issues.filter(i=>i.severity==='medium').length,
+      low:      issues.filter(i=>i.severity==='low').length,
     };
 
-    let html=`
-      <div class="risk-summary">
-        <div class="risk-row">
+    let html = `
+      <div class="risk-block">
+        <div class="risk-top">
           <div>
-            <div class="risk-eyebrow">Risk Assessment</div>
+            <div class="risk-label">// threat assessment</div>
             <div class="risk-verdict" style="color:${risk.color}">${risk.verdict}</div>
           </div>
-          <span class="risk-score-badge" style="background:${risk.bg};color:${risk.color};border-color:${risk.border}">${risk.score} / 100</span>
+          <div>
+            <div class="risk-score" style="color:${risk.color}">${risk.score}</div>
+            <div class="risk-score-label">/ 100</div>
+          </div>
         </div>
-        <div class="risk-bar-wrap"><div class="risk-bar" id="riskBar" style="background:${risk.color}"></div></div>
-        <div class="sev-row">
-          <div class="sev-box"><div class="sev-n" style="color:var(--red)">${counts.critical}</div><div class="sev-t">Critical</div></div>
-          <div class="sev-box"><div class="sev-n" style="color:var(--orange)">${counts.high}</div><div class="sev-t">High</div></div>
-          <div class="sev-box"><div class="sev-n" style="color:var(--blue)">${counts.medium}</div><div class="sev-t">Medium</div></div>
-          <div class="sev-box"><div class="sev-n" style="color:var(--green)">${counts.low}</div><div class="sev-t">Low</div></div>
+        <div class="risk-bar-track">
+          <div class="risk-bar-fill" id="riskBar" style="background:${risk.barColor}"></div>
+        </div>
+        <div class="sev-grid">
+          <div class="sev-cell">
+            <div class="sev-num" style="color:var(--red)">${counts.critical}</div>
+            <div class="sev-lbl">Critical</div>
+          </div>
+          <div class="sev-cell">
+            <div class="sev-num" style="color:var(--orange)">${counts.high}</div>
+            <div class="sev-lbl">High</div>
+          </div>
+          <div class="sev-cell">
+            <div class="sev-num" style="color:var(--blue)">${counts.medium}</div>
+            <div class="sev-lbl">Medium</div>
+          </div>
+          <div class="sev-cell">
+            <div class="sev-num" style="color:var(--text2)">${counts.low}</div>
+            <div class="sev-lbl">Low</div>
+          </div>
         </div>
       </div>`;
 
-    issues.forEach((issue,idx)=>{
-      const delay=(idx*0.04).toFixed(2);
-      const steps=issue.steps.map((s,i)=>`<li><span class="step-n">${i+1}</span><span>${s}</span></li>`).join('');
-      html+=`
-        <div class="issue-card" style="animation-delay:${delay}s">
+    issues.forEach((issue, idx) => {
+      const delay = (idx * 0.04).toFixed(2);
+      const steps = issue.steps.map((s,i) =>
+        `<li><span class="step-num">${i+1}</span><span>${s}</span></li>`
+      ).join('');
+      html += `
+        <div class="issue-card ic-${issue.severity}" style="animation-delay:${delay}s">
           <div class="card-head" onclick="toggleCard(this)">
-            <span class="sev-pip pip-${issue.severity}"></span>
-            <span class="sev-tag tag-${issue.severity}">${issue.severity}</span>
+            <span class="sev-badge sb-${issue.severity}">${issue.severity}</span>
             <span class="card-title">${issue.title}</span>
-            ${issue.line?`<span class="line-tag">L${issue.line}</span>`:''}
-            <span class="arrow">›</span>
+            ${issue.line ? `<span class="line-badge">L${issue.line}</span>` : ''}
+            <span class="card-arrow">›</span>
           </div>
           <div class="card-body">
-            <p class="explanation">${issue.explanation}</p>
-            <div class="code-duo">
-              <div class="code-box">
-                <div class="code-box-head"><span class="code-tag ct-bad">Before</span></div>
+            <p class="explain">${issue.explanation}</p>
+            <div class="code-pair">
+              <div class="code-block">
+                <div class="code-block-head">
+                  <span class="code-lbl lbl-bad">✗ before</span>
+                </div>
                 <pre>${esc(issue.badCode)}</pre>
               </div>
-              <div class="code-box">
-                <div class="code-box-head">
-                  <span class="code-tag ct-good">After</span>
+              <div class="code-block">
+                <div class="code-block-head">
+                  <span class="code-lbl lbl-good">✓ after</span>
                   <button class="copy-btn" onclick="copyFix(this,${JSON.stringify(issue.goodCode)})">copy</button>
                 </div>
                 <pre>${esc(issue.goodCode)}</pre>
               </div>
             </div>
-            <div class="fix-head">Steps to fix</div>
-            <ol class="fix-steps">${steps}</ol>
+            <div class="steps-label">// how to fix</div>
+            <ol class="steps-list">${steps}</ol>
           </div>
         </div>`;
     });
 
-    div.innerHTML=html;
-    requestAnimationFrame(()=>{
-      const bar=document.getElementById('riskBar');
-      if(bar) bar.style.width=risk.score+'%';
+    div.innerHTML = html;
+    requestAnimationFrame(() => {
+      const bar = document.getElementById('riskBar');
+      if (bar) bar.style.width = risk.score + '%';
     });
   }
 
-  function toggleCard(head){
-    const body=head.nextElementSibling;
-    const arrow=head.querySelector('.arrow');
+  function toggleCard(head) {
+    const body = head.nextElementSibling;
+    const arrow = head.querySelector('.card-arrow');
     body.classList.toggle('open');
     arrow.classList.toggle('open');
   }
 
-  function copyFix(btn,code){
-    navigator.clipboard.writeText(code).then(()=>{
-      btn.textContent='done ✓';btn.classList.add('done');
-      setTimeout(()=>{btn.textContent='copy';btn.classList.remove('done');},2000);
+  function copyFix(btn, code) {
+    navigator.clipboard.writeText(code).then(() => {
+      btn.textContent = '✓ done';
+      btn.classList.add('done');
+      setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('done'); }, 2000);
     });
   }
 
   function loadExample(type) {
-  const examples = {
-    sqli: {
-      lang: 'python',
-      code: `import sqlite3\n\ndef get_user(user_id):\n    conn = sqlite3.connect("users.db")\n    cursor = conn.cursor()\n    query = "SELECT * FROM users WHERE id = " + user_id\n    cursor.execute(query)\n    return cursor.fetchone()\n\nresult = get_user(input("Enter user ID: "))`
-    },
-    secret: {
-      lang: 'python',
-      code: `import requests\n\n# Application configuration\nDATABASE_HOST = "localhost"\nDATABASE_NAME = "myapp"\npassword = "admin123"\napi_key = "sk-abc123xyz789"\nsecret = "my_jwt_secret_key"\n\ndef connect():\n    return f"host={DATABASE_HOST} password={password}"`
-    },
-    xss: {
-      lang: 'javascript',
-      code: `// User profile page\nfunction loadProfile() {\n  const username = new URLSearchParams(window.location.search).get('user')\n  const query = "SELECT * FROM users WHERE name = '" + username + "'"\n  \n  document.getElementById('profile').innerHTML = userInput\n  document.getElementById('bio').innerHTML = userData.bio\n}`
-    },
-    loop: {
-      lang: 'python',
-      code: `import time\n\ndef monitor_server():\n    while True:\n        status = check_server()\n        log_status(status)\n        time.sleep(5)\n\ndef process_queue():\n    while True:\n        item = queue.get()\n        process(item)\n\nmonitor_server()`
-    },
-    mixed: {
-      lang: 'python',
-      code: `import os\nimport unused_lib\n\npassword = "supersecret123"\napi_key = "sk-prod-abc123"\n\ndef calculate(total, count):\n    result = eval(input("Enter formula: "))\n    average = total / count\n    return average\n\ndef login(username):\n    query = "SELECT * FROM users WHERE name = '" + username + "'"\n    cursor.execute(query)\n\nwhile True:\n    data = process()\n    print("data:", data)\n    print("result:", result)\n    print("user:", username)\n    print("token:", token)`
-    }
-  };
+    const examples = {
+      sqli: {
+        lang: 'python',
+        code: `import sqlite3\n\ndef get_user(user_id):\n    conn = sqlite3.connect("users.db")\n    cursor = conn.cursor()\n    query = "SELECT * FROM users WHERE id = " + user_id\n    cursor.execute(query)\n    return cursor.fetchone()\n\nresult = get_user(input("Enter user ID: "))`
+      },
+      secret: {
+        lang: 'python',
+        code: `import requests\n\n# Application configuration\nDATABASE_HOST = "localhost"\nDATABASE_NAME = "myapp"\npassword = "admin123"\napi_key = "sk-abc123xyz789"\nsecret = "my_jwt_secret_key"\n\ndef connect():\n    return f"host={DATABASE_HOST} password={password}"`
+      },
+      xss: {
+        lang: 'javascript',
+        code: `// User profile page\nfunction loadProfile() {\n  const username = new URLSearchParams(window.location.search).get('user')\n  const query = "SELECT * FROM users WHERE name = '" + username + "'"\n  \n  document.getElementById('profile').innerHTML = userInput\n  document.getElementById('bio').innerHTML = userData.bio\n}`
+      },
+      loop: {
+        lang: 'python',
+        code: `import time\n\ndef monitor_server():\n    while True:\n        status = check_server()\n        log_status(status)\n        time.sleep(5)\n\ndef process_queue():\n    while True:\n        item = queue.get()\n        process(item)\n\nmonitor_server()`
+      },
+      mixed: {
+        lang: 'python',
+        code: `import os\nimport unused_lib\n\npassword = "supersecret123"\napi_key = "sk-prod-abc123"\n\ndef calculate(total, count):\n    result = eval(input("Enter formula: "))\n    average = total / count\n    return average\n\ndef login(username):\n    query = "SELECT * FROM users WHERE name = '" + username + "'"\n    cursor.execute(query)\n\nwhile True:\n    data = process()\n    print("data:", data)\n    print("result:", result)\n    print("user:", username)\n    print("token:", token)`
+      }
+    };
 
-  const ex = examples[type];
-  if (!ex) return;
+    const ex = examples[type];
+    if (!ex) return;
+    currentLang = ex.lang;
+    document.querySelectorAll('.lang-btn').forEach(b => {
+      b.classList.toggle('active',
+        b.textContent.toLowerCase() === ex.lang ||
+        (ex.lang === 'javascript' && b.textContent === 'JS')
+      );
+    });
+    document.getElementById('codeInput').value = ex.code;
+    updateMeta();
+    analyzeCode();
+  }
 
-  // Set language
-  currentLang = ex.lang;
-  document.querySelectorAll('.lang-btn').forEach(b => {
-    b.classList.toggle('active',
-      b.textContent.toLowerCase() === ex.lang ||
-      (ex.lang  === 'javascript' && b.textContent === 'JS')
-    );
-  });
+  // API
+  const API_BASE = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
+    ? 'http://127.0.0.1:5000'
+    : window.location.origin;
 
-  // Load code
-  document.getElementById('codeInput').value = ex.code;
-  updateMeta();
+  function analyzeCode() {
+    const code = document.getElementById('codeInput').value.trim();
+    const btn  = document.getElementById('analyzeBtn');
+    const div  = document.getElementById('results');
 
-  // Auto analyze
-  analyzeCode();
-}
-
- const API_BASE = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
-  ? 'http://127.0.0.1:5000'
-  : window.location.origin;
-
-  // ANALYZE
-  function analyzeCode(){
-    const code=document.getElementById('codeInput').value.trim();
-    const btn=document.getElementById('analyzeBtn');
-    const div=document.getElementById('results');
-
-    if(!code){
-      div.innerHTML=`<div class="empty-state"><div class="empty-glyph">⚠️</div><h3>No code found</h3><p>Paste something first.</p></div>`;
+    if (!code) {
+      div.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠ no code provided</div><p>paste something first</p></div>`;
       return;
     }
 
-    btn.disabled=true; btn.textContent='Analyzing...';
-    document.getElementById('resultChip').textContent='—';
-    div.innerHTML=`<div class="loading-state"><div class="spinner"></div><span>Scanning for issues...</span></div>`;
+    btn.disabled = true;
+    btn.textContent = '⏳ SCANNING...';
+    document.getElementById('resultChip').textContent = '—';
+    div.innerHTML = `
+      <div class="loading-state">
+        <div class="scan-bar-wrap"><div class="scan-bar"></div></div>
+        <span class="scan-label">SCANNING FOR VULNERABILITIES...</span>
+      </div>`;
 
-      fetch(`${API_BASE}/analyze`, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({code,language:currentLang})
+    fetch(`${API_BASE}/analyze`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, language: currentLang })
     })
-    .then(r=>r.json())
-    .then(data=>{
-      if(data.issues&&data.issues.length>0){
+    .then(r => r.json())
+    .then(data => {
+      if (data.issues && data.issues.length > 0) {
         renderResults(data.issues);
-        saveToHistory(code,currentLang,data.issues);
+        saveToHistory(code, currentLang, data.issues);
       } else {
-        runFrontend(code,currentLang);
+        runFrontend(code, currentLang);
       }
     })
-    .catch(()=>runFrontend(code,currentLang))
-    .finally(()=>{btn.disabled=false;btn.textContent='Analyze →';});
+    .catch(() => runFrontend(code, currentLang))
+    .finally(() => { btn.disabled = false; btn.textContent = '▶ RUN SCAN'; });
   }
 
-  function runFrontend(code,language){
-    setTimeout(()=>{
-      const found=rules.filter(r=>
-        (r.languages.includes(language)||r.languages.includes('general'))&&r.detect(code)
+  function runFrontend(code, language) {
+    setTimeout(() => {
+      const found = rules.filter(r =>
+        (r.languages.includes(language) || r.languages.includes('general')) && r.detect(code)
       );
       renderResults(found);
-      saveToHistory(code,language,found);
-    },500);
+      saveToHistory(code, language, found);
+    }, 500);
   }
 
   // Init
