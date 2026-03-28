@@ -171,16 +171,17 @@ def check_logic(code):
     for i, line in enumerate(lines, 1):
         stripped = line.strip()
         if stripped.startswith("def ") and stripped.endswith(":"):
-            VOID_FUNCS = {"__init__", "__del__", "__str__", "__repr__", "__enter__", "__exit__", "setUp", "tearDown", "main"}
-        try:
-            func_name = stripped[4:stripped.index("(")].strip()
-        except ValueError:
-            continue
-        if func_name in VOID_FUNCS:
-            continue
-        func_lines = lines[i:i+20]
-        has_return = any("return" in l for l in func_lines)
-        if not has_return:
+            VOID_FUNCS = {"__init__", "__del__", "__str__", "__repr__",
+                          "__enter__", "__exit__", "setUp", "tearDown", "main"}
+            try:
+                func_name = stripped[4:stripped.index("(")].strip()
+            except ValueError:
+                continue
+            if func_name in VOID_FUNCS:
+                continue
+            func_lines = lines[i:i+20]
+            has_return = any("return" in l for l in func_lines)
+            if not has_return:
                 issues.append({
                     "id": "no_return",
                     "title": "Function Has No Return Statement",
@@ -308,27 +309,6 @@ def check_logic(code):
                     "Find the bare except on line " + str(i),
                     "Change it to: except Exception as e:",
                     "Log or handle the error properly"
-                ]
-            })
-
-    # Check for use of input() in non-interactive scripts
-    for i, line in enumerate(lines, 1):
-        stripped = line.strip()
-        if "input(" in stripped and not stripped.startswith("#"):
-            issues.append({
-                "id": "input_usage",
-                "title": "input() Found — Validate User Input",
-                "severity": "medium",
-                "line": i,
-                "explanation": f"Line {i}: input() accepts raw user data with no "
-                              f"validation. Always validate and sanitize what "
-                              f"users type in.",
-                "badCode": 'age = input("Enter age: ")',
-                "goodCode": 'age_str = input("Enter age: ")\nif not age_str.isdigit():\n    print("Invalid input")\nelse:\n    age = int(age_str)',
-                "steps": [
-                    "Find input() on line " + str(i),
-                    "Add type checking after the input()",
-                    "Handle invalid input with a helpful error message"
                 ]
             })
 
