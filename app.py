@@ -372,7 +372,7 @@ def check_logic(code):
                 ]
             })
         
-     # Check for == True / == False comparisons
+    # Check for == True / == False comparisons
     for i, line in enumerate(lines, 1):
         stripped = line.strip()
         if ("== True" in stripped or "== False" in stripped) and not stripped.startswith("#"):
