@@ -308,20 +308,12 @@ fetch(`${API_BASE}/analyze`, {
   const endTime = performance.now();
   const time = ((endTime - startTime) / 1000).toFixed(2);
 
-  document.getElementById('metaInfo').textContent += ` · ${time}s`;
+  const meta = document.getElementById('metaInfo');
+  meta.textContent = meta.textContent.split('·')[0] + ` · ${time}s`;
 
   btn.disabled = false;
   btn.innerHTML = '<span>▶</span> Analyze Code';
-})
-.finally(() => {
-  const endTime = performance.now();
-  const time = ((endTime - startTime) / 1000).toFixed(2);
-
-  document.getElementById('metaInfo').textContent += ` · ${time}s`;
-
-  btn.disabled = false;
-  btn.innerHTML = '<span>▶</span> Analyze Code';
-}).finally(()=>{btn.disabled=false;btn.innerHTML='<span>▶</span> Analyze Code'})}
+})}
 function runFrontend(code,language){setTimeout(()=>{const found=rules.filter(r=>(r.languages.includes(language)||r.languages.includes('general'))&&r.detect(code));renderResults(found);saveToHistory(code,language,found)},500)}
 updateHistoryCount();
 
