@@ -1,1585 +1,259 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>CodeGuard AI — Security Scanner</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>CodeGuard AI — Code Security Scanner</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+[data-theme="light"]{--bg:#f5f6f8;--bg2:#eef0f3;--surface:#ffffff;--surface2:#f9fafb;--border:#e2e5ea;--border2:#cdd1d9;--text:#111827;--text2:#4b5563;--text3:#9ca3af;--shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.06);--shadow-md:0 4px 16px rgba(0,0,0,0.10);--shadow-lg:0 10px 40px rgba(0,0,0,0.12)}
+[data-theme="dark"]{--bg:#0d1117;--bg2:#090c11;--surface:#161b22;--surface2:#1c2230;--border:#21293a;--border2:#2d3a50;--text:#e6edf3;--text2:#7d8fa8;--text3:#3d4f6a;--shadow:0 1px 3px rgba(0,0,0,0.3),0 1px 2px rgba(0,0,0,0.2);--shadow-md:0 4px 16px rgba(0,0,0,0.4);--shadow-lg:0 10px 40px rgba(0,0,0,0.5)}
+:root{--red:#ef4444;--red-bg:rgba(239,68,68,0.08);--red-bd:rgba(239,68,68,0.25);--orange:#f97316;--org-bg:rgba(249,115,22,0.08);--org-bd:rgba(249,115,22,0.25);--blue:#3b82f6;--blu-bg:rgba(59,130,246,0.08);--blu-bd:rgba(59,130,246,0.25);--green:#22c55e;--grn-bg:rgba(34,197,94,0.08);--grn-bd:rgba(34,197,94,0.25);--grn-glow:rgba(34,197,94,0.15);--mono:'JetBrains Mono',monospace;--sans:'Outfit',sans-serif;--radius:10px}
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-
-:root {
-  --bg:        #050608;
-  --bg2:       #090b0f;
-  --panel:     #0c0f14;
-  --panel2:    #0f1319;
-  --border:    #161c26;
-  --border2:   #1e2738;
-  --border-hi: #253040;
-
-  --text:      #c9d1d9;
-  --text2:     #6e7f96;
-  --text3:     #2d3d52;
-  --text-dim:  #1a2535;
-
-  --green:     #39d353;
-  --green-dim: rgba(57,211,83,0.08);
-  --green-bd:  rgba(57,211,83,0.2);
-
-  --red:       #ff4d4d;
-  --red-dim:   rgba(255,77,77,0.08);
-  --red-bd:    rgba(255,77,77,0.2);
-
-  --orange:    #ff8c42;
-  --org-dim:   rgba(255,140,66,0.08);
-  --org-bd:    rgba(255,140,66,0.2);
-
-  --blue:      #58a6ff;
-  --blu-dim:   rgba(88,166,255,0.08);
-  --blu-bd:    rgba(88,166,255,0.2);
-
-  --amber:     #e3a03c;
-  --amber-dim: rgba(227,160,60,0.08);
-  --amber-bd:  rgba(227,160,60,0.2);
-
-  --mono: 'IBM Plex Mono', monospace;
-  --sans: 'IBM Plex Sans', sans-serif;
-}
-
-html { height: 100%; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--sans);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  font-size: 14px;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  /* Subtle scanline texture */
-  background-image: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(255,255,255,0.008) 2px,
-    rgba(255,255,255,0.008) 4px
-  );
-}
-
-/* ── TOPBAR ─────────────────────────────────────────── */
-.topbar {
-  height: 52px;
-  background: var(--panel);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  flex-shrink: 0;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.brand-shield {
-  width: 28px; height: 28px;
-  flex-shrink: 0;
-}
-
-.brand-text {
-  font-family: var(--mono);
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text);
-  letter-spacing: -.02em;
-}
-.brand-text .hi { color: var(--green); }
-
-.brand-sub {
-  font-family: var(--mono);
-  font-size: 9px;
-  color: var(--text3);
-  letter-spacing: .15em;
-  text-transform: uppercase;
-  margin-left: 4px;
-  border: 1px solid var(--border2);
-  padding: 1px 6px;
-  border-radius: 3px;
-}
-
-.topbar-right { display: flex; align-items: center; gap: 8px; }
-
-.status-dot {
-  display: flex; align-items: center; gap: 6px;
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--text2);
-  letter-spacing: .05em;
-  background: var(--panel2);
-  border: 1px solid var(--border);
-  padding: 4px 10px;
-  border-radius: 4px;
-}
-.status-dot::before {
-  content: '';
-  width: 6px; height: 6px;
-  background: var(--green);
-  border-radius: 50%;
-  box-shadow: 0 0 6px var(--green);
-  animation: blink 2s ease-in-out infinite;
-}
-
-.tb-btn {
-  width: 32px; height: 32px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: var(--panel2);
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px;
-  transition: all .15s;
-  position: relative;
-  color: var(--text2);
-}
-.tb-btn:hover { border-color: var(--border2); background: var(--border); color: var(--text); }
-.tb-btn.active { border-color: var(--amber-bd); background: var(--amber-dim); }
-
-.hist-badge {
-  position: absolute; top: -5px; right: -5px;
-  background: var(--amber);
-  color: #000;
-  font-family: var(--mono);
-  font-size: 8px;
-  font-weight: 700;
-  border-radius: 99px;
-  padding: 1px 4px;
-  min-width: 14px;
-  text-align: center;
-  display: none;
-}
-
-/* ── LAYOUT ─────────────────────────────────────────── */
-.shell {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  flex: 1;
-  min-height: calc(100vh - 52px - 44px);
-  overflow: hidden;
-}
-
-/* ── LEFT PANE ──────────────────────────────────────── */
-.left-pane {
-  display: flex;
-  flex-direction: column;
-  border-right: 1px solid var(--border);
-  background: var(--bg2);
-}
-
-.pane-header {
-  height: 38px;
-  background: var(--panel);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 14px;
-  flex-shrink: 0;
-}
-
-.pane-title {
-  font-family: var(--mono);
-  font-size: 9px;
-  font-weight: 600;
-  color: var(--text3);
-  letter-spacing: .15em;
-  text-transform: uppercase;
-}
-
-.lang-tabs {
-  display: flex;
-  gap: 2px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 5px;
-  padding: 2px;
-}
-.lang-btn {
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 600;
-  padding: 3px 10px;
-  border: none;
-  background: transparent;
-  color: var(--text3);
-  cursor: pointer;
-  border-radius: 3px;
-  transition: all .12s;
-  letter-spacing: .04em;
-}
-.lang-btn.active {
-  background: var(--green);
-  color: #000;
-}
-.lang-btn:hover:not(.active) { color: var(--text2); }
-
-/* Example chips */
-.examples-strip {
-  padding: 8px 14px;
-  border-bottom: 1px solid var(--border);
-  background: var(--panel2);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  flex-shrink: 0;
-}
-.ex-label {
-  font-family: var(--mono);
-  font-size: 8px;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: .12em;
-  white-space: nowrap;
-  font-weight: 600;
-}
-.ex-chips { display: flex; gap: 5px; flex-wrap: wrap; }
-.ex-chip {
-  font-family: var(--mono);
-  font-size: 9px;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 3px;
-  border: 1px solid var(--border2);
-  background: var(--panel);
-  color: var(--text2);
-  cursor: pointer;
-  transition: all .12s;
-  letter-spacing: .03em;
-  white-space: nowrap;
-}
-.ex-chip:hover {
-  border-color: var(--green-bd);
-  color: var(--green);
-  background: var(--green-dim);
-  box-shadow: 0 0 8px rgba(57,211,83,0.1);
-}
-
-/* Code editor */
-.editor-wrap {
-  flex: 1;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Line numbers feel */
-.editor-wrap::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 44px;
-  background: var(--panel);
-  border-right: 1px solid var(--border);
-  z-index: 1;
-  pointer-events: none;
-}
-
-textarea#codeInput {
-  flex: 1;
-  width: 100%;
-  background: transparent;
-  color: var(--text);
-  border: none;
-  outline: none;
-  resize: none;
-  padding: 14px 16px 14px 60px;
-  font-family: var(--mono);
-  font-size: 13px;
-  line-height: 1.85;
-  caret-color: var(--green);
-  min-height: 300px;
-  position: relative;
-  z-index: 2;
-}
-textarea#codeInput::placeholder { color: var(--text3); }
-
-.editor-footer {
-  height: 44px;
-  background: var(--panel);
-  border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 14px;
-  flex-shrink: 0;
-}
-
-.meta-info {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--text3);
-  letter-spacing: .03em;
-}
-
-.btn-group { display: flex; gap: 8px; }
-
-.btn-clear {
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 600;
-  padding: 6px 14px;
-  border-radius: 4px;
-  border: 1px solid var(--border2);
-  background: transparent;
-  color: var(--text3);
-  cursor: pointer;
-  transition: all .12s;
-  letter-spacing: .03em;
-}
-.btn-clear:hover { border-color: var(--red-bd); color: var(--red); background: var(--red-dim); }
-
-.btn-scan {
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 700;
-  padding: 6px 18px;
-  border-radius: 4px;
-  border: 1px solid var(--green-bd);
-  background: var(--green-dim);
-  color: var(--green);
-  cursor: pointer;
-  transition: all .15s;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  position: relative;
-  overflow: hidden;
-}
-.btn-scan::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(57,211,83,0.06), transparent);
-  transform: translateX(-100%);
-  transition: transform .4s;
-}
-.btn-scan:hover::before { transform: translateX(100%); }
-.btn-scan:hover {
-  background: var(--green);
-  color: #000;
-  box-shadow: 0 0 20px rgba(57,211,83,0.25);
-}
-.btn-scan:disabled {
-  opacity: .4; cursor: not-allowed;
-  background: transparent;
-  color: var(--text3);
-  border-color: var(--border);
-  box-shadow: none;
-}
-
-/* ── RIGHT PANE ─────────────────────────────────────── */
-.right-pane {
-  display: flex;
-  flex-direction: column;
-  background: var(--bg);
-  overflow: hidden;
-}
-
-.results-header {
-  height: 38px;
-  background: var(--panel);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 14px;
-  flex-shrink: 0;
-}
-
-.result-count {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--text3);
-  letter-spacing: .05em;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  padding: 2px 8px;
-  border-radius: 3px;
-}
-
-.results-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 14px;
-}
-.results-body::-webkit-scrollbar { width: 3px; }
-.results-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
-
-/* Empty / loading */
-.empty-state {
-  min-height: 300px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  color: var(--text3);
-  text-align: center;
-  padding: 40px;
-}
-.empty-icon {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--text3);
-  border: 1px solid var(--border);
-  padding: 10px 16px;
-  border-radius: 4px;
-  letter-spacing: .05em;
-  background: var(--panel);
-}
-.empty-state p {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--text3);
-  line-height: 1.8;
-}
-
-.loading-state {
-  min-height: 300px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-}
-.scan-bar-wrap {
-  width: 200px;
-  height: 2px;
-  background: var(--border);
-  border-radius: 2px;
-  overflow: hidden;
-}
-.scan-bar {
-  height: 100%;
-  background: var(--green);
-  border-radius: 2px;
-  box-shadow: 0 0 8px var(--green);
-  animation: scanAnim 1.2s ease-in-out infinite;
-}
-.scan-label {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--green);
-  letter-spacing: .1em;
-  animation: textFlicker 1.2s ease-in-out infinite;
-}
-
-/* ── RISK SUMMARY ───────────────────────────────────── */
-.risk-block {
-  background: var(--panel);
-  border: 1px solid var(--border2);
-  border-radius: 6px;
-  padding: 0;
-  margin-bottom: 12px;
-  overflow: hidden;
-  animation: fadeUp .3s ease both;
-}
-
-.risk-top {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: 16px;
-  padding: 16px 18px;
-  border-bottom: 1px solid var(--border);
-}
-
-.risk-label {
-  font-family: var(--mono);
-  font-size: 8px;
-  font-weight: 700;
-  color: var(--text3);
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
-
-.risk-verdict {
-  font-family: var(--mono);
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -.02em;
-  line-height: 1;
-}
-
-.risk-score {
-  font-family: var(--mono);
-  font-size: 36px;
-  font-weight: 700;
-  line-height: 1;
-  text-align: right;
-}
-.risk-score-label {
-  font-family: var(--mono);
-  font-size: 9px;
-  color: var(--text3);
-  letter-spacing: .1em;
-  text-align: right;
-  margin-top: 2px;
-}
-
-.risk-bar-track {
-  height: 3px;
-  background: var(--bg);
-  margin: 0 18px;
-  border-radius: 2px;
-  overflow: hidden;
-}
-.risk-bar-fill {
-  height: 100%;
-  border-radius: 2px;
-  width: 0;
-  transition: width 1.2s cubic-bezier(.4,0,.2,1);
-}
-
-.sev-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0;
-  margin-top: 0;
-}
-
-.sev-cell {
-  padding: 12px 0;
-  text-align: center;
-  border-right: 1px solid var(--border);
-  border-top: 1px solid var(--border);
-  position: relative;
-}
-.sev-cell:last-child { border-right: none; }
-
-.sev-num {
-  font-family: var(--mono);
-  font-size: 26px;
-  font-weight: 700;
-  line-height: 1;
-  margin-bottom: 4px;
-}
-.sev-lbl {
-  font-family: var(--mono);
-  font-size: 8px;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: .12em;
-  font-weight: 600;
-}
-
-/* ── ISSUE CARDS ────────────────────────────────────── */
-.issue-card {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 5px;
-  margin-bottom: 6px;
-  overflow: hidden;
-  animation: fadeUp .25s ease both;
-  transition: border-color .15s, box-shadow .15s;
-  border-left: 3px solid transparent;
-}
-.issue-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
-
-.ic-critical { border-left-color: var(--red); }
-.ic-high     { border-left-color: var(--orange); }
-.ic-medium   { border-left-color: var(--blue); }
-.ic-low      { border-left-color: var(--text3); }
-
-.card-head {
-  padding: 10px 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  user-select: none;
-}
-.card-head:hover { background: rgba(255,255,255,0.015); }
-
-.sev-badge {
-  font-family: var(--mono);
-  font-size: 8px;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 3px;
-  text-transform: uppercase;
-  letter-spacing: .08em;
-  flex-shrink: 0;
-  border: 1px solid;
-}
-.sb-critical { background: var(--red-dim);  color: var(--red);    border-color: var(--red-bd); }
-.sb-high     { background: var(--org-dim);  color: var(--orange); border-color: var(--org-bd); }
-.sb-medium   { background: var(--blu-dim);  color: var(--blue);   border-color: var(--blu-bd); }
-.sb-low      { background: var(--panel2);   color: var(--text3);  border-color: var(--border2); }
-
-.card-title {
-  font-family: var(--mono);
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text);
-  flex: 1;
-}
-
-.line-badge {
-  font-family: var(--mono);
-  font-size: 9px;
-  color: var(--text3);
-  background: var(--bg);
-  border: 1px solid var(--border);
-  padding: 2px 7px;
-  border-radius: 3px;
-  letter-spacing: .03em;
-}
-
-.card-arrow {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--text3);
-  transition: transform .15s, color .15s;
-  flex-shrink: 0;
-}
-.card-arrow.open { transform: rotate(90deg); color: var(--green); }
-
-.card-body {
-  border-top: 1px solid var(--border);
-  padding: 14px;
-  background: var(--bg2);
-  display: none;
-}
-.card-body.open { display: block; animation: fadeIn .15s ease; }
-
-.explain {
-  font-size: 12px;
-  color: var(--text2);
-  line-height: 1.75;
-  margin-bottom: 14px;
-  font-family: var(--sans);
-  border-left: 2px solid var(--border2);
-  padding-left: 12px;
-}
-
-.code-pair {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 14px;
-}
-.code-block {
-  border-radius: 4px;
-  overflow: hidden;
-  border: 1px solid var(--border);
-}
-.code-block-head {
-  padding: 5px 10px;
-  background: var(--panel);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.code-lbl {
-  font-family: var(--mono);
-  font-size: 8px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .1em;
-}
-.lbl-bad  { color: var(--red); }
-.lbl-good { color: var(--green); }
-
-.code-block pre {
-  padding: 12px;
-  font-family: var(--mono);
-  font-size: 11px;
-  line-height: 1.8;
-  white-space: pre-wrap;
-  word-break: break-word;
-  color: var(--text2);
-  background: var(--bg);
-}
-
-.copy-btn {
-  font-family: var(--mono);
-  font-size: 8px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 3px;
-  border: 1px solid var(--green-bd);
-  background: transparent;
-  color: var(--green);
-  cursor: pointer;
-  transition: all .12s;
-  text-transform: uppercase;
-  letter-spacing: .06em;
-}
-.copy-btn:hover { background: var(--green); color: #000; }
-.copy-btn.done  { border-color: var(--amber-bd); color: var(--amber); }
-
-.steps-label {
-  font-family: var(--mono);
-  font-size: 8px;
-  font-weight: 700;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: .15em;
-  margin-bottom: 8px;
-}
-.steps-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
-.steps-list li {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--text2);
-  line-height: 1.6;
-}
-.step-num {
-  font-family: var(--mono);
-  font-size: 8px;
-  font-weight: 700;
-  min-width: 18px;
-  height: 18px;
-  background: var(--green-dim);
-  border: 1px solid var(--green-bd);
-  border-radius: 3px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--green);
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-
-/* Clean result */
-.clean-state {
-  background: var(--panel);
-  border: 1px solid var(--green-bd);
-  border-radius: 6px;
-  padding: 40px;
-  text-align: center;
-  animation: fadeUp .3s ease;
-  box-shadow: 0 0 40px rgba(57,211,83,0.05);
-}
-.clean-icon { font-size: 32px; display: block; margin-bottom: 12px; }
-.clean-state h3 {
-  font-family: var(--mono);
-  font-size: 16px;
-  color: var(--green);
-  margin-bottom: 6px;
-  letter-spacing: -.02em;
-}
-.clean-state p { font-family: var(--mono); font-size: 11px; color: var(--text3); }
-
-/* ── HISTORY PANEL ──────────────────────────────────── */
-.overlay {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.7);
-  backdrop-filter: blur(6px);
-  z-index: 299;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .2s;
-}
-.overlay.open { opacity: 1; pointer-events: all; }
-
-.history-panel {
-  position: fixed; top: 0; right: 0;
-  width: 360px; height: 100vh;
-  background: var(--panel);
-  border-left: 1px solid var(--border);
-  z-index: 300;
-  display: flex; flex-direction: column;
-  transform: translateX(100%);
-  transition: transform .25s cubic-bezier(.4,0,.2,1);
-  box-shadow: -20px 0 60px rgba(0,0,0,0.6);
-}
-.history-panel.open { transform: translateX(0); }
-
-.hist-header {
-  height: 52px;
-  padding: 0 16px;
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-  flex-shrink: 0;
-  background: var(--bg);
-}
-.hist-title {
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--text2);
-  letter-spacing: .12em;
-  text-transform: uppercase;
-}
-.hist-close {
-  width: 26px; height: 26px;
-  border-radius: 4px;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--text3);
-  font-size: 12px;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: all .12s;
-  font-family: var(--mono);
-}
-.hist-close:hover { border-color: var(--red-bd); color: var(--red); background: var(--red-dim); }
-
-.hist-list { flex: 1; overflow-y: auto; padding: 12px; }
-.hist-list::-webkit-scrollbar { width: 2px; }
-.hist-list::-webkit-scrollbar-thumb { background: var(--border2); }
-
-.hist-empty {
-  display: flex; flex-direction: column; align-items: center;
-  justify-content: center; height: 100%;
-  gap: 12px; color: var(--text3); text-align: center; padding: 40px;
-}
-.hist-empty p { font-family: var(--mono); font-size: 11px; line-height: 1.7; }
-
-.hist-item {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 5px;
-  padding: 12px;
-  margin-bottom: 6px;
-  cursor: pointer;
-  transition: all .15s;
-  position: relative;
-}
-.hist-item:hover { border-color: var(--border-hi); transform: translateX(-2px); }
-.hist-item:hover .restore-hint { opacity: 1; }
-
-.hi-top { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-.hi-lang {
-  font-family: var(--mono); font-size: 9px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: .08em;
-  padding: 2px 7px; border-radius: 3px;
-  background: var(--panel); border: 1px solid var(--border); color: var(--text2);
-}
-.hi-time { font-family: var(--mono); font-size: 9px; color: var(--text3); margin-left: auto; }
-.hi-del {
-  width: 18px; height: 18px; border-radius: 3px;
-  border: 1px solid var(--border); background: transparent;
-  color: var(--text3); font-size: 9px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: all .12s; font-family: var(--mono);
-}
-.hi-del:hover { border-color: var(--red-bd); color: var(--red); background: var(--red-dim); }
-
-.hi-verdict { font-family: var(--mono); font-size: 13px; font-weight: 700; margin-bottom: 6px; }
-.hi-pills { display: flex; gap: 5px; flex-wrap: wrap; }
-.hi-pill {
-  font-family: var(--mono); font-size: 8px; font-weight: 700;
-  padding: 2px 7px; border-radius: 3px; border: 1px solid;
-}
-.hi-preview {
-  font-family: var(--mono); font-size: 10px; color: var(--text3);
-  margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  background: var(--bg); border: 1px solid var(--border); border-radius: 3px;
-  padding: 5px 8px;
-}
-.restore-hint {
-  font-family: var(--mono); font-size: 8px; color: var(--amber);
-  text-transform: uppercase; letter-spacing: .08em;
-  margin-top: 8px; text-align: right; opacity: 0; transition: opacity .15s;
-}
-
-.hist-footer { padding: 12px; border-top: 1px solid var(--border); flex-shrink: 0; }
-.clear-btn {
-  width: 100%; padding: 8px;
-  border-radius: 4px; border: 1px solid var(--border);
-  background: transparent; color: var(--text3);
-  font-family: var(--mono); font-size: 9px; font-weight: 700;
-  cursor: pointer; transition: all .15s;
-  text-transform: uppercase; letter-spacing: .1em;
-}
-.clear-btn:hover { border-color: var(--red-bd); color: var(--red); background: var(--red-dim); }
-
-/* ── STATUS BAR ─────────────────────────────────────── */
-.statusbar {
-  height: 44px;
-  background: var(--panel);
-  border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 18px;
-  flex-shrink: 0;
-}
-.sb-left {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--text3);
-  display: flex; align-items: center; gap: 16px;
-}
-.sb-left strong { color: var(--text2); font-weight: 500; }
-.sb-right {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--text3);
-  display: flex; align-items: center; gap: 16px;
-}
-.sb-right a { color: var(--text3); text-decoration: none; transition: color .15s; }
-.sb-right a:hover { color: var(--amber); }
-.sb-sep { color: var(--border2); }
-
-/* ── ANIMATIONS ─────────────────────────────────────── */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-@keyframes blink {
-  0%,100% { opacity: 1; }
-  50%      { opacity: .3; }
-}
-@keyframes scanAnim {
-  0%   { transform: translateX(-100%); }
-  50%  { transform: translateX(0); }
-  100% { transform: translateX(100%); }
-}
-@keyframes textFlicker {
-  0%,100% { opacity: 1; }
-  45%,55% { opacity: .5; }
-}
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-@media(max-width:768px){
-  .shell { grid-template-columns: 1fr; }
-  .code-pair { grid-template-columns: 1fr; }
-  .history-panel { width: 100%; }
-  .sev-grid { grid-template-columns: repeat(2,1fr); }
-}
+html{height:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;display:flex;flex-direction:column;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+header{height:58px;background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow);transition:background .2s,border-color .2s}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-logo{width:32px;height:32px;flex-shrink:0}
+.brand-name{font-family:var(--sans);font-size:18px;font-weight:800;color:var(--text);letter-spacing:-.04em}
+.brand-name .accent{color:var(--green)}
+.brand-badge{font-family:var(--mono);font-size:9px;font-weight:600;padding:3px 8px;border-radius:99px;background:var(--grn-bg);border:1px solid var(--grn-bd);color:var(--green);letter-spacing:.06em;text-transform:uppercase}
+.header-right{display:flex;align-items:center;gap:8px}
+.foss-badge{font-family:var(--mono);font-size:10px;font-weight:600;padding:5px 12px;border-radius:99px;border:1px solid var(--border2);background:var(--surface2);color:var(--text2);letter-spacing:.04em;transition:all .2s}
+.icon-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s;position:relative;color:var(--text2)}
+.icon-btn:hover{background:var(--border);border-color:var(--border2);transform:scale(1.05)}
+.hist-count{position:absolute;top:-5px;right:-5px;background:var(--red);color:#fff;font-family:var(--mono);font-size:8px;font-weight:700;border-radius:99px;padding:1px 4px;min-width:14px;text-align:center;display:none}
+.workspace{display:grid;grid-template-columns:1fr 1fr;flex:1;min-height:calc(100vh - 58px - 46px)}
+.left-panel{display:flex;flex-direction:column;border-right:1px solid var(--border);background:var(--surface);transition:background .2s,border-color .2s}
+.right-panel{display:flex;flex-direction:column;background:var(--bg);transition:background .2s}
+.panel-bar{height:42px;padding:0 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface2);flex-shrink:0;transition:background .2s}
+.panel-label{font-family:var(--mono);font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.1em}
+.lang-tabs{display:flex;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:2px;gap:2px}
+.lang-btn{font-family:var(--mono);font-size:10px;font-weight:600;padding:4px 12px;border:none;background:transparent;color:var(--text3);cursor:pointer;border-radius:4px;transition:all .12s;letter-spacing:.03em}
+.lang-btn.active{background:var(--green);color:#fff;box-shadow:0 2px 6px rgba(34,197,94,0.3)}
+.lang-btn:hover:not(.active){color:var(--text2);background:var(--border)}
+.examples-strip{padding:8px 16px;border-bottom:1px solid var(--border);background:var(--surface);display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0;transition:background .2s}
+.ex-label{font-family:var(--mono);font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;white-space:nowrap}
+.ex-pills{display:flex;gap:5px;flex-wrap:wrap}
+.ex-pill{font-family:var(--mono);font-size:10px;font-weight:500;padding:4px 10px;border-radius:99px;border:1px solid var(--border2);background:var(--surface2);color:var(--text2);cursor:pointer;transition:all .12s;white-space:nowrap}
+.ex-pill:hover{border-color:var(--grn-bd);color:var(--green);background:var(--grn-bg)}
+.editor-area{flex:1;position:relative;display:flex;flex-direction:column}
+textarea#codeInput{flex:1;width:100%;background:var(--surface);color:var(--text);border:none;outline:none;resize:none;padding:18px 20px;font-family:var(--mono);font-size:13px;line-height:1.85;caret-color:var(--green);min-height:300px;transition:background .2s,color .2s}
+textarea#codeInput::placeholder{color:var(--text3)}
+.editor-footer{height:48px;padding:0 16px;border-top:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;transition:background .2s}
+.meta{font-family:var(--mono);font-size:10px;color:var(--text3)}
+.btn-row{display:flex;gap:8px}
+.btn-clear{font-family:var(--sans);font-size:13px;font-weight:500;padding:7px 16px;border-radius:7px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all .12s}
+.btn-clear:hover{background:var(--red-bg);color:var(--red);border-color:var(--red-bd)}
+.btn-scan{font-family:var(--sans);font-size:13px;font-weight:700;padding:7px 20px;border-radius:7px;border:none;background:var(--green);color:#fff;cursor:pointer;transition:all .15s;box-shadow:0 2px 8px rgba(34,197,94,0.3);letter-spacing:-.01em;display:flex;align-items:center;gap:6px}
+.btn-scan:hover{background:#16a34a;transform:translateY(-1px);box-shadow:0 4px 16px rgba(34,197,94,0.4)}
+.btn-scan:active{transform:translateY(0)}
+.btn-scan:disabled{background:var(--border2);color:var(--text3);cursor:not-allowed;transform:none;box-shadow:none}
+.results-bar{height:42px;padding:0 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface2);flex-shrink:0;transition:background .2s}
+.result-chip{font-family:var(--mono);font-size:10px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--bg);border:1px solid var(--border2);color:var(--text3);transition:all .2s}
+.results-scroll{flex:1;overflow-y:auto;padding:16px}
+.results-scroll::-webkit-scrollbar{width:4px}
+.results-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.empty-state{min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--text3);text-align:center;padding:40px}
+.empty-icon{width:56px;height:56px;border-radius:14px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:var(--shadow);margin-bottom:6px}
+.empty-state h3{font-size:15px;font-weight:600;color:var(--text2)}
+.empty-state p{font-size:13px;line-height:1.6;max-width:200px}
+.loading-state{min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px}
+.scan-wrap{width:180px}
+.scan-track{height:3px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:12px}
+.scan-fill{height:100%;background:var(--green);border-radius:3px;animation:scanSlide 1.1s ease-in-out infinite;box-shadow:0 0 8px var(--green)}
+.scan-text{font-family:var(--mono);font-size:11px;color:var(--text3);text-align:center;letter-spacing:.06em}
+.risk-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow);animation:fadeUp .3s ease both;transition:background .2s,border-color .2s}
+.risk-main{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px}
+.risk-left{flex:1}
+.risk-eyebrow{font-family:var(--mono);font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.14em;margin-bottom:5px}
+.risk-verdict{font-size:22px;font-weight:800;letter-spacing:-.04em;line-height:1}
+.risk-right{text-align:right}
+.risk-score-num{font-family:var(--mono);font-size:38px;font-weight:700;line-height:1}
+.risk-score-denom{font-family:var(--mono);font-size:11px;color:var(--text3);margin-top:2px}
+.risk-bar-wrap{height:4px;background:var(--bg2);margin:0 18px 14px;border-radius:4px;overflow:hidden}
+.risk-bar{height:100%;border-radius:4px;width:0;transition:width 1.1s cubic-bezier(.4,0,.2,1)}
+.sev-grid{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--border)}
+.sev-cell{padding:12px 8px;text-align:center;border-right:1px solid var(--border);transition:background .15s}
+.sev-cell:last-child{border-right:none}
+.sev-cell:hover{background:var(--surface2)}
+.sev-num{font-family:var(--mono);font-size:24px;font-weight:700;line-height:1;margin-bottom:4px}
+.sev-lbl{font-family:var(--mono);font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text3)}
+.issue-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;overflow:hidden;box-shadow:var(--shadow);animation:fadeUp .25s ease both;transition:all .2s;border-left:3px solid transparent}
+.issue-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.ic-critical{border-left-color:var(--red)}.ic-high{border-left-color:var(--orange)}.ic-medium{border-left-color:var(--blue)}.ic-low{border-left-color:var(--green)}
+.card-head{padding:11px 14px;display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none;transition:background .12s}
+.card-head:hover{background:var(--surface2)}
+.sev-tag{font-family:var(--mono);font-size:9px;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.07em;border:1px solid;flex-shrink:0}
+.tag-critical{background:var(--red-bg);color:var(--red);border-color:var(--red-bd)}.tag-high{background:var(--org-bg);color:var(--orange);border-color:var(--org-bd)}.tag-medium{background:var(--blu-bg);color:var(--blue);border-color:var(--blu-bd)}.tag-low{background:var(--grn-bg);color:var(--green);border-color:var(--grn-bd)}
+.card-title{font-size:13px;font-weight:600;color:var(--text);flex:1;letter-spacing:-.01em}
+.line-tag{font-family:var(--mono);font-size:9px;color:var(--text3);background:var(--bg);border:1px solid var(--border);padding:2px 7px;border-radius:4px}
+.card-arrow{color:var(--text3);font-size:14px;transition:transform .18s,color .15s;flex-shrink:0}
+.card-arrow.open{transform:rotate(90deg);color:var(--green)}
+.card-body{border-top:1px solid var(--border);padding:16px;background:var(--bg);display:none;transition:background .2s}
+.card-body.open{display:block;animation:fadeIn .15s ease}
+.explanation{font-size:13px;color:var(--text2);line-height:1.75;margin-bottom:14px;padding:10px 12px;background:var(--surface);border-radius:6px;border-left:3px solid var(--border2);transition:background .2s}
+.code-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.code-block{border-radius:7px;overflow:hidden;border:1px solid var(--border)}
+.code-head{padding:6px 12px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;transition:background .2s}
+.code-lbl{font-family:var(--mono);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+.lbl-bad{color:var(--red)}.lbl-good{color:var(--green)}
+.code-block pre{padding:12px;font-family:var(--mono);font-size:11.5px;line-height:1.8;white-space:pre-wrap;word-break:break-word;color:var(--text2);background:var(--surface);transition:background .2s,color .2s}
+.copy-btn{font-family:var(--mono);font-size:8px;font-weight:700;padding:2px 8px;border-radius:4px;border:1px solid var(--grn-bd);background:var(--grn-bg);color:var(--green);cursor:pointer;transition:all .12s;text-transform:uppercase;letter-spacing:.06em}
+.copy-btn:hover{background:var(--green);color:#fff}
+.copy-btn.done{border-color:var(--org-bd);color:var(--orange);background:var(--org-bg)}
+.steps-label{font-family:var(--mono);font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px}
+.steps-list{list-style:none;display:flex;flex-direction:column;gap:6px}
+.steps-list li{display:flex;gap:10px;align-items:flex-start;font-size:12px;color:var(--text2);line-height:1.6}
+.step-n{font-family:var(--mono);font-size:9px;font-weight:700;min-width:20px;height:20px;background:var(--grn-bg);border:1px solid var(--grn-bd);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--green);flex-shrink:0;margin-top:1px}
+.no-issues{background:var(--surface);border:1px solid var(--grn-bd);border-radius:var(--radius);padding:48px 40px;text-align:center;animation:fadeUp .3s ease;box-shadow:var(--shadow),0 0 40px var(--grn-glow);transition:background .2s}
+.ni-icon{font-size:40px;display:block;margin-bottom:12px}
+.no-issues h3{font-size:18px;font-weight:800;color:var(--green);margin-bottom:6px;letter-spacing:-.03em}
+.no-issues p{font-size:13px;color:var(--text3)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);z-index:299;opacity:0;pointer-events:none;transition:opacity .2s}
+.overlay.open{opacity:1;pointer-events:all}
+.history-panel{position:fixed;top:0;right:0;width:380px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:300;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1),background .2s;box-shadow:var(--shadow-lg)}
+.history-panel.open{transform:translateX(0)}
+.hist-header{height:58px;padding:0 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--surface2);transition:background .2s}
+.hist-title{font-size:14px;font-weight:700;color:var(--text);letter-spacing:-.02em}
+.hist-close{width:30px;height:30px;border-radius:7px;border:1px solid var(--border);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:13px;transition:all .12s}
+.hist-close:hover{background:var(--red-bg);color:var(--red);border-color:var(--red-bd)}
+.hist-list{flex:1;overflow-y:auto;padding:14px}
+.hist-list::-webkit-scrollbar{width:3px}
+.hist-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.hist-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;color:var(--text3);text-align:center;padding:40px}
+.hist-empty span{font-size:32px}
+.hist-empty p{font-size:13px;line-height:1.6;max-width:180px}
+.hist-item{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:all .15s;position:relative}
+.hist-item:hover{border-color:var(--border2);box-shadow:var(--shadow);transform:translateX(-2px)}
+.hist-item:hover .restore-hint{opacity:1}
+.hi-top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.hi-lang{font-family:var(--mono);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:2px 8px;border-radius:4px;background:var(--surface);border:1px solid var(--border);color:var(--text2)}
+.hi-time{font-family:var(--mono);font-size:9px;color:var(--text3);margin-left:auto}
+.hi-del{width:20px;height:20px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text3);font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.hi-del:hover{background:var(--red-bg);color:var(--red);border-color:var(--red-bd)}
+.hi-verdict{font-size:13px;font-weight:700;margin-bottom:6px}
+.hi-pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px}
+.hi-pill{font-family:var(--mono);font-size:9px;font-weight:600;padding:2px 7px;border-radius:4px;border:1px solid}
+.hi-preview{font-family:var(--mono);font-size:10px;color:var(--text3);background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:5px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.restore-hint{font-family:var(--mono);font-size:9px;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-top:6px;text-align:right;opacity:0;transition:opacity .15s}
+.hist-footer{padding:12px;border-top:1px solid var(--border);flex-shrink:0}
+.clear-hist-btn{width:100%;padding:8px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--text3);font-family:var(--mono);font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.08em}
+.clear-hist-btn:hover{background:var(--red-bg);color:var(--red);border-color:var(--red-bd)}
+footer{height:46px;border-top:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;background:var(--surface);font-size:12px;color:var(--text3);flex-shrink:0;transition:background .2s,border-color .2s}
+footer strong{color:var(--text2);font-weight:600}
+footer a{color:var(--text3);text-decoration:none;transition:color .15s}
+footer a:hover{color:var(--green)}
+.footer-sep{color:var(--border2);margin:0 4px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes scanSlide{0%{width:0%;margin-left:0}50%{width:60%;margin-left:20%}100%{width:0%;margin-left:100%}}
+@media(max-width:768px){.workspace{grid-template-columns:1fr}.code-pair{grid-template-columns:1fr}.history-panel{width:100%}.sev-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
-
-<!-- TOPBAR -->
-<div class="topbar">
+<header>
   <div class="brand">
-    <svg class="brand-shield" viewBox="0 0 28 28" fill="none">
-      <defs>
-        <linearGradient id="sg" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#4ade80"/>
-          <stop offset="100%" stop-color="#22c55e"/>
-        </linearGradient>
-      </defs>
-      <path d="M14 1.5L3 6v8c0 5.8 4.7 11.2 11 13.5C20.3 25.2 25 19.8 25 14V6L14 1.5Z" fill="url(#sg)" opacity=".15"/>
-      <path d="M14 1.5L3 6v8c0 5.8 4.7 11.2 11 13.5C20.3 25.2 25 19.8 25 14V6L14 1.5Z" stroke="#39d353" stroke-width="1.5" fill="none"/>
-      <path d="M9.5 14l3.2 3.2L18.5 11" stroke="#39d353" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <svg class="brand-logo" viewBox="0 0 32 32" fill="none">
+      <defs><linearGradient id="lg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#4ade80"/><stop offset="100%" stop-color="#16a34a"/></linearGradient></defs>
+      <path d="M16 2L4 7v8c0 6.6 5.4 12.7 12 15 6.6-2.3 12-8.4 12-15V7L16 2Z" fill="url(#lg)" opacity=".15"/>
+      <path d="M16 2L4 7v8c0 6.6 5.4 12.7 12 15 6.6-2.3 12-8.4 12-15V7L16 2Z" stroke="url(#lg)" stroke-width="1.5" fill="none"/>
+      <path d="M11 16l3.5 3.5L21 13" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
-    <span class="brand-text">code<span class="hi">guard</span></span>
-    <span class="brand-sub">AI Security Scanner</span>
+    <span class="brand-name">code<span class="accent">guard</span></span>
+    <span class="brand-badge">AI</span>
   </div>
-  <div class="topbar-right">
-    <span class="status-dot">SYSTEM ONLINE</span>
-    <span style="font-family:var(--mono);font-size:10px;color:var(--text3);background:var(--panel2);border:1px solid var(--border);padding:4px 10px;border-radius:4px;">v1.0</span>
-    <button class="tb-btn" id="historyBtn" onclick="toggleHistory()" title="History">
-      ⏱
-      <span class="hist-badge" id="historyCount"></span>
-    </button>
+  <div class="header-right">
+    <span class="foss-badge">FOSS Hack 2026</span>
+    <button class="icon-btn" id="historyBtn" onclick="toggleHistory()" title="Scan History">🕐<span class="hist-count" id="historyCount"></span></button>
+    <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle theme">🌙</button>
   </div>
-</div>
-
-<!-- MAIN SHELL -->
-<div class="shell">
-
-  <!-- LEFT: EDITOR -->
-  <div class="left-pane">
-    <div class="pane-header">
-      <span class="pane-title">// source input</span>
+</header>
+<div class="workspace">
+  <div class="left-panel">
+    <div class="panel-bar">
+      <span class="panel-label">Source Code</span>
       <div class="lang-tabs">
         <button class="lang-btn active" onclick="setLang('python',this)">Python</button>
         <button class="lang-btn" onclick="setLang('javascript',this)">JS</button>
         <button class="lang-btn" onclick="setLang('general',this)">General</button>
       </div>
     </div>
-
     <div class="examples-strip">
-      <span class="ex-label">load example →</span>
-      <div class="ex-chips">
-        <button class="ex-chip" onclick="loadExample('sqli')">SQL Inject</button>
-        <button class="ex-chip" onclick="loadExample('secret')">Hardcoded Secret</button>
-        <button class="ex-chip" onclick="loadExample('xss')">XSS Attack</button>
-        <button class="ex-chip" onclick="loadExample('loop')">Infinite Loop</button>
-        <button class="ex-chip" onclick="loadExample('mixed')">Mixed Bugs</button>
+      <span class="ex-label">Try:</span>
+      <div class="ex-pills">
+        <button class="ex-pill" onclick="loadExample('sqli')">💉 SQL Injection</button>
+        <button class="ex-pill" onclick="loadExample('secret')">🔑 Hardcoded Secret</button>
+        <button class="ex-pill" onclick="loadExample('xss')">⚠️ XSS Attack</button>
+        <button class="ex-pill" onclick="loadExample('loop')">♾️ Infinite Loop</button>
+        <button class="ex-pill" onclick="loadExample('mixed')">🔥 Mixed Bugs</button>
       </div>
     </div>
-
-    <div class="editor-wrap">
-      <textarea id="codeInput" spellcheck="false"
-        placeholder="# paste your code here..."
-        oninput="updateMeta()"></textarea>
+    <div class="editor-area">
+      <textarea id="codeInput" spellcheck="false" placeholder="# Paste your Python or JavaScript code here..." oninput="updateMeta()"></textarea>
     </div>
-
     <div class="editor-footer">
-      <span class="meta-info" id="metaInfo">ready</span>
-      <div class="btn-group">
-        <button class="btn-clear" onclick="clearAll()">clear</button>
-        <button class="btn-scan" id="analyzeBtn" onclick="analyzeCode()">▶ RUN SCAN</button>
+      <span class="meta" id="metaInfo">Ready</span>
+      <div class="btn-row">
+        <button class="btn-clear" onclick="clearAll()">Clear</button>
+        <button class="btn-scan" id="analyzeBtn" onclick="analyzeCode()"><span>▶</span> Analyze Code</button>
       </div>
     </div>
   </div>
-
-  <!-- RIGHT: RESULTS -->
-  <div class="right-pane">
-    <div class="results-header">
-      <span class="pane-title">// scan results</span>
-      <span class="result-count" id="resultChip">no scan</span>
+  <div class="right-panel">
+    <div class="results-bar">
+      <span class="panel-label">Scan Results</span>
+      <span class="result-chip" id="resultChip">No scan yet</span>
     </div>
-    <div class="results-body" id="results">
+    <div class="results-scroll" id="results">
       <div class="empty-state">
-        <div class="empty-icon">$ codeguard --scan &lt;file&gt;</div>
-        <p>paste your code on the left<br>and run a scan to detect issues</p>
+        <div class="empty-icon">🔍</div>
+        <h3>Nothing to show yet</h3>
+        <p>Paste your code on the left and click Analyze.</p>
       </div>
     </div>
   </div>
 </div>
-
-<!-- HISTORY OVERLAY -->
 <div class="overlay" id="overlay" onclick="closeHistory()"></div>
 <div class="history-panel" id="historyPanel">
   <div class="hist-header">
-    <span class="hist-title">// scan history</span>
+    <span class="hist-title">📋 Scan History</span>
     <button class="hist-close" onclick="closeHistory()">✕</button>
   </div>
   <div class="hist-list" id="historyList"></div>
-  <div class="hist-footer">
-    <button class="clear-btn" onclick="clearHistory()">clear all history</button>
-  </div>
+  <div class="hist-footer"><button class="clear-hist-btn" onclick="clearHistory()">Clear all history</button></div>
 </div>
-
-<!-- STATUS BAR -->
-<div class="statusbar">
-  <div class="sb-left">
-    <span>Built by <strong>Chennuru Pushpanjali</strong></span>
-    <span class="sb-sep">|</span>
-    <span>Python · Flask · AST · Open Source</span>
-  </div>
-  <div class="sb-right">
-    <a href="https://fossunited.org/fosshack" target="_blank">FOSS Hack 2026</a>
-    <span class="sb-sep">|</span>
-    <a href="https://github.com/pushpanjalich1985/Codeguard-ai.git" target="_blank">github ↗</a>
-  </div>
-</div>
-
+<footer>
+  <span>Built by <strong>Chennuru Pushpanjali</strong> <span class="footer-sep">·</span> Python + Flask + AST <span class="footer-sep">·</span> Open Source</span>
+  <span><a href="https://fossunited.org/fosshack" target="_blank">FOSS Hack 2026</a><span class="footer-sep">·</span><a href="https://github.com/pushpanjalich1985/Codeguard-ai.git" target="_blank">GitHub ↗</a></span>
+</footer>
 <script>
-  let currentLang = 'python';
-  let lastIssues = [];
-
-  function setLang(lang, btn) {
-    currentLang = lang;
-    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  }
-
-  function updateMeta() {
-    const v = document.getElementById('codeInput').value;
-    if (!v) { document.getElementById('metaInfo').textContent = 'ready'; return; }
-    const lines = v.split('\n').length;
-    document.getElementById('metaInfo').textContent = `${lines} lines · ${v.length} chars`;
-  }
-
-  function clearAll() {
-    document.getElementById('codeInput').value = '';
-    updateMeta();
-    document.getElementById('resultChip').textContent = 'no scan';
-    document.getElementById('results').innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">$ codeguard --scan &lt;file&gt;</div>
-        <p>paste your code on the left<br>and run a scan to detect issues</p>
-      </div>`;
-  }
-
-  function esc(s) {
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  }
-
-  // HISTORY
-  function getHistory() {
-    try { return JSON.parse(localStorage.getItem('cg-history') || '[]'); }
-    catch { return []; }
-  }
-
-  function saveToHistory(code, language, issues) {
-    const history = getHistory();
-    const risk = getRisk(issues);
-    const counts = {
-      critical: issues.filter(i=>i.severity==='critical').length,
-      high:     issues.filter(i=>i.severity==='high').length,
-      medium:   issues.filter(i=>i.severity==='medium').length,
-      low:      issues.filter(i=>i.severity==='low').length,
-    };
-    const entry = {
-      id: Date.now(), code, language, issues, counts,
-      risk: { score: risk.score, verdict: risk.verdict, color: risk.color },
-      timestamp: new Date().toLocaleString('en-IN', { dateStyle:'short', timeStyle:'short' }),
-      preview: code.trim().split('\n')[0].substring(0, 60)
-    };
-    history.unshift(entry);
-    if (history.length > 10) history.pop();
-    localStorage.setItem('cg-history', JSON.stringify(history));
-    updateHistoryCount();
-    if (document.getElementById('historyPanel').classList.contains('open')) renderHistoryList();
-  }
-
-  function updateHistoryCount() {
-    const count = getHistory().length;
-    const badge = document.getElementById('historyCount');
-    badge.textContent = count;
-    badge.style.display = count > 0 ? 'block' : 'none';
-  }
-
-  function toggleHistory() {
-    const panel = document.getElementById('historyPanel');
-    const isOpen = panel.classList.contains('open');
-    if (isOpen) closeHistory();
-    else {
-      panel.classList.add('open');
-      document.getElementById('overlay').classList.add('open');
-      document.getElementById('historyBtn').classList.add('active');
-      renderHistoryList();
-    }
-  }
-
-  function closeHistory() {
-    document.getElementById('historyPanel').classList.remove('open');
-    document.getElementById('overlay').classList.remove('open');
-    document.getElementById('historyBtn').classList.remove('active');
-  }
-
-  function renderHistoryList() {
-    const history = getHistory();
-    const listEl = document.getElementById('historyList');
-    if (history.length === 0) {
-      listEl.innerHTML = `<div class="hist-empty"><p>no scan history yet.<br>run your first scan<br>to see results here.</p></div>`;
-      return;
-    }
-    listEl.innerHTML = history.map(entry => {
-      const c = entry.counts;
-      let pills = '';
-      if (c.critical) pills += `<span class="hi-pill" style="background:var(--red-dim);color:var(--red);border-color:var(--red-bd)">${c.critical} crit</span>`;
-      if (c.high)     pills += `<span class="hi-pill" style="background:var(--org-dim);color:var(--orange);border-color:var(--org-bd)">${c.high} high</span>`;
-      if (c.medium)   pills += `<span class="hi-pill" style="background:var(--blu-dim);color:var(--blue);border-color:var(--blu-bd)">${c.medium} med</span>`;
-      if (c.low)      pills += `<span class="hi-pill" style="background:var(--panel2);color:var(--text3);border-color:var(--border2)">${c.low} low</span>`;
-      if (!pills)     pills  = `<span class="hi-pill" style="background:var(--green-dim);color:var(--green);border-color:var(--green-bd)">✓ clean</span>`;
-      return `
-        <div class="hist-item" id="hi-${entry.id}">
-          <div class="hi-top">
-            <span class="hi-lang">${entry.language}</span>
-            <span class="hi-time">${entry.timestamp}</span>
-            <button class="hi-del" onclick="deleteEntry(${entry.id}, event)" title="Delete">✕</button>
-          </div>
-          <div onclick="restoreEntry(${entry.id})">
-            <div class="hi-verdict" style="color:${entry.risk.color}">${entry.risk.verdict} — ${entry.risk.score}/100</div>
-            <div class="hi-pills">${pills}</div>
-            <div class="hi-preview">${esc(entry.preview)}</div>
-            <span class="restore-hint">↩ restore scan</span>
-          </div>
-        </div>`;
-    }).join('');
-  }
-
-  function restoreEntry(id) {
-    const entry = getHistory().find(e => e.id === id);
-    if (!entry) return;
-    document.getElementById('codeInput').value = entry.code;
-    updateMeta();
-    currentLang = entry.language;
-    document.querySelectorAll('.lang-btn').forEach(b => {
-      const match = b.textContent.toLowerCase() === entry.language ||
-        (entry.language === 'javascript' && b.textContent === 'JS');
-      b.classList.toggle('active', match);
-    });
-    renderResults(entry.issues);
-    closeHistory();
-  }
-
-  function clearHistory() {
-    if (!confirm('Clear all history?')) return;
-    localStorage.removeItem('cg-history');
-    updateHistoryCount();
-    renderHistoryList();
-  }
-
-  function deleteEntry(id, event) {
-    event.stopPropagation();
-    const history = getHistory().filter(e => e.id !== id);
-    localStorage.setItem('cg-history', JSON.stringify(history));
-    updateHistoryCount();
-    renderHistoryList();
-  }
-
-  // RULES
-  const rules = [
-    {
-      id:'sql_injection',title:'SQL Injection Risk',severity:'critical',
-      languages:['python','javascript','general'],
-      detect:c=>(c.includes('SELECT')||c.includes('INSERT')||c.includes('DELETE')||c.includes('UPDATE'))&&(c.includes(' + ')||c.includes('${'))&&(c.includes('input')||c.includes('request')||c.includes('req.')||c.includes('params')),
-      explanation:'SQL queries built by concatenating user input let attackers inject malicious SQL and steal or destroy your entire database.',
-      badCode:`query = "SELECT * FROM users WHERE id = " + user_id\ncursor.execute(query)`,
-      goodCode:`query = "SELECT * FROM users WHERE id = ?"\ncursor.execute(query, [user_id])`,
-      steps:['Find where user input is joined into SQL strings','Replace with parameterized ? placeholders','Pass values separately to cursor.execute()']
-    },
-    {
-      id:'hardcoded_secret',title:'Hardcoded Secret / Credential',severity:'critical',
-      languages:['python','javascript','general'],
-      detect:c=>(c.toLowerCase().includes('password =')||c.toLowerCase().includes('password=')||c.toLowerCase().includes('secret =')||c.toLowerCase().includes('api_key =')||c.toLowerCase().includes('api_key='))&&(c.includes('"')||c.includes("'")),
-      explanation:'Hardcoded credentials are visible to anyone with access to your repository. Always load secrets from environment variables.',
-      badCode:`password = "mypassword123"\napi_key = "sk-abc123xyz"`,
-      goodCode:`import os\npassword = os.getenv("PASSWORD")\napi_key = os.getenv("API_KEY")`,
-      steps:['Remove all hardcoded secrets from source code','Store them in a .env file','Use os.getenv() to load at runtime','Add .env to .gitignore']
-    },
-    {
-      id:'eval_usage',title:'Dangerous eval() Call',severity:'critical',
-      languages:['python','javascript','general'],
-      detect:c=>c.includes('eval('),
-      explanation:'eval() executes arbitrary strings as real code. If user input reaches eval(), an attacker can run any command on your system.',
-      badCode:`result = eval(user_input)`,
-      goodCode:`import ast\nresult = ast.literal_eval(user_input)`,
-      steps:['Remove eval() wherever possible','Use ast.literal_eval() for safe data parsing','Validate all external input']
-    },
-    {
-      id:'xss_risk',title:'XSS via innerHTML',severity:'critical',
-      languages:['javascript','general'],
-      detect:c=>c.includes('innerHTML')&&(c.includes('input')||c.includes('Input')||c.includes('value')||c.includes('Value')||c.includes('params')||c.includes('query')||c.includes('data')||c.includes('user')),
-      explanation:'Setting innerHTML from user input lets attackers inject scripts that run in your users\' browsers and steal session data.',
-      badCode:`element.innerHTML = userInput`,
-      goodCode:`element.textContent = userInput\n// If HTML needed:\nelement.innerHTML = DOMPurify.sanitize(userInput)`,
-      steps:['Use textContent instead of innerHTML for plain text','Sanitize with DOMPurify if HTML is needed','Never trust raw user input in the DOM']
-    },
-    {
-      id:'infinite_loop',title:'Potential Infinite Loop',severity:'high',
-      languages:['python','javascript','general'],
-      detect:c=>(c.includes('while True')||c.includes('while(true')||c.includes('while (true'))&&!c.includes('break'),
-      explanation:'A loop without an exit condition runs forever, consuming 100% CPU and eventually crashing your process.',
-      badCode:`while True:\n    process_data()`,
-      goodCode:`while True:\n    process_data()\n    if done:\n        break`,
-      steps:['Locate the while True loop','Add a break condition inside it','Verify it terminates under all conditions']
-    },
-    {
-      id:'no_error_handling',title:'Missing Error Handling',severity:'medium',
-      languages:['python','javascript','general'],
-      detect:c=>(c.includes('open(')||c.includes('requests.get')||c.includes('fetch(')||c.includes('urllib'))&&!c.includes('try')&&!c.includes('except')&&!c.includes('catch'),
-      explanation:'File and network operations can fail anytime. Without error handling, one failure terminates your entire program.',
-      badCode:`file = open("data.txt")\ndata = file.read()`,
-      goodCode:`try:\n    with open("data.txt") as f:\n        data = f.read()\nexcept FileNotFoundError:\n    print("File not found")`,
-      steps:['Wrap risky operations in try/except','Catch specific exception types','Use finally to release resources']
-    },
-    {
-      id:'no_input_validation',title:'No Input Validation',severity:'high',
-      languages:['python','javascript','general'],
-      detect:c=>(c.includes('input(')||c.includes('request.form')||c.includes('req.body')||c.includes('argv'))&&!c.includes('if ')&&!c.includes('validate')&&!c.includes('len('),
-      explanation:'Unvalidated input allows empty, malformed, or malicious data to enter your system and cause crashes.',
-      badCode:`username = request.form["username"]\nsave_to_db(username)`,
-      goodCode:`username = request.form["username"]\nif not username or len(username) < 3:\n    return "Invalid input"\nsave_to_db(username)`,
-      steps:['Check that input is not empty','Validate length and format','Reject invalid values with a clear error']
-    },
-    {
-      id:'division_by_zero',title:'Division by Zero Risk',severity:'high',
-      languages:['python','javascript','general'],
-      detect:c=>c.split('\n').some(l=>l.includes('/')&&!l.trim().startsWith('#')&&!l.trim().startsWith('//')&&(l.includes('len(')||l.includes('count')||l.includes('total')||l.includes('size'))),
-      explanation:'Dividing by a variable that could equal zero crashes your program with ZeroDivisionError.',
-      badCode:`average = total / count`,
-      goodCode:`average = total / count if count != 0 else 0`,
-      steps:['Find all divisions by variables','Check whether the divisor can be zero','Provide a safe fallback value']
-    },
-    {
-      id:'debug_prints',title:'Debug print() Left in Code',severity:'low',
-      languages:['python','general'],
-      detect:c=>c.split('\n').filter(l=>l.trim().startsWith('print(')).length>3,
-      explanation:'Excessive print() calls indicate debug code left in production and may expose sensitive data.',
-      badCode:`print("user:", user)\nprint("token:", token)\nprint("password:", password)`,
-      goodCode:`import logging\nlogging.info("Processing user: %s", user.id)\n# Never log credentials`,
-      steps:['Remove all debug print() calls','Use the logging module for production output','Never log passwords or tokens']
-    },
-    {
-      id:'missing_colon',title:'Missing Colon in Statement',severity:'high',
-      languages:['python'],
-      detect:c=>c.split('\n').some(l=>{const t=l.trim();return(t.startsWith('if ')||t.startsWith('for ')||t.startsWith('while ')||t.startsWith('def ')||t.startsWith('class ')||t.startsWith('else')||t.startsWith('elif ')||t.startsWith('try')||t.startsWith('except'))&&!t.endsWith(':')&&!t.endsWith('\\')&&t.length>2}),
-      explanation:'Python requires a colon at the end of every compound statement. A missing colon causes an immediate SyntaxError.',
-      badCode:`for i in range(10)\n    print(i)`,
-      goodCode:`for i in range(10):\n    print(i)`,
-      steps:['Check all if, for, while, def, class headers','Ensure every one ends with :','Also check elif, else, try, except']
-    },
-    {
-      id:'bare_except',title:'Bare except Clause',severity:'medium',
-      languages:['python'],
-      detect:c=>c.includes('except:')||c.includes('except :'),
-      explanation:'A bare except: catches every exception including SystemExit, masking real bugs and making debugging very hard.',
-      badCode:`try:\n    do_something()\nexcept:\n    pass`,
-      goodCode:`try:\n    do_something()\nexcept ValueError as e:\n    print("Error:", e)`,
-      steps:['Specify the exception type after except','Use except Exception as e: at minimum','Never silently pass on errors']
-    },
-    {
-      id:'bool_comparison',title:'Unnecessary Boolean Comparison',severity:'low',
-      languages:['python'],
-      detect:c=>c.includes('== True')||c.includes('== False'),
-      explanation:'Comparing directly to True or False is unnecessary and considered bad practice in Python.',
-      badCode:`if is_valid == True:\n    do_something()`,
-      goodCode:`if is_valid:\n    do_something()`,
-      steps:['Find the boolean comparison','Replace "if x == True:" with just "if x:"','Replace "if x == False:" with "if not x:"']
-    },
-    {
-      id:'var_usage',title:"Outdated 'var' Keyword Used",severity:'medium',
-      languages:['javascript'],
-      detect:c=>c.split('\n').some(l=>l.trim().startsWith('var ')),
-      explanation:"'var' is outdated JavaScript with confusing scope rules. Use 'let' or 'const' instead.",
-      badCode:`var username = "john"\nvar count = 0`,
-      goodCode:`const username = "john"\nlet count = 0`,
-      steps:["Find 'var' in your code","Replace with 'const' if the value never changes","Replace with 'let' if the value will be reassigned"]
-    },
-    {
-      id:'input_no_cast',title:'input() Used in Math Without int()',severity:'high',
-      languages:['python'],
-      detect:c=>c.split('\n').some(l=>l.includes('input(')&&!l.trim().startsWith('#')&&(l.includes(' + ')||l.includes(' - ')||l.includes(' * ')||l.includes(' / ')||l.includes(' > ')||l.includes(' < ')||l.includes(' >= ')||l.includes(' <= '))),
-      explanation:'input() always returns a string. Using it directly in math or comparisons will crash with a TypeError.',
-      badCode:`age = input("Enter age: ")\nif age > 18:`,
-      goodCode:`age = int(input("Enter age: "))\nif age > 18:`,
-      steps:['Find input() used in math or comparisons','Wrap with int() for numbers','Or float() if you need decimals']
-    }
-  ];
-
-  // RISK
-  function getRisk(issues) {
-    const c = issues.filter(i=>i.severity==='critical').length;
-    const h = issues.filter(i=>i.severity==='high').length;
-    const score = Math.min(100, c*25 + h*12 + issues.length*4);
-    if (score>=75) return {score, verdict:'CRITICAL RISK', color:'var(--red)',    barColor:'#ff4d4d'};
-    if (score>=50) return {score, verdict:'HIGH RISK',     color:'var(--orange)', barColor:'#ff8c42'};
-    if (score>=20) return {score, verdict:'MEDIUM RISK',   color:'var(--blue)',   barColor:'#58a6ff'};
-    return              {score, verdict:'LOW RISK',      color:'var(--green)',  barColor:'#39d353'};
-  }
-
-  // RENDER
-  function renderResults(issues) {
-    lastIssues = issues;
-    const div = document.getElementById('results');
-    document.getElementById('resultChip').textContent =
-      issues.length === 0 ? '0 issues' : `${issues.length} issue${issues.length!==1?'s':''}`;
-
-    if (issues.length === 0) {
-      div.innerHTML = `
-        <div class="clean-state">
-          <span class="clean-icon">✓</span>
-          <h3>NO ISSUES FOUND</h3>
-          <p>all checks passed. code looks clean.</p>
-        </div>`;
-      return;
-    }
-
-    const risk = getRisk(issues);
-    const counts = {
-      critical: issues.filter(i=>i.severity==='critical').length,
-      high:     issues.filter(i=>i.severity==='high').length,
-      medium:   issues.filter(i=>i.severity==='medium').length,
-      low:      issues.filter(i=>i.severity==='low').length,
-    };
-
-    let html = `
-      <div class="risk-block">
-        <div class="risk-top">
-          <div>
-            <div class="risk-label">// threat assessment</div>
-            <div class="risk-verdict" style="color:${risk.color}">${risk.verdict}</div>
-          </div>
-          <div>
-            <div class="risk-score" style="color:${risk.color}">${risk.score}</div>
-            <div class="risk-score-label">/ 100</div>
-          </div>
-        </div>
-        <div class="risk-bar-track">
-          <div class="risk-bar-fill" id="riskBar" style="background:${risk.barColor}"></div>
-        </div>
-        <div class="sev-grid">
-          <div class="sev-cell">
-            <div class="sev-num" style="color:var(--red)">${counts.critical}</div>
-            <div class="sev-lbl">Critical</div>
-          </div>
-          <div class="sev-cell">
-            <div class="sev-num" style="color:var(--orange)">${counts.high}</div>
-            <div class="sev-lbl">High</div>
-          </div>
-          <div class="sev-cell">
-            <div class="sev-num" style="color:var(--blue)">${counts.medium}</div>
-            <div class="sev-lbl">Medium</div>
-          </div>
-          <div class="sev-cell">
-            <div class="sev-num" style="color:var(--text2)">${counts.low}</div>
-            <div class="sev-lbl">Low</div>
-          </div>
-        </div>
-      </div>`;
-
-    issues.forEach((issue, idx) => {
-      const delay = (idx * 0.04).toFixed(2);
-      const steps = issue.steps.map((s,i) =>
-        `<li><span class="step-num">${i+1}</span><span>${s}</span></li>`
-      ).join('');
-      html += `
-        <div class="issue-card ic-${issue.severity}" style="animation-delay:${delay}s">
-          <div class="card-head" onclick="toggleCard(this)">
-            <span class="sev-badge sb-${issue.severity}">${issue.severity}</span>
-            <span class="card-title">${issue.title}</span>
-            ${issue.line ? `<span class="line-badge">L${issue.line}</span>` : ''}
-            <span class="card-arrow">›</span>
-          </div>
-          <div class="card-body">
-            <p class="explain">${issue.explanation}</p>
-            <div class="code-pair">
-              <div class="code-block">
-                <div class="code-block-head">
-                  <span class="code-lbl lbl-bad">✗ before</span>
-                </div>
-                <pre>${esc(issue.badCode)}</pre>
-              </div>
-              <div class="code-block">
-                <div class="code-block-head">
-                  <span class="code-lbl lbl-good">✓ after</span>
-                  <button class="copy-btn" onclick="copyFix(this,${JSON.stringify(issue.goodCode)})">copy</button>
-                </div>
-                <pre>${esc(issue.goodCode)}</pre>
-              </div>
-            </div>
-            <div class="steps-label">// how to fix</div>
-            <ol class="steps-list">${steps}</ol>
-          </div>
-        </div>`;
-    });
-
-    div.innerHTML = html;
-    requestAnimationFrame(() => {
-      const bar = document.getElementById('riskBar');
-      if (bar) bar.style.width = risk.score + '%';
-    });
-  }
-
-  function toggleCard(head) {
-    const body = head.nextElementSibling;
-    const arrow = head.querySelector('.card-arrow');
-    body.classList.toggle('open');
-    arrow.classList.toggle('open');
-  }
-
-  function copyFix(btn, code) {
-    navigator.clipboard.writeText(code).then(() => {
-      btn.textContent = '✓ done';
-      btn.classList.add('done');
-      setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('done'); }, 2000);
-    });
-  }
-
-  function loadExample(type) {
-    const examples = {
-      sqli: {
-        lang: 'python',
-        code: `import sqlite3\n\ndef get_user(user_id):\n    conn = sqlite3.connect("users.db")\n    cursor = conn.cursor()\n    query = "SELECT * FROM users WHERE id = " + user_id\n    cursor.execute(query)\n    return cursor.fetchone()\n\nresult = get_user(input("Enter user ID: "))`
-      },
-      secret: {
-        lang: 'python',
-        code: `import requests\n\n# Application configuration\nDATABASE_HOST = "localhost"\nDATABASE_NAME = "myapp"\npassword = "admin123"\napi_key = "sk-abc123xyz789"\nsecret = "my_jwt_secret_key"\n\ndef connect():\n    return f"host={DATABASE_HOST} password={password}"`
-      },
-      xss: {
-        lang: 'javascript',
-        code: `// User profile page\nfunction loadProfile() {\n  const username = new URLSearchParams(window.location.search).get('user')\n  const query = "SELECT * FROM users WHERE name = '" + username + "'"\n  \n  document.getElementById('profile').innerHTML = userInput\n  document.getElementById('bio').innerHTML = userData.bio\n}`
-      },
-      loop: {
-        lang: 'python',
-        code: `import time\n\ndef monitor_server():\n    while True:\n        status = check_server()\n        log_status(status)\n        time.sleep(5)\n\ndef process_queue():\n    while True:\n        item = queue.get()\n        process(item)\n\nmonitor_server()`
-      },
-      mixed: {
-        lang: 'python',
-        code: `import os\nimport unused_lib\n\npassword = "supersecret123"\napi_key = "sk-prod-abc123"\n\ndef calculate(total, count):\n    result = eval(input("Enter formula: "))\n    average = total / count\n    return average\n\ndef login(username):\n    query = "SELECT * FROM users WHERE name = '" + username + "'"\n    cursor.execute(query)\n\nwhile True:\n    data = process()\n    print("data:", data)\n    print("result:", result)\n    print("user:", username)\n    print("token:", token)`
-      }
-    };
-
-    const ex = examples[type];
-    if (!ex) return;
-    currentLang = ex.lang;
-    document.querySelectorAll('.lang-btn').forEach(b => {
-      b.classList.toggle('active',
-        b.textContent.toLowerCase() === ex.lang ||
-        (ex.lang === 'javascript' && b.textContent === 'JS')
-      );
-    });
-    document.getElementById('codeInput').value = ex.code;
-    updateMeta();
-    analyzeCode();
-  }
-
-  // API
-  const API_BASE = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
-    ? 'http://127.0.0.1:5000'
-    : window.location.origin;
-
-  function analyzeCode() {
-    const code = document.getElementById('codeInput').value.trim();
-    const btn  = document.getElementById('analyzeBtn');
-    const div  = document.getElementById('results');
-
-    if (!code) {
-      div.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠ no code provided</div><p>paste something first</p></div>`;
-      return;
-    }
-
-    btn.disabled = true;
-    btn.textContent = '⏳ SCANNING...';
-    document.getElementById('resultChip').textContent = '—';
-    div.innerHTML = `
-      <div class="loading-state">
-        <div class="scan-bar-wrap"><div class="scan-bar"></div></div>
-        <span class="scan-label">SCANNING FOR VULNERABILITIES...</span>
-      </div>`;
-
-    fetch(`${API_BASE}/analyze`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code, language: currentLang })
-    })
-    .then(r => r.json())
-    .then(data => {
-      if (data.issues && data.issues.length > 0) {
-        renderResults(data.issues);
-        saveToHistory(code, currentLang, data.issues);
-      } else {
-        runFrontend(code, currentLang);
-      }
-    })
-    .catch(() => runFrontend(code, currentLang))
-    .finally(() => { btn.disabled = false; btn.textContent = '▶ RUN SCAN'; });
-  }
-
-  function runFrontend(code, language) {
-    setTimeout(() => {
-      const found = rules.filter(r =>
-        (r.languages.includes(language) || r.languages.includes('general')) && r.detect(code)
-      );
-      renderResults(found);
-      saveToHistory(code, language, found);
-    }, 500);
-  }
-
-  // Init
-  updateHistoryCount();
+let currentLang='python',lastIssues=[];
+function toggleTheme(){const h=document.documentElement,d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.getElementById('themeBtn').textContent=d?'🌙':'☀️';localStorage.setItem('cg-theme',d?'light':'dark')}
+const st=localStorage.getItem('cg-theme');if(st){document.documentElement.setAttribute('data-theme',st);document.getElementById('themeBtn').textContent=st==='dark'?'☀️':'🌙'}
+function setLang(l,b){currentLang=l;document.querySelectorAll('.lang-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active')}
+function updateMeta(){const v=document.getElementById('codeInput').value;if(!v){document.getElementById('metaInfo').textContent='Ready';return}document.getElementById('metaInfo').textContent=`${v.split('\n').length} lines · ${v.length} chars`}
+function clearAll(){document.getElementById('codeInput').value='';updateMeta();const c=document.getElementById('resultChip');c.textContent='No scan yet';c.style.color='';c.style.borderColor='';c.style.background='';document.getElementById('results').innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div><h3>Nothing to show yet</h3><p>Paste your code on the left and click Analyze.</p></div>'}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function getHistory(){try{return JSON.parse(localStorage.getItem('cg-history')||'[]')}catch{return[]}}
+function saveToHistory(code,language,issues){const h=getHistory(),risk=getRisk(issues),counts={critical:issues.filter(i=>i.severity==='critical').length,high:issues.filter(i=>i.severity==='high').length,medium:issues.filter(i=>i.severity==='medium').length,low:issues.filter(i=>i.severity==='low').length};h.unshift({id:Date.now(),code,language,issues,counts,risk:{score:risk.score,verdict:risk.verdict,color:risk.color},timestamp:new Date().toLocaleString('en-IN',{dateStyle:'short',timeStyle:'short'}),preview:code.trim().split('\n')[0].substring(0,60)});if(h.length>10)h.pop();localStorage.setItem('cg-history',JSON.stringify(h));updateHistoryCount();if(document.getElementById('historyPanel').classList.contains('open'))renderHistoryList()}
+function updateHistoryCount(){const c=getHistory().length,b=document.getElementById('historyCount');b.textContent=c;b.style.display=c>0?'block':'none'}
+function toggleHistory(){const p=document.getElementById('historyPanel');if(p.classList.contains('open'))closeHistory();else{p.classList.add('open');document.getElementById('overlay').classList.add('open');renderHistoryList()}}
+function closeHistory(){document.getElementById('historyPanel').classList.remove('open');document.getElementById('overlay').classList.remove('open')}
+function renderHistoryList(){const history=getHistory(),l=document.getElementById('historyList');if(history.length===0){l.innerHTML='<div class="hist-empty"><span>📭</span><p>No scans yet. Run your first analysis to see history here.</p></div>';return}l.innerHTML=history.map(e=>{const c=e.counts;let p='';if(c.critical)p+=`<span class="hi-pill" style="background:var(--red-bg);color:var(--red);border-color:var(--red-bd)">${c.critical} critical</span>`;if(c.high)p+=`<span class="hi-pill" style="background:var(--org-bg);color:var(--orange);border-color:var(--org-bd)">${c.high} high</span>`;if(c.medium)p+=`<span class="hi-pill" style="background:var(--blu-bg);color:var(--blue);border-color:var(--blu-bd)">${c.medium} medium</span>`;if(c.low)p+=`<span class="hi-pill" style="background:var(--grn-bg);color:var(--green);border-color:var(--grn-bd)">${c.low} low</span>`;if(!p)p='<span class="hi-pill" style="background:var(--grn-bg);color:var(--green);border-color:var(--grn-bd)">✓ Clean</span>';return`<div class="hist-item" id="hi-${e.id}"><div class="hi-top"><span class="hi-lang">${e.language}</span><span class="hi-time">${e.timestamp}</span><button class="hi-del" onclick="deleteEntry(${e.id},event)" title="Delete">✕</button></div><div onclick="restoreEntry(${e.id})"><div class="hi-verdict" style="color:${e.risk.color}">${e.risk.verdict} — ${e.risk.score}/100</div><div class="hi-pills">${p}</div><div class="hi-preview">${esc(e.preview)}</div><span class="restore-hint">↩ click to restore</span></div></div>`}).join('')}
+function restoreEntry(id){const e=getHistory().find(x=>x.id===id);if(!e)return;document.getElementById('codeInput').value=e.code;updateMeta();currentLang=e.language;document.querySelectorAll('.lang-btn').forEach(b=>{b.classList.toggle('active',b.textContent.toLowerCase()===e.language||(e.language==='javascript'&&b.textContent==='JS'))});renderResults(e.issues);closeHistory()}
+function clearHistory(){if(!confirm('Clear all history?'))return;localStorage.removeItem('cg-history');updateHistoryCount();renderHistoryList()}
+function deleteEntry(id,event){event.stopPropagation();const h=getHistory().filter(e=>e.id!==id);localStorage.setItem('cg-history',JSON.stringify(h));updateHistoryCount();renderHistoryList()}
+const rules=[{id:'sql_injection',title:'SQL Injection Risk',severity:'critical',languages:['python','javascript','general'],detect:c=>(c.includes('SELECT')||c.includes('INSERT')||c.includes('DELETE')||c.includes('UPDATE'))&&(c.includes(' + ')||c.includes('${'))&&(c.includes('input')||c.includes('request')||c.includes('req.')||c.includes('params')),explanation:'SQL queries built by concatenating user input let attackers inject malicious SQL and steal or destroy your entire database.',badCode:'query = "SELECT * FROM users WHERE id = " + user_id\ncursor.execute(query)',goodCode:'query = "SELECT * FROM users WHERE id = ?"\ncursor.execute(query, [user_id])',steps:['Find where user input is joined into SQL strings','Replace with parameterized ? placeholders','Pass values separately to cursor.execute()']},{id:'hardcoded_secret',title:'Hardcoded Secret / Credential',severity:'critical',languages:['python','javascript','general'],detect:c=>(c.toLowerCase().includes('password =')||c.toLowerCase().includes('password=')||c.toLowerCase().includes('secret =')||c.toLowerCase().includes('api_key =')||c.toLowerCase().includes('api_key='))&&(c.includes('"')||c.includes("'")),explanation:'Hardcoded credentials are visible to anyone with access to your repository. Always load secrets from environment variables.',badCode:'password = "mypassword123"\napi_key = "sk-abc123xyz"',goodCode:'import os\npassword = os.getenv("PASSWORD")\napi_key = os.getenv("API_KEY")',steps:['Remove all hardcoded secrets from source code','Store them in a .env file','Use os.getenv() to load at runtime','Add .env to .gitignore']},{id:'eval_usage',title:'Dangerous eval() Call',severity:'critical',languages:['python','javascript','general'],detect:c=>c.includes('eval('),explanation:"eval() executes arbitrary strings as real code. If user input reaches eval(), an attacker can run any command on your system.",badCode:'result = eval(user_input)',goodCode:'import ast\nresult = ast.literal_eval(user_input)',steps:['Remove eval() wherever possible','Use ast.literal_eval() for safe data parsing','Validate all external input']},{id:'xss_risk',title:'XSS via innerHTML',severity:'critical',languages:['javascript','general'],detect:c=>c.includes('innerHTML')&&(c.includes('input')||c.includes('value')||c.includes('params')||c.includes('query')||c.includes('user')),explanation:"Setting innerHTML from user input lets attackers inject scripts that run in your users' browsers and steal session data.",badCode:'element.innerHTML = userInput',goodCode:'element.textContent = userInput\n// If HTML is needed:\nelement.innerHTML = DOMPurify.sanitize(userInput)',steps:['Use textContent instead of innerHTML for plain text','Sanitize with DOMPurify if HTML is needed','Never trust raw user input in the DOM']},{id:'infinite_loop',title:'Potential Infinite Loop',severity:'high',languages:['python','javascript','general'],detect:c=>(c.includes('while True')||c.includes('while(true')||c.includes('while (true'))&&!c.includes('break'),explanation:'A loop without an exit condition runs forever, consuming 100% CPU and eventually crashing your process.',badCode:'while True:\n    process_data()',goodCode:'while True:\n    process_data()\n    if done:\n        break',steps:['Locate the while True loop','Add a break condition inside it','Verify it terminates under all conditions']},{id:'no_error_handling',title:'Missing Error Handling',severity:'medium',languages:['python','javascript','general'],detect:c=>(c.includes('open(')||c.includes('requests.get')||c.includes('fetch(')||c.includes('urllib'))&&!c.includes('try')&&!c.includes('except')&&!c.includes('catch'),explanation:'File and network operations can fail anytime. Without error handling, one failure terminates your entire program.',badCode:'file = open("data.txt")\ndata = file.read()',goodCode:'try:\n    with open("data.txt") as f:\n        data = f.read()\nexcept FileNotFoundError:\n    print("File not found")',steps:['Wrap risky operations in try/except','Catch specific exception types','Use finally to release resources']},{id:'no_input_validation',title:'No Input Validation',severity:'high',languages:['python','javascript','general'],detect:c=>(c.includes('input(')||c.includes('request.form')||c.includes('req.body')||c.includes('argv'))&&!c.includes('if ')&&!c.includes('validate')&&!c.includes('len('),explanation:'Unvalidated input allows empty, malformed, or malicious data to enter your system and cause crashes.',badCode:'username = request.form["username"]\nsave_to_db(username)',goodCode:'username = request.form["username"]\nif not username or len(username) < 3:\n    return "Invalid input"\nsave_to_db(username)',steps:['Check that input is not empty','Validate length and format','Reject invalid values with a clear error']},{id:'division_by_zero',title:'Division by Zero Risk',severity:'high',languages:['python','javascript','general'],detect:c=>c.split('\n').some(l=>l.includes('/')&&!l.trim().startsWith('#')&&!l.trim().startsWith('//')&&(l.includes('len(')||l.includes('count')||l.includes('total')||l.includes('size'))),explanation:'Dividing by a variable that could equal zero crashes your program with ZeroDivisionError.',badCode:'average = total / count',goodCode:'average = total / count if count != 0 else 0',steps:['Find all divisions by variables','Check whether the divisor can be zero','Provide a safe fallback value']},{id:'debug_prints',title:'Debug print() Left in Code',severity:'low',languages:['python','general'],detect:c=>c.split('\n').filter(l=>l.trim().startsWith('print(')).length>3,explanation:'Excessive print() calls indicate debug code left in production and may expose sensitive data.',badCode:'print("user:", user)\nprint("token:", token)\nprint("password:", password)',goodCode:'import logging\nlogging.info("Processing user: %s", user.id)\n# Never log credentials',steps:['Remove all debug print() calls','Use the logging module for production output','Never log passwords or tokens']},{id:'missing_colon',title:'Missing Colon in Statement',severity:'high',languages:['python'],detect:c=>c.split('\n').some(l=>{const t=l.trim();return(t.startsWith('if ')||t.startsWith('for ')||t.startsWith('while ')||t.startsWith('def ')||t.startsWith('class ')||t.startsWith('else')||t.startsWith('elif ')||t.startsWith('try')||t.startsWith('except'))&&!t.endsWith(':')&&!t.endsWith('\\')&&t.length>2}),explanation:'Python requires a colon at the end of every compound statement. A missing colon causes an immediate SyntaxError.',badCode:'for i in range(10)\n    print(i)',goodCode:'for i in range(10):\n    print(i)',steps:['Check all if, for, while, def, class headers','Ensure every one ends with :','Also check elif, else, try, except']},{id:'bare_except',title:'Bare except Clause',severity:'medium',languages:['python'],detect:c=>c.includes('except:')||c.includes('except :'),explanation:'A bare except: catches every exception including SystemExit, masking real bugs and making debugging very hard.',badCode:'try:\n    do_something()\nexcept:\n    pass',goodCode:'try:\n    do_something()\nexcept ValueError as e:\n    print("Error:", e)',steps:['Specify the exception type after except','Use except Exception as e: at minimum','Never silently pass on errors']},{id:'bool_comparison',title:'Unnecessary Boolean Comparison',severity:'low',languages:['python'],detect:c=>c.includes('== True')||c.includes('== False'),explanation:'Comparing directly to True or False is unnecessary and considered bad practice in Python.',badCode:'if is_valid == True:\n    do_something()',goodCode:'if is_valid:\n    do_something()',steps:['Find the boolean comparison','Replace "if x == True:" with just "if x:"','Replace "if x == False:" with "if not x:"']},{id:'var_usage',title:"Outdated 'var' Keyword Used",severity:'medium',languages:['javascript'],detect:c=>c.split('\n').some(l=>l.trim().startsWith('var ')),explanation:"'var' is outdated JavaScript with confusing scope rules. Use 'let' or 'const' instead.",badCode:'var username = "john"\nvar count = 0',goodCode:'const username = "john"\nlet count = 0',steps:["Find 'var' in your code","Replace with 'const' if the value never changes","Replace with 'let' if the value will be reassigned"]},{id:'input_no_cast',title:'input() Used in Math Without int()',severity:'high',languages:['python'],detect:c=>c.split('\n').some(l=>l.includes('input(')&&!l.trim().startsWith('#')&&(l.includes(' + ')||l.includes(' - ')||l.includes(' * ')||l.includes(' / ')||l.includes(' > ')||l.includes(' < ')||l.includes(' >= ')||l.includes(' <= '))),explanation:'input() always returns a string. Using it directly in math or comparisons will crash with a TypeError.',badCode:'age = input("Enter age: ")\nif age > 18:',goodCode:'age = int(input("Enter age: "))\nif age > 18:',steps:['Find input() used in math or comparisons','Wrap with int() for numbers','Or float() if you need decimals']}];
+function getRisk(issues){const c=issues.filter(i=>i.severity==='critical').length,h=issues.filter(i=>i.severity==='high').length,score=Math.min(100,c*25+h*12+issues.length*4);if(score>=75)return{score,verdict:'Critical Risk',color:'var(--red)',bar:'#ef4444'};if(score>=50)return{score,verdict:'High Risk',color:'var(--orange)',bar:'#f97316'};if(score>=20)return{score,verdict:'Medium Risk',color:'var(--blue)',bar:'#3b82f6'};return{score,verdict:'Low Risk',color:'var(--green)',bar:'#22c55e'}}
+function renderResults(issues){lastIssues=issues;const div=document.getElementById('results'),chip=document.getElementById('resultChip');chip.textContent=issues.length===0?'✓ Clean':`${issues.length} issue${issues.length!==1?'s':''}`;chip.style.color=issues.length===0?'var(--green)':'var(--red)';chip.style.borderColor=issues.length===0?'var(--grn-bd)':'var(--red-bd)';chip.style.background=issues.length===0?'var(--grn-bg)':'var(--red-bg)';if(issues.length===0){div.innerHTML='<div class="no-issues"><span class="ni-icon">✅</span><h3>No Issues Found</h3><p>Your code passed all checks. Looks good!</p></div>';return}const risk=getRisk(issues),counts={critical:issues.filter(i=>i.severity==='critical').length,high:issues.filter(i=>i.severity==='high').length,medium:issues.filter(i=>i.severity==='medium').length,low:issues.filter(i=>i.severity==='low').length};let html=`<div class="risk-card"><div class="risk-main"><div class="risk-left"><div class="risk-eyebrow">Risk Assessment</div><div class="risk-verdict" style="color:${risk.color}">${risk.verdict}</div></div><div class="risk-right"><div class="risk-score-num" style="color:${risk.color}">${risk.score}</div><div class="risk-score-denom">out of 100</div></div></div><div class="risk-bar-wrap"><div class="risk-bar" id="riskBar" style="background:${risk.bar}"></div></div><div class="sev-grid"><div class="sev-cell"><div class="sev-num" style="color:var(--red)">${counts.critical}</div><div class="sev-lbl">Critical</div></div><div class="sev-cell"><div class="sev-num" style="color:var(--orange)">${counts.high}</div><div class="sev-lbl">High</div></div><div class="sev-cell"><div class="sev-num" style="color:var(--blue)">${counts.medium}</div><div class="sev-lbl">Medium</div></div><div class="sev-cell"><div class="sev-num" style="color:var(--green)">${counts.low}</div><div class="sev-lbl">Low</div></div></div></div>`;issues.forEach((issue,idx)=>{const delay=(idx*0.04).toFixed(2),steps=issue.steps.map((s,i)=>`<li><span class="step-n">${i+1}</span><span>${s}</span></li>`).join('');html+=`<div class="issue-card ic-${issue.severity}" style="animation-delay:${delay}s"><div class="card-head" onclick="toggleCard(this)"><span class="sev-tag tag-${issue.severity}">${issue.severity}</span><span class="card-title">${issue.title}</span>${issue.line?`<span class="line-tag">Line ${issue.line}</span>`:''}<span class="card-arrow">›</span></div><div class="card-body"><p class="explanation">${issue.explanation}</p><div class="code-pair"><div class="code-block"><div class="code-head"><span class="code-lbl lbl-bad">✗ Before</span></div><pre>${esc(issue.badCode)}</pre></div><div class="code-block"><div class="code-head"><span class="code-lbl lbl-good">✓ After</span><button class="copy-btn" onclick="copyFix(this,${JSON.stringify(issue.goodCode)})">Copy fix</button></div><pre>${esc(issue.goodCode)}</pre></div></div><div class="steps-label">How to fix</div><ol class="steps-list">${steps}</ol></div></div>`});div.innerHTML=html;requestAnimationFrame(()=>{const bar=document.getElementById('riskBar');if(bar)bar.style.width=risk.score+'%'})}
+function toggleCard(head){const body=head.nextElementSibling,arrow=head.querySelector('.card-arrow');body.classList.toggle('open');arrow.classList.toggle('open')}
+function copyFix(btn,code){navigator.clipboard.writeText(code).then(()=>{btn.textContent='✓ Copied!';btn.classList.add('done');setTimeout(()=>{btn.textContent='Copy fix';btn.classList.remove('done')},2000)})}
+function loadExample(type){const examples={sqli:{lang:'python',code:`import sqlite3\n\ndef get_user(user_id):\n    conn = sqlite3.connect("users.db")\n    cursor = conn.cursor()\n    query = "SELECT * FROM users WHERE id = " + user_id\n    cursor.execute(query)\n    return cursor.fetchone()\n\nresult = get_user(input("Enter user ID: "))`},secret:{lang:'python',code:`import requests\n\n# Application configuration\nDATABASE_HOST = "localhost"\nDATABASE_NAME = "myapp"\npassword = "admin123"\napi_key = "sk-abc123xyz789"\nsecret = "my_jwt_secret_key"\n\ndef connect():\n    return f"host={DATABASE_HOST} password={password}"`},xss:{lang:'javascript',code:`// User profile page\nfunction loadProfile() {\n  const username = new URLSearchParams(window.location.search).get('user')\n  const query = "SELECT * FROM users WHERE name = '" + username + "'"\n  \n  document.getElementById('profile').innerHTML = userInput\n  document.getElementById('bio').innerHTML = userData.bio\n}`},loop:{lang:'python',code:`import time\n\ndef monitor_server():\n    while True:\n        status = check_server()\n        log_status(status)\n        time.sleep(5)\n\ndef process_queue():\n    while True:\n        item = queue.get()\n        process(item)\n\nmonitor_server()`},mixed:{lang:'python',code:`import os\nimport unused_lib\n\npassword = "supersecret123"\napi_key = "sk-prod-abc123"\n\ndef calculate(total, count):\n    result = eval(input("Enter formula: "))\n    average = total / count\n    return average\n\ndef login(username):\n    query = "SELECT * FROM users WHERE name = '" + username + "'"\n    cursor.execute(query)\n\nwhile True:\n    data = process()\n    print("data:", data)\n    print("result:", result)\n    print("user:", username)\n    print("token:", token)`}};const ex=examples[type];if(!ex)return;currentLang=ex.lang;document.querySelectorAll('.lang-btn').forEach(b=>{b.classList.toggle('active',b.textContent.toLowerCase()===ex.lang||(ex.lang==='javascript'&&b.textContent==='JS'))});document.getElementById('codeInput').value=ex.code;updateMeta();analyzeCode()}
+const API_BASE=window.location.hostname==='127.0.0.1'||window.location.hostname==='localhost'?'http://127.0.0.1:5000':window.location.origin;
+function analyzeCode(){const code=document.getElementById('codeInput').value.trim(),btn=document.getElementById('analyzeBtn'),div=document.getElementById('results');if(!code){div.innerHTML='<div class="empty-state"><div class="empty-icon">⚠️</div><h3>No code found</h3><p>Paste something first then click Analyze.</p></div>';return}btn.disabled=true;btn.innerHTML='<span>⏳</span> Scanning...';const chip=document.getElementById('resultChip');chip.textContent='—';chip.style.color='';chip.style.borderColor='';chip.style.background='';div.innerHTML='<div class="loading-state"><div class="scan-wrap"><div class="scan-track"><div class="scan-fill"></div></div><div class="scan-text">Scanning for vulnerabilities...</div></div></div>';fetch(`${API_BASE}/analyze`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code,language:currentLang})}).then(r=>r.json()).then(data=>{if(data.issues&&data.issues.length>0){renderResults(data.issues);saveToHistory(code,currentLang,data.issues)}else{runFrontend(code,currentLang)}}).catch(()=>runFrontend(code,currentLang)).finally(()=>{btn.disabled=false;btn.innerHTML='<span>▶</span> Analyze Code'})}
+function runFrontend(code,language){setTimeout(()=>{const found=rules.filter(r=>(r.languages.includes(language)||r.languages.includes('general'))&&r.detect(code));renderResults(found);saveToHistory(code,language,found)},500)}
+updateHistoryCount();
 </script>
 </body>
 </html>
