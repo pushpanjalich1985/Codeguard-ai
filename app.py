@@ -55,24 +55,6 @@ def check_logic(code):
     issues = []
     lines = code.split("\n")
 
-    C_PATTERNS = ["printf(", "scanf(", "int ", "float ", "void ", "#include", "->", "::"]
-    if any(p in code for p in C_PATTERNS):
-        issues.append({
-            "id": "wrong_language",
-            "title": "This looks like C/C++ code, not Python",
-            "severity": "critical",
-            "line": 1,
-            "explanation": "Line 1: This code appears to be C or C++, not Python. Running C code in a Python environment will fail completely.",
-            "badCode": 'int x = 10;\nprintf("hello");',
-            "goodCode": 'x = 10\nprint("hello")',
-            "steps": [
-                "Check that you selected the correct language",
-                "If writing Python, remove C-style syntax",
-                "If writing C, use a C compiler instead"
-            ]
-        })
-
-
     # Check for hardcoded secrets
     for i, line in enumerate(lines, 1):
         lower = line.lower()
