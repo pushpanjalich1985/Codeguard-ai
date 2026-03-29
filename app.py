@@ -208,9 +208,9 @@ def check_logic(code):
 
     # Check for SQL injection
     for i, line in enumerate(lines, 1):
-        if (("SELECT" in line or "INSERT" in line or
-             "DELETE" in line or "UPDATE" in line) and
-            ("+" in line or "%" in line or ".format(" in line)):
+        lower = line.lower()
+    if (("select" in lower or "insert" in lower or "delete" in lower or "update" in lower) and
+    ("+" in line or "%" in line or ".format(" in line)):
             issues.append({
                 "id": "sql_injection_backend",
                 "title": "SQL Injection Risk in Query",
