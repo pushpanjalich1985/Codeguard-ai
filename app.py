@@ -429,9 +429,12 @@ def health():
 
 @app.route("/analyze", methods=["POST"])
 def analyze():
-    data = request.get_json()
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"error": "Invalid JSON in request body"}), 400
     code = data.get("code", "")
     language = data.get("language", "python")
+
 
     if not code:
         return jsonify({"error": "No code provided"}), 400
