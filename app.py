@@ -59,9 +59,10 @@ def check_syntax(code):
     return issues
 
 def check_logic(code):
+    lower_lines = [l.lower() for l in lines]
     issues = []
-    lines = code.split("\n")
-
+    lower = lower_lines[i-1]
+    
     # Check for hardcoded secrets
     for i, line in enumerate(lines, 1):
         lower = line.lower()
