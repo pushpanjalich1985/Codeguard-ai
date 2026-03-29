@@ -435,6 +435,7 @@ def health():
     return jsonify({"status": "ok", "version": "1.0"})
 
 @app.route("/analyze", methods=["POST"])
+@limiter.limit("30 per minute")
 def analyze():
     data = request.get_json(silent=True)
     if not data:
