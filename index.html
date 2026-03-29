@@ -303,7 +303,25 @@ fetch(`${API_BASE}/analyze`, {
   } catch {
     throw new Error("Invalid JSON response");
   }
-}).then(data=>{if(data.issues&&data.issues.length>0){renderResults(data.issues);saveToHistory(code,currentLang,data.issues)}else{runFrontend(code,currentLang)}}).catch(()=>runFrontend(code,currentLang)).finally(()=>{btn.disabled=false;btn.innerHTML='<span>▶</span> Analyze Code'})}
+}).then(data=>{if(data.issues&&data.issues.length>0){renderResults(data.issues);saveToHistory(code,currentLang,data.issues)}else{runFrontend(code,currentLang)}}).catch(()=>runFrontend(code,currentLang))
+.finally(() => {
+  const endTime = performance.now();
+  const time = ((endTime - startTime) / 1000).toFixed(2);
+
+  document.getElementById('metaInfo').textContent += ` · ${time}s`;
+
+  btn.disabled = false;
+  btn.innerHTML = '<span>▶</span> Analyze Code';
+})
+.finally(() => {
+  const endTime = performance.now();
+  const time = ((endTime - startTime) / 1000).toFixed(2);
+
+  document.getElementById('metaInfo').textContent += ` · ${time}s`;
+
+  btn.disabled = false;
+  btn.innerHTML = '<span>▶</span> Analyze Code';
+}).finally(()=>{btn.disabled=false;btn.innerHTML='<span>▶</span> Analyze Code'})}
 function runFrontend(code,language){setTimeout(()=>{const found=rules.filter(r=>(r.languages.includes(language)||r.languages.includes('general'))&&r.detect(code));renderResults(found);saveToHistory(code,language,found)},500)}
 updateHistoryCount();
 
